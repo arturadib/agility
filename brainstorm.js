@@ -191,7 +191,7 @@ $$.document.add(list);
 
 //
 // 
-// The dimo
+// The prototypical object
 //
 //
 {
