@@ -1,4 +1,4 @@
-// Sandbox it, so kids don't get hurt
+// Sandbox, so kids don't get hurt
 var $$ = (function(){
 
   if (!window.jQuery) {
@@ -9,7 +9,7 @@ var $$ = (function(){
   var $ = jQuery;
   
   // Global agility object id counter
-  var guid = 1;
+  var agilityId = 1;
 
   // Crockford's Object.create()
   if (typeof Object.create !== 'function') {
@@ -31,25 +31,24 @@ var $$ = (function(){
       throw 'agility.js: invalid number of arguments';
     }
     
-    // Build from existing object
-    if (typeof arguments[0] === "object" && typeof arguments[0].guid === 'number') {
+    // Build from agility object
+    if (typeof arguments[0] === "object" && typeof arguments[0].agilityId === 'number') {
       object = Object.create(arguments[0]);      
       return object;
-    } // build from object
+    } // build from agility object
 
     // Default agility object
     object = Object.create({
 
       // Global agility object identifier
-      guid: guid++,
-
-      // List of sub-objects
-      tree: [],
+      agilityId: agilityId++,
       
       // Using self-executing function to encapsulate _model
       model: (function(){
         var _model = {}; // private
-        return function(arg){
+        
+        // Setter, getter
+        var modelObject = function(arg){
           // Model getter
           if (typeof arg === 'undefined') {
             return _model;
@@ -64,7 +63,18 @@ var $$ = (function(){
             return;
           }
         }
+        
+        // Persistence: save
+        modelObject.save = function(){};
+
+        // Persistence: load
+        modelObject.load = function(){};
+        
+        return modelObject;
       })(),
+
+      // Array of sub-objects
+      tree: [],
 
       view: {
         format: '',
@@ -81,7 +91,7 @@ var $$ = (function(){
 
       // Add a new object to current one, call event handlers
       add: function($$obj, args){
-        if (typeof $$obj.guid !== 'number') {
+        if (typeof $$obj.agilityId !== 'number') {
           throw "agility.js: add argument is not an agility object";
         }
         this.tree.push($$obj);
@@ -92,21 +102,25 @@ var $$ = (function(){
       
       // Internal utility functions
       _: {
-        // Scans object for functions and proxy their 'this' to object
+        // Scan object for functions (depth=2) and proxy their 'this' to object
         proxyAll: function(obj){
           for (var attr1 in obj) {
-            // Root methods
+            var proxied = obj[attr1]; // default is untouched
+            // Proxy root methods
             if (typeof obj[attr1] === 'function') {
-              obj[attr1] = $.proxy(obj[attr1], obj);
+              proxied = $.proxy(obj[attr1], obj);
             }
-            // Sub-methods (model.*, view.*, controller.*)
-            else if (typeof obj[attr1] === 'object') {
+            // Proxy sub-methods (model.*, view.*, controller.*)
+            if (typeof obj[attr1] === 'function' || typeof obj[attr1] === 'object') {
               for (var attr2 in obj[attr1]) {
+                var proxied2 = obj[attr1][attr2]; // default is untouched
                 if (typeof obj[attr1][attr2] === 'function') {
-                  obj[attr1][attr2] = $.proxy(obj[attr1][attr2], obj);
+                  proxied2 = $.proxy(obj[attr1][attr2], obj);
                 }
-              }
+                proxied[attr2] = proxied2;
+              } // for attr2
             } // if not func
+            obj[attr1] = proxied;
           } // for attr1
         } // proxyAll
       } // _
