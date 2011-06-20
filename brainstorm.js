@@ -176,18 +176,69 @@ var item = $$(null, '<li>${content} <button>x</button></li>', {
 var list = $$({
   view: {
     format: '<div><button>Add item</button> <ul id="list"></ul></div>',
-    append: function($$obj, params){  // default implementation
-      this.$(params.select).append( $$obj.view.html );  
+    append: function($$obj, selector){
+      this.$(selector).append( $$obj.view.html );  // default implementation
     }
   }, 
   controller: {
     'click button': function(){
       var newItem = $$(item).model({content:'Hello World'});
-      this.add(newItem, {selector:'#list'}); // calls view,controller:add($$obj, {params}) which will append to specified element
+      this.add(newItem, '#list'); // calls view,controller:add($$obj, {params}) which will append to specified element
     }
   }
 });
 $$.document.add(list);
+
+
+//
+// Builder: Decorating a prototypical MVC object
+//
+var mvc = $$(); // verbatim prototype
+var mvc = $$('Joe Doe', '<div>${content}</div>'); // override model._model.content, view.format
+var mvc = $$({name:'Joe Doe'}, {format:'<div>${name}</div>'}); // override model._model.name, view.format
+var mvc = $$({name:'Joe Doe'}, {format:'<div>${name}</div>'}, { // override model._model.name, view.format, controller.init()
+  init: function(){
+    // no render
+  }
+}); 
+var mvc = $$({
+  model: {
+    name: 'haha'
+  },
+  view: {
+    format: '<div>${name}</div>'
+  },
+  controller: {
+    hover: function(){
+      alert('hovered');
+    }
+  }
+});
+
+//
+// Builder: Specifying existing prototypical object
+//
+var baseObj = $$();
+var mvc = $$(baseObj);
+
+//
+// Builder: From scratch
+//
+var mvc = $$({
+  clear: true,
+  model: {
+    name: 'haha'
+  },
+  view: {
+    format: '<div>${name}</div>'
+  },
+  controller: {
+    hover: function(){
+      alert('hovered');
+    }
+  }  
+});
+
 
 //
 // 
