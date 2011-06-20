@@ -138,7 +138,7 @@ var item = $$(null, '<div>${content}</div>'); // prototype
 var list = $$(null, '<div><button>Add item</button></div>', {
   'click button': function(){
     var newItem = $$(item).extend({content:'Hello World'});
-    self.add(newItem); // calls view:add($$obj), which by default appends to self
+    this.add(newItem); // calls view:add($$obj), which by default appends to self
   }
 });
 $$.document.add(list);
@@ -148,7 +148,7 @@ var item = $$(null, '<li>${content}</li>'); // prototype
 var list = $$(null, '<div><button>Add item</button> <ul id="list"></ul></div>', {
   'click button': function(){
     var newItem = $$(item).model({content:'Hello World'});
-    self.add(newItem, '#list'); // now newItem.parent == self; calls view:add($$obj, '#list'), which will append to specified element
+    this.add(newItem, '#list'); // now newItem.parent == this; calls view:add($$obj, '#list'), which will append to specified element
   }
 });
 $$.add(document.add, list);
@@ -156,13 +156,13 @@ $$.add(document.add, list);
 // One-liners: ul list, with self-remove
 var item = $$(null, '<li>${content} <button>x</button></li>', {
   'click button': function(){
-    self.remove(); // destroy self, update view (delete self.parent[ownName])
+    this.remove(); // destroy self, update view (delete this.parent[ownName])
   }
 }); // prototype
 var list = $$(null, '<div><button>Add item</button> <ul id="list"></ul></div>', {
   'click button': function(){
     var newItem = $$(item).model({content:'Hello World'});
-    self.add(newItem, {selector:'#list'}); // calls view,controller:add($$obj, {params}) which will append to specified element
+    this.add(newItem, {selector:'#list'}); // calls view,controller:add($$obj, {params}) which will append to specified element
   }
 });
 $$.document.add(list);
@@ -170,14 +170,14 @@ $$.document.add(list);
 // One-liners: ul list, with self-remove, showing default implementation of view:add()
 var item = $$(null, '<li>${content} <button>x</button></li>', {
   'click button': function(){
-    self.remove(); // destroy self, update view (delete self.parent[ownName])
+    this.remove(); // destroy self, update view (delete self.parent[ownName])
   }
 }); // prototype
 var list = $$({
   view: {
     format: '<div><button>Add item</button> <ul id="list"></ul></div>',
-    add: function($$obj, params){
-      this.$(params.select).append( $$obj.view.html );
+    append: function($$obj, params){  // default implementation
+      this.$(params.select).append( $$obj.view.html );  
     }
   }, 
   controller: {
