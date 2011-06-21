@@ -113,7 +113,7 @@
         var _model = {}; // private
     
         // Setter, getter
-        var modelObject = function(arg){
+        var modelObject = function(arg, params){
           // Model getter
           if (typeof arg === 'undefined') {
             return _model;
@@ -125,6 +125,9 @@
           // Model setter
           if (typeof arg === 'object') {
             _model = arg;
+            if (params && params.silent===true) {
+              return;
+            }
             this.trigger('change');
             return;
           }
@@ -147,7 +150,8 @@
     
       view: {
     
-        template: '<div>${content}</div>',
+        // Default template will give rise to an empty jQuery object
+        template: '<div></div>',
     
         style: '',
     
@@ -263,29 +267,43 @@
     if (arguments.length === 0) {      
     }
 
-    // Build from {model,view,controller} object
+    // Build object from {model,view,controller} object
     else if (arguments.length === 1 && typeof arguments[0] === 'object' && (arguments[0].model || arguments[0].view || arguments[0].controller) ) {
-      // model() must come last in order to call the newly defined view/controller methods
-      if (arguments[0].controller) {
-        $.extend(object.controller, arguments[0].controller);
+      if (arguments[0].model) {
+        object.model(arguments[0].model, {silent:true}); // do not fire events
       }
       if (arguments[0].view) {
         $.extend(object.view, arguments[0].view);
       }
-      if (arguments[0].model) {
-        object.model(arguments[0].model); // this will fire events
+      if (arguments[0].controller) {
+        $.extend(object.controller, arguments[0].controller);
       }
     }
     
-    // Build from shorthand model and view
-    else if (typeof arguments[0] === 'string' && typeof arguments[1] === 'string') {
-      // model() must come last in order to call the newly defined view/controller methods
-      object.view.template = arguments[1];
-      object.model({ // this will fire events
-        content: arguments[0]
-      });
-    }
+    // Build object from (model, view, controller) arguments
+    else {
+      
+      // Build model from string ('hello world', ..., ...)
+      if (typeof arguments[0] === 'string') {
+        object.model({ 
+          content: arguments[0]
+        }, {silent:true}); // do not fire events
+        object.view.template = '<div>${content}</div>'; // default template
+      }
 
+      // Build model from object ({name:'asdf', email:'asdf@asdf.com'}, ..., ...)
+      if (typeof arguments[0] === 'object') {
+        object.model(arguments[0], {silent:true}); // do not fire events
+      }
+
+      // Build view from shorthand string (..., '<div>${whatever}</div>', ...)
+      if (typeof arguments[1] === 'string') {
+        // model() must come last in order to call the newly defined view/controller methods
+        object.view.template = arguments[1];
+      }      
+      
+    }
+    
     // -----------------------------------------
     //
     //  Object bindings, initializations, etc

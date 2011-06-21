@@ -21,7 +21,7 @@ test("One argument (model object)", function(){
     last: 'Doe'
   });
   validateObject( obj );
-  equals( obj.view.$root.html(), 'Joe Doe', 'template as expected');
+  equals( obj.view.$root.html(), '', 'template as expected'); // lib doesn't have a default template for an arbitrary model
 });
 test("Two arguments (model, view string)", function(){
   var obj = $$('Joe Doe', '<div>${content}</div>');
