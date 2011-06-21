@@ -11,7 +11,7 @@
   // In case $ is being used by another lib
   $ = jQuery,
 
-  // Agility object builder
+  // Main agility object builder
   agility,
 
   // Global agility object id counter
@@ -76,10 +76,7 @@
     
     // Private: custom event placeholder
     customEventHolder = {},
-    
-    // Private: jQuery object corresponding to the object's view. Placeholder for (UI) events, HTML, etc
-    $object = $('<div/>'),
-    
+        
     prototype = {
 
       // Global agility object identifier
@@ -128,6 +125,7 @@
           // Model setter
           if (typeof arg === 'object') {
             _model = arg;
+            this.trigger('change');
             return;
           }
         }
@@ -149,28 +147,48 @@
     
       view: {
     
-        format: '',
+        template: '<div>${content}</div>',
     
         style: '',
     
-        $: function(selector){
-          return selector ? $(selector, $object) : $object;
-        },
+        // Root jQuery object, contains view HTML, UI event bindings, etc
+        $root: {},
     
         render: function(){
-          if (this.view.format.length > 0) {
-            if ($.isEmptyObject( this.model() )) {
-              this.view.$().html( this.view.format ); // raw HTML
+          // Without template there is no view
+          if (this.view.template.length === 0) {
+            return;
+          }
+          var firstCall = $.isEmptyObject(this.view.$root);
+          // Renders template without data, if no model
+          if ($.isEmptyObject( this.model() )) {
+            if (firstCall) {
+              this.view.$root = $(this.view.template); // firstCall only, otherwise it would destroy $root's previously bound events
             }
             else {
-              this.view.$().html( $.tmpl(this.view.format, this.model()) ); // templated HTML
+              this.view.$root.html(this.view.template); // raw HTML
             }
           }
+          // Renders from model and template
+          else {
+            if (firstCall) {
+              this.view.$root = $.tmpl(this.view.template, this.model()); // firstCall only, otherwise it would destroy $root's previously bound events
+            }
+            else {
+              this.view.$root.html( $.tmpl(this.view.template, this.model()).html() );
+            }
+          }
+          // At this point we should have a valid (non-empty) $root
+          if (this.view.$root.size() === 0) {
+            throw 'agility.js: invalid template';
+          }          
         },
     
-        // Appends content of $obj into selector of own jQuery object
+        // Appends jQuery object $obj into selector of own jQuery object
         append: function($obj, selector){
-          this.view.$(selector).append($obj);
+          if (!$.isEmptyObject(this.view.$root)) {
+            this.view.$root.append($obj);
+          }
         }
       },
 
@@ -189,7 +207,12 @@
 
         // Called when obj is added to tree
         add: function(event, obj, selector){
-          this.view.append(obj.view.$(), selector);
+          this.view.append(obj.view.$root, selector);
+        },
+        
+        // Called when model changes
+        change: function(){
+          this.view.render();
         }
       },
 
@@ -257,7 +280,7 @@
     // Build from shorthand model and view
     else if (typeof arguments[0] === 'string' && typeof arguments[1] === 'string') {
       // model() must come last in order to call the newly defined view/controller methods
-      object.view.format = arguments[1];
+      object.view.template = arguments[1];
       object.model({ // this will fire events
         content: arguments[0]
       });
@@ -293,9 +316,7 @@
 
   agility.document = agility({
     view: {
-      $: function(selector) {
-        return selector ? $(selector, document.body) : $(document.body);
-      }
+      template: document.body // hack; with an empty model this will set $root = $(template) on first call
     }
   });
 
