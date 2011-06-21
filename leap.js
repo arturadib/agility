@@ -2,7 +2,7 @@
 (function(window, undefined){
 
   if (!window.jQuery) {
-    throw "agility.js: jQuery not found";
+    throw "leap.js: jQuery not found";
   }
   
   // Local reference
@@ -11,11 +11,11 @@
   // In case $ is being used by another lib
   $ = jQuery,
 
-  // Main agility object builder
-  agility,
+  // Main leap object builder
+  leap,
 
-  // Global agility object id counter
-  agilityId = 1,
+  // Global leap object id counter
+  leapId = 1,
   
   // Internal utility functions
   util = {};
@@ -57,9 +57,9 @@
     } // for attr1
   } // proxyAll
   
-  // Checks if provided var is an agility object
-  util.isAgility = function(obj){
-   return typeof obj.agilityId === 'number';
+  // Checks if provided var is an leap object
+  util.isLeap = function(obj){
+   return typeof obj.leapId === 'number';
   }
   
   // --------------------------
@@ -68,8 +68,8 @@
   //
   // --------------------------      
 
-  // Main agility object builder
-  agility = function(){    
+  // Main leap object builder
+  leap = function(){    
 
     // Object to be returned by builder
     var object = {},
@@ -79,8 +79,8 @@
         
     prototype = {
 
-      // Global agility object identifier
-      agilityId: agilityId++,
+      // Global leap object identifier
+      leapId: leapId++,
         
       // --------------------------
       //
@@ -93,8 +93,8 @@
     
         // Adds a new object to tree, calls/fires necessary events
         treeObject.add = function(obj, selector){          
-          if (!util.isAgility(obj)) {
-            throw "agility.js: add argument is not an agility object";
+          if (!util.isLeap(obj)) {
+            throw "leap.js: add argument is not an leap object";
           }
           this.tree.push(obj);
           this.trigger('add', [obj, selector]);
@@ -180,7 +180,7 @@
           }
           // At this point we should have a valid (non-empty) $root
           if (this.view.$root.size() === 0) {
-            throw 'agility.js: invalid template';
+            throw 'leap.js: invalid template';
           }          
         },
     
@@ -250,13 +250,13 @@
     //
     // --------------------------      
 
-    // Build from agility object
-    if (typeof arguments[0] === "object" && typeof arguments[0].agilityId === 'number') {
+    // Build from leap object
+    if (typeof arguments[0] === "object" && typeof arguments[0].leapId === 'number') {
       object = Object.create(arguments[0]);      
       return object;
-    } // build from agility object
+    } // build from leap object
 
-    // Default agility object
+    // Default leap object
     object = Object.create(prototype);
         
     // Builds the default prototype
@@ -306,21 +306,21 @@
     object.trigger('init');
     
     return object;
-  } // agility
+  } // leap
 
   // -----------------------------------------
   //
-  //  agility.document
+  //  leap.document
   //
   // -----------------------------------------
 
-  agility.document = agility({
+  leap.document = leap({
     view: {
       template: document.body // hack; with an empty model this will set $root = $(template) on first call
     }
   });
 
   // Globals
-  window.agility = window.$$ = agility;
+  window.leap = window.$$ = leap;
     
 })(window);
