@@ -276,21 +276,15 @@
     
     // Object to be returned by builder
     var object = {};
-    
-    // --------------------------
-    //
-    //  Build decisions
-    //
-    // --------------------------      
-  
-    // Builds object from individual prototype parts so that
-    // we can do differential inheritance at the sub-object level, e.g. object.view.template.
+      
+    // Builds object from individual prototype parts
+    // This enables differential inheritance at the sub-object level, e.g. object.view.template
     object = Object.create(prototype.base);
     object.model = Object.create(prototype.model);
     object.view = Object.create(prototype.view);
     object.controller = Object.create(prototype.controller);
     
-    // Instance-specific data
+    // Instance-specific data ('own' properties)
     object._customEvents = {};
     object.model._data = {};
     object._tree = [];
@@ -298,11 +292,17 @@
     object.view.template = '<div/>';
     object.view.style = '';
     
-    // Builds the default prototype
+    // ---------------------------------------
+    //
+    //  Build via differential inheritance
+    //
+    // ---------------------------------------
+
+    // Just the default prototype
     if (arguments.length === 0) {
     }
   
-    // Build object from {model,view,controller} object
+    // Prototype differential from {model,view,controller} object
     else if (arguments.length === 1 && typeof arguments[0] === 'object' && (arguments[0].model || arguments[0].view || arguments[0].controller) ) {
       if (arguments[0].model) {
         object.model._data = arguments[0].model;
@@ -315,7 +315,7 @@
       }
     }
     
-    // Build object from (model, view, controller) arguments
+    // Prototype differential from (model, view, controller) arguments
     else {
       
       // Model from string ('hello world', ..., ...)
