@@ -151,7 +151,7 @@
       view: {
     
         // Default template will give rise to an empty jQuery object
-        template: '<div></div>',
+        template: '<div />',
     
         style: '',
     
@@ -191,7 +191,8 @@
         // Appends jQuery object $obj into selector of own jQuery object
         append: function($obj, selector){
           if (!$.isEmptyObject(this.view.$root)) {
-            this.view.$root.append($obj);
+            if (selector) this.view.$root.find(selector).append($obj);
+            else this.view.$root.append($obj);
           }
         }
       },
@@ -290,7 +291,7 @@
     // Build object from (model, view, controller) arguments
     else {
       
-      // Build model from string ('hello world', ..., ...)
+      // Model from string ('hello world', ..., ...)
       if (typeof arguments[0] === 'string') {
         object.model({ 
           content: arguments[0]
@@ -298,15 +299,24 @@
         object.view.template = '<div>${content}</div>'; // default template
       }
 
-      // Build model from object ({name:'asdf', email:'asdf@asdf.com'}, ..., ...)
+      // Model from object ({name:'asdf', email:'asdf@asdf.com'}, ..., ...)
       if (typeof arguments[0] === 'object') {
         object.model(arguments[0], {silent:true}); // do not fire events
       }
 
-      // Build view from shorthand string (..., '<div>${whatever}</div>', ...)
+      // View from shorthand string (..., '<div>${whatever}</div>', ...)
       if (typeof arguments[1] === 'string') {
-        // model() must come last in order to call the newly defined view/controller methods
         object.view.template = arguments[1];
+      }      
+
+      // View from object (..., {template:'<div>${whatever}</div>'}, ...)
+      if (typeof arguments[1] === 'object') {
+        $.extend(object.view, arguments[1]);
+      }      
+
+      // Controller from object (..., ..., {method():function(){}})
+      if (typeof arguments[2] === 'object') {
+        $.extend(object.controller, arguments[2]);
       }      
       
     }
