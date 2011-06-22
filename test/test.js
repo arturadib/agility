@@ -155,12 +155,19 @@
     var obj1 = $$({}, '<div><span class="here"></span></div>');
     var obj2 = $$('hello');
     obj1.add(obj2, '.here');
-    ok( obj1.view.$root.find('.here').find('div').html() === 'hello', 'add() appends at given selector');
+    ok(obj1.view.$root.find('.here').find('div').html() === 'hello', 'add() appends at given selector');
 
     obj1 = $$({}, '<div><span></span></div>');
     obj2 = $$('hello'); // default template should have a <div> root
     obj1.add(obj2);
-    ok( obj1.view.$root.find('span').next().html() === 'hello', 'add() appends at root element');        
+    ok(obj1.view.$root.find('span').next().html() === 'hello', 'add() appends at root element');        
+
+    obj1 = $$({}, '<div><span></span></div>');
+    for (var i=0;i<10;i++) {
+      obj2 = $$('hello', '<div class="test"></div>'); // default template should have a <div> root
+      obj1.add(obj2, 'span');
+    }
+    ok(obj1.view.$root.find('.test').size() === 10, 'add() appends multiple elements');
   });
 
   test("Model events", function(){
