@@ -126,10 +126,10 @@
           if (typeof arg === 'object') {
             _model = arg;
             if (params && params.silent===true) {
-              return;
+              return this; // for chainable calls
             }
             this.trigger('change');
-            return;
+            return this; // for chainable calls
           }
         }
     
@@ -237,16 +237,34 @@
       // Removes self, including from parent tree
       remove: function(){},
 
-      // Binds eventStr to fn
+      // Binds eventStr to fn. eventStr can be:
+      //    'event'          : binds to custom event
+      //    'event selector' : binds to DOM event using 'selector'
       bind: function(eventStr, fn){
-        $(customEventHolder).bind(eventStr, fn);
-        return this;
+        var spacePos = eventStr.search(/\s/);
+        // DOM event 'event selector', e.g. 'click button'
+        if (spacePos > -1) {
+          var type = eventStr.substr(0, spacePos);
+          var selector = eventStr.substr(spacePos+1);
+          // Manually override selector 'root', as jQuery selectors can't select self object
+          if (selector === 'root') {
+            object.view.$root.bind(type, fn);
+          }
+          else {
+            object.view.$root.delegate(selector, type, fn);
+          }
+        }
+        // Custom 'event'
+        else {
+          $(customEventHolder).bind(eventStr, fn);
+        }
+        return this; // for chainable calls
       },
 
       // Triggers eventStr
-      trigger: function(eventStr, params){
-        $(customEventHolder).trigger(eventStr, params);
-        return this;
+      trigger: function(event, params){
+        $(customEventHolder).trigger(event, params);
+        return this; // for chainable calls
       }
       
     }; // prototype
@@ -331,23 +349,7 @@
     // Binds all controller functions to corresponding events
     for (ev in object.controller) {
       if (typeof object.controller[ev] === 'function') {
-        var spacePos = ev.search(/\s/);
-        // Method is of format 'event selector', e.g. 'click button'
-        if (spacePos > -1) {
-          var type = ev.substr(0, spacePos);
-          var selector = ev.substr(spacePos+1);
-          // Manually override selector 'root', as jQuery selectors can't select self object
-          if (selector === 'root') {
-            object.view.$root.bind(type, object.controller[ev]);
-          }
-          else {
-            object.view.$root.delegate(selector, type, object.controller[ev]);
-          }
-        }
-        // Method is a pure 'event'
-        else {
-          object.bind(ev, object.controller[ev]);
-        }
+        object.bind(ev, object.controller[ev]);
       }
     }
 

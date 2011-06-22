@@ -169,13 +169,20 @@
     ok(obj1.view.$root.html() === 'Joe Doe', 'obj.model() fires view change');
   });
 
-  // ----------------------------------
-  //
-  //  Post-builder - Custom controller
-  //
-  // ----------------------------------
+  test("Chainable calls", function(){
+    t = false;
+    var obj = $$().model({content:'Joe Doe'}).bind('click root', function(){ t = true; });
+    obj.view.$root.click();
+    ok(t===true, 'chaining model() and bind()');
+  });
 
-  module("Post-builder - Custom controller");
+  // ----------------------------------------------
+  //
+  //  Post-builder - Custom controller methods
+  //
+  // ----------------------------------------------
+
+  module("Post-builder - Custom controller methods");
 
   test("Tree events", function(){
     var o = {};
