@@ -115,7 +115,7 @@
           $(this._customEvents).bind(eventStr, fn);
         }
         return this; // for chainable calls
-      },
+      }, // bind
   
       // Triggers eventStr. Syntax for eventStr is same as that for bind()
       trigger: function(eventStr, params){
@@ -126,10 +126,10 @@
           var selector = eventStr.substr(spacePos+1);
           // Manually override selector 'root', as jQuery selectors can't select self object
           if (selector === 'root') {
-            object.view.$root.trigger(type, params);
+            this.view.$root.trigger(type, params);
           }
           else {
-            object.view.$root.find(selector).trigger(type, params);
+            this.view.$root.find(selector).trigger(type, params);
           }
         }
         // Custom 'event'
@@ -137,6 +137,17 @@
           $(this._customEvents).trigger(eventStr, params, params);
         }
         return this; // for chainable calls
+      }, // trigger
+      
+      // Shortcut to model.set()
+      set: function(){
+        this.model.set.apply(this, arguments);
+        return this; // for chainable calls
+      }, // set
+      
+      // Shortcut to model.get()
+      get: function(){
+        return this.model.get.apply(this, arguments);        
       }
       
     }, // base prototype

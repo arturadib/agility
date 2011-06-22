@@ -9,7 +9,7 @@
   module("Object builder");
 
   var validateObject = function(o){
-    ok( typeof o.model === 'function', "obj.model defined");
+    ok( !$.isEmptyObject(o.model), "obj.model defined");
     ok( !$.isEmptyObject(o.view), "obj.view defined");    
     ok( !$.isEmptyObject(o.controller), "obj.controller defined");    
   }
@@ -17,13 +17,13 @@
   test("No arguments", function(){
     var obj = $$(); // default object
     validateObject( obj );
-    ok($.isEmptyObject(obj.model()), "model is empty");
+    ok($.isEmptyObject(obj.get()), "model is empty");
   });
 
   test("Dummy arguments", function(){
     var obj = $$({}, {}, {}); // default object
     validateObject( obj );
-    ok($.isEmptyObject(obj.model()), "model is empty");
+    ok($.isEmptyObject(obj.get()), "model is empty");
   });
 
   test("One argument (model string)", function(){
@@ -165,14 +165,14 @@
 
   test("Model events", function(){
     var obj1 = $$({}, '<div>${content}</div>');
-    obj1.model({content:'Joe Doe'});
-    ok(obj1.view.$root.html() === 'Joe Doe', 'obj.model() fires view change');
+    obj1.set({content:'Joe Doe'});
+    ok(obj1.view.$root.html() === 'Joe Doe', 'obj.set() fires view change');
   });
 
   test("Chainable calls", function(){
     t = false;
-    var obj = $$().model({content:'Joe Doe'}).bind('click root', function(){ t = true; }).trigger('click root');
-    ok(t===true, 'chaining model(), bind(), and trigger()');
+    var obj = $$().set({content:'Joe Doe'}).bind('click root', function(){ t = true; }).trigger('click root');
+    ok(t===true, 'chaining set(), bind(), and trigger()');
   });
 
   // ----------------------------------------------
@@ -206,7 +206,7 @@
         t = true;
       }
     });
-    obj.model({a:'hello'});
+    obj.set({a:'hello'});
     ok(t===true, "change() called");
   });
 
@@ -221,12 +221,6 @@
     ok(t===true, "click event caught");
     
     t = false;
-    obj.model('something else', '<div><span><button>${content}</button></span></div>'); // re-renders $root
-    obj.view.$root.find('button').trigger('click');
-    ok(t===true, "click event caught after re-rendering");
-
-    t = false;
-    obj.model('something else', '<div><span><button>${content}</button></span></div>'); // re-renders $root
     obj.view.$root.find('span').trigger('click');
     ok(t===false, "click event properly filtered selector");
 
