@@ -14,9 +14,6 @@
   // Main agility object builder
   agility,
 
-  // Global agility object id counter
-  agilityId = 1,
-  
   // Internal utility functions
   util = {};
 
@@ -59,7 +56,7 @@
   
   // Checks if provided var is an agility object
   util.isAgility = function(obj){
-   return typeof obj.agilityId === 'number';
+   return obj._agility === true;
   }
   
   // --------------------------
@@ -78,10 +75,9 @@
     customEventHolder = {},
         
     prototype = {
-
-      // Global agility object identifier
-      agilityId: agilityId++,
         
+      _agility: true,
+      
       // --------------------------
       //
       //  Tree
@@ -261,14 +257,30 @@
         return this; // for chainable calls
       },
 
-      // Triggers eventStr
-      trigger: function(event, params){
-        $(customEventHolder).trigger(event, params);
+      // Triggers eventStr. Syntax for eventStr is same as that of bind()
+      trigger: function(eventStr, params){
+        var spacePos = eventStr.search(/\s/);
+        // DOM event 'event selector', e.g. 'click button'
+        if (spacePos > -1) {
+          var type = eventStr.substr(0, spacePos);
+          var selector = eventStr.substr(spacePos+1);
+          // Manually override selector 'root', as jQuery selectors can't select self object
+          if (selector === 'root') {
+            object.view.$root.trigger(type, params);
+          }
+          else {
+            object.view.$root.find(selector).trigger(type, params);
+          }
+        }
+        // Custom 'event'
+        else {
+          $(customEventHolder).trigger(eventStr, params, params);
+        }
         return this; // for chainable calls
       }
       
     }; // prototype
-        
+
     // --------------------------
     //
     //  Build decisions
@@ -276,7 +288,7 @@
     // --------------------------      
 
     // Build from agility object
-    if (typeof arguments[0] === "object" && typeof arguments[0].agilityId === 'number') {
+    if (typeof arguments[0] === "object" && util.isAgility(arguments[0])) {
       object = Object.create(arguments[0]);      
       return object;
     } // build from agility object

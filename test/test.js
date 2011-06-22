@@ -171,9 +171,8 @@
 
   test("Chainable calls", function(){
     t = false;
-    var obj = $$().model({content:'Joe Doe'}).bind('click root', function(){ t = true; });
-    obj.view.$root.click();
-    ok(t===true, 'chaining model() and bind()');
+    var obj = $$().model({content:'Joe Doe'}).bind('click root', function(){ t = true; }).trigger('click root');
+    ok(t===true, 'chaining model(), bind(), and trigger()');
   });
 
   // ----------------------------------------------
