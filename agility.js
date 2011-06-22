@@ -151,13 +151,16 @@
       view: {
     
         // Default template will give rise to an empty jQuery object
-        template: '<div />',
+        template: '<div/>',
     
         style: '',
     
-        // Root jQuery object, contains view HTML, UI event bindings, etc
+        // Root jQuery object. Will contain view HTML, UI event bindings, etc
         $root: {},
     
+        // Render is the main handler of $root. It's responsible for:
+        //   - Creating jQuery object $root
+        //   - Updating $root with DOM/HTML from template
         render: function(){
           // Without template there is no view
           if (this.view.template.length === 0) {
@@ -170,7 +173,7 @@
               this.view.$root = $(this.view.template); // firstCall only, otherwise it would destroy $root's previously bound events
             }
             else {
-              this.view.$root.html(this.view.template); // raw HTML
+              this.view.$root.html(this.view.template); // this won't destroy events bound to $root
             }
           }
           // Renders from model and template
@@ -179,13 +182,13 @@
               this.view.$root = $.tmpl(this.view.template, this.model()); // firstCall only, otherwise it would destroy $root's previously bound events
             }
             else {
-              this.view.$root.html( $.tmpl(this.view.template, this.model()).html() );
+              this.view.$root.html( $.tmpl(this.view.template, this.model()).html() ); // this won't destroy events bound to $root
             }
           }
-          // At this point we should have a valid (non-empty) $root
+          // Ensure we have a valid (non-empty) $root
           if (this.view.$root.size() === 0) {
             throw 'agility.js: invalid template';
-          }          
+          }
         },
     
         // Appends jQuery object $obj into selector of own jQuery object
@@ -206,9 +209,7 @@
       controller: {
 
         // Called upon object creation
-        init: function(event){
-          this.view.render();
-        },
+        init: function(event){},
 
         // Called when obj is added to tree
         add: function(event, obj, selector){
@@ -246,13 +247,7 @@
       trigger: function(eventStr, params){
         $(customEventHolder).trigger(eventStr, params);
         return this;
-      },
-      
-      // !!! UNFINISHED
-      // shortcuts to view methods
-      show: function(){},
-      hide: function(){},
-      visible: function(){}
+      }
       
     }; // prototype
         
@@ -327,17 +322,36 @@
     //
     // -----------------------------------------
     
-    // object.* will have their 'this' === object
+    // object.* will have their 'this' === object. This should come before call to object.* below (just in case).
     util.proxyAll(object);
+    
+    // Initialize $root, needed in the events binding below
+    object.view.render();
 
     // Binds all controller functions to corresponding events
     for (ev in object.controller) {
       if (typeof object.controller[ev] === 'function') {
-        object.bind(ev, object.controller[ev]);
+        var spacePos = ev.search(/\s/);
+        // Method is of format 'event selector', e.g. 'click button'
+        if (spacePos > -1) {
+          var type = ev.substr(0, spacePos);
+          var selector = ev.substr(spacePos+1);
+          // Manually override selector 'root', as jQuery selectors can't select self object
+          if (selector === 'root') {
+            object.view.$root.bind(type, object.controller[ev]);
+          }
+          else {
+            object.view.$root.delegate(selector, type, object.controller[ev]);
+          }
+        }
+        // Method is a pure 'event'
+        else {
+          object.bind(ev, object.controller[ev]);
+        }
       }
     }
-    
-    // Calls controller.init()
+
+    // Auto-triggers init event
     object.trigger('init');
     
     return object;
@@ -351,7 +365,8 @@
 
   agility.document = agility({
     view: {
-      template: document.body // hack; with an empty model this will set $root = $(template) on first call
+      $root: $(document.body),
+      render: function(){}
     }
   });
 

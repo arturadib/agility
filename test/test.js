@@ -158,7 +158,7 @@
     ok( obj1.view.$root.find('.here').find('div').html() === 'hello', 'add() appends at given selector');
 
     obj1 = $$({}, '<div><span></span></div>');
-    obj2 = $$('hello');
+    obj2 = $$('hello'); // default template should have a <div> root
     obj1.add(obj2);
     ok( obj1.view.$root.find('span').next().html() === 'hello', 'add() appends at root element');        
   });
@@ -205,6 +205,33 @@
   });
 
   test("DOM events", function(){
+    var t = false;
+    var obj = $$('hello', '<div><button>${content}</button></div>', {
+      'click button': function(event){
+        t = true;
+      }
+    });
+    obj.view.$root.find('button').trigger('click');
+    ok(t===true, "click event caught");
+    
+    t = false;
+    obj.model('something else', '<div><span><button>${content}</button></span></div>'); // re-renders $root
+    obj.view.$root.find('button').trigger('click');
+    ok(t===true, "click event caught after re-rendering");
+
+    t = false;
+    obj.model('something else', '<div><span><button>${content}</button></span></div>'); // re-renders $root
+    obj.view.$root.find('span').trigger('click');
+    ok(t===false, "click event properly filtered selector");
+
+    t = false;
+    obj = $$('hello', '<button>${content}</button>', {
+      'click root': function(event){
+        t = true;
+      }
+    });
+    obj.view.$root.trigger('click');
+    ok(t===true, "root click event caught");
   });
 
 })(jQuery, agility);
