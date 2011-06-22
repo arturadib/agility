@@ -67,14 +67,27 @@
 
   // Main agility object builder
   agility = function(){    
-
+    
     // Object to be returned by builder
     var object = {},
     
-    // Private: custom event placeholder
-    customEventHolder = {},
-        
-    prototype = {
+    // Private data. Contain instance-specific data.
+    data = {    
+      customEvents: {},
+      model: {},
+      tree: [],
+      $root: {}, // jQuery object correspoding to root element
+      template: '<div/>',    
+      style: ''
+    }    
+    
+    // --------------------------
+    //
+    //  Main object prototype
+    //
+    // --------------------------
+    
+    var prototype = {
         
       _agility: true,
       
@@ -84,11 +97,9 @@
       //
       // --------------------------
   
-      tree: (function(){
-        treeObject = [];
-    
+      tree: (function(){    
         // Adds a new object to tree, calls/fires necessary events
-        treeObject.add = function(obj, selector){          
+        data.tree.add = function(obj, selector){          
           if (!util.isAgility(obj)) {
             throw "agility.js: add argument is not an agility object";
           }
@@ -96,7 +107,7 @@
           this.trigger('add', [obj, selector]);
         };
     
-        return treeObject;
+        return data.tree;
       })(),
   
       // --------------------------
@@ -105,22 +116,20 @@
       //
       // --------------------------
        
-      model: (function(){
-        var _model = {}; // private
-    
+      model: (function(){    
         // Setter, getter
         var modelObject = function(arg, params){
           // Model getter
           if (typeof arg === 'undefined') {
-            return _model;
+            return data.model;
           }
           // Attribute getter
           if (typeof arg === 'string') {            
-            return _model[arg];
+            return data.model[arg];
           }
           // Model setter
           if (typeof arg === 'object') {
-            _model = arg;
+            data.model = arg;
             if (params && params.silent===true) {
               return this; // for chainable calls
             }
@@ -146,14 +155,13 @@
     
       view: {
     
-        // Default template will give rise to an empty jQuery object
-        template: '<div/>',
-    
-        style: '',
-    
-        // Root jQuery object. Will contain view HTML, UI event bindings, etc
-        $root: {},
-    
+        // jQuery object. Empty object initially.
+        $root: data.$root,
+        
+        template: data.template,
+        
+        style: data.style,
+        
         // Render is the main handler of $root. It's responsible for:
         //   - Creating jQuery object $root
         //   - Updating $root with DOM/HTML from template
@@ -252,12 +260,12 @@
         }
         // Custom 'event'
         else {
-          $(customEventHolder).bind(eventStr, fn);
+          $(data.customEvents).bind(eventStr, fn);
         }
         return this; // for chainable calls
       },
 
-      // Triggers eventStr. Syntax for eventStr is same as that of bind()
+      // Triggers eventStr. Syntax for eventStr is same as that for bind()
       trigger: function(eventStr, params){
         var spacePos = eventStr.search(/\s/);
         // DOM event 'event selector', e.g. 'click button'
@@ -274,7 +282,7 @@
         }
         // Custom 'event'
         else {
-          $(customEventHolder).trigger(eventStr, params, params);
+          $(data.customEvents).trigger(eventStr, params, params);
         }
         return this; // for chainable calls
       }
@@ -356,7 +364,7 @@
     util.proxyAll(object);
     
     // Initialize $root, needed in the events binding below
-    object.view.render();
+    object.view.render();        
 
     // Binds all controller functions to corresponding events
     for (ev in object.controller) {
