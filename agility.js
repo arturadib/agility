@@ -18,7 +18,7 @@
   util = {},
   
   // Default object prototype
-  prototype = {};
+  defaultPrototype = {};
 
   // Crockford's Object.create()
   if (typeof Object.create !== 'function') {
@@ -37,7 +37,7 @@
   
   // Scans object for functions (depth=2) and proxies their 'this' to dest.
   // To ensure it works with previously proxied objects, we save the original function as 
-  // a '_preProxy' method belonging to the new proxied function.
+  // a '_preProxy' method and when available always use that as the proxy source.
   util.proxyAll = function(obj, dest){
     if (!obj || !dest) {
       throw "agility.js: util.proxyAll needs two arguments";
@@ -54,7 +54,7 @@
         for (var attr2 in obj[attr1]) {
           var proxied2 = obj[attr1][attr2]; // default is untouched
           if (typeof obj[attr1][attr2] === 'function') {
-            proxied2 = obj[attr1][attr2]._noProxy ? obj[attr1][attr2] : $.proxy(obj[attr1][attr2] || obj[attr1][attr2], dest);
+            proxied2 = obj[attr1][attr2]._noProxy ? obj[attr1][attr2] : $.proxy(obj[attr1][attr2]._preProxy || obj[attr1][attr2], dest);
             proxied2._preProxy = obj[attr1][attr2]._noProxy ? undefined : (obj[attr1][attr2]._preProxy || obj[attr1][attr2]); // save original
           }
           proxied[attr2] = proxied2;
@@ -75,7 +75,7 @@
   //
   // ------------------------------
   
-  prototype = {
+  defaultPrototype = {
     
     // -------------
     //
@@ -131,7 +131,7 @@
     view: {
         
       // Render is the main handler of $root. It's responsible for:
-      //   - Creating jQuery object $root
+      //   - Creating the jQuery object $root
       //   - Updating $root with DOM/HTML from template
       render: function(){
         // Without template there is no view
@@ -289,34 +289,31 @@
     var args = Array.prototype.slice.call(arguments, 0),
     
     // Object to be returned by builder
-    object = {};
-        
-    // Build object from clone of given agility object
-    // We clone instead of inherit as it leads to issues related to prototype vs. 'own' data
-    // (i.e. we'd need to somehow know what the user wants to be own vs. what they want to be prototyped)
-    // Cloning is not as bad as it seems; the cloned objects still reuse the default prototype,
-    // so they only duplicate resources introduced by the user
+    object = {},
+    
+    prototype = defaultPrototype;
+            
+    // Build object from given prototype
     if (typeof args[0] === "object" && util.isAgility(args[0])) {
-      object = $.extend(true, {}, args[0]); // deep copy of given object
+      prototype = args[0];
       args.shift(); // remaining args now work as though object wasn't specified
     } // build from agility object
-
+    
     // Build object from individual prototype parts
     // This enables differential inheritance at the sub-object level, e.g. object.view.template
-    else {
-      object = Object.create(prototype);
-      object.model = Object.create(prototype.model);
-      object.view = Object.create(prototype.view);
-      object.controller = Object.create(prototype.controller);
+    object = Object.create(prototype);
+    object.model = Object.create(prototype.model);
+    object.view = Object.create(prototype.view);
+    object.controller = Object.create(prototype.controller);
 
-      // Instance-specific data ('own' properties)
-      object._customEvents = {};
-      object.model._data = {};
-      object._tree = [];
-      object.view.template = '<div/>';
-      object.view.style = '';
-    }
-    
+    // Reset object-specific data so that they're 'own' properties
+    object._customEvents = {}; // don't inherit custom events; new bindings will happen below
+    object.model._data = object.model._data ? $.extend({}, object.model._data) : {}; // model is copied
+    object._tree = []; // don't inherit tree
+    object.view.template = object.view.template || '<div/>';
+    object.view.style = object.view.style || '';
+    object.view.$root = {}; // don't inherit jQuery object; new bindings will happen below
+  
     // Just the default prototype
     if (args.length === 0) {
     }
@@ -381,7 +378,6 @@
     util.proxyAll(object, object);
 
     // Initialize $root, needed for DOM events binding below
-    object.view.$root = {};
     object.view.render();        
   
     // Binds all controller functions to corresponding events
@@ -404,10 +400,9 @@
   //
   // -----------------------------------------
   
-  agility.document = agility({
-    view: {
-      $root: $(document.body),
-      render: function(){}
+  agility.document = agility({}, {}, {
+    init: function(){
+      this.view.$root = $(document.body)
     }
   });
 

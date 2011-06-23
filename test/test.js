@@ -148,7 +148,7 @@
     var objNewModel = {first:'Joe', last:'Doe'};
     var objNew = $$(objBase, objNewModel);
 
-    ok($.isEmptyObject(objBase.get()), "parent model untouched");
+    ok($.isEmptyObject(objBase.get()), "parent model untouched ("+JSON.stringify(objBase.get())+")");
     equals(objBase.view.$root.html(), objBaseHtml, "parent html untouched");
     equals(objNew.get('first'), objNewModel.first, "child model OK");
     equals(objNew.view.$root.html(), 'Joe Doe', "child html OK");
