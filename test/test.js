@@ -142,6 +142,17 @@
     // equals( t2, o2, '_noProxy obj.*' );
   });
   
+  test("Object inheritance", function(){
+    var objBase = $$({}, '<div>${first} ${last}</div>');
+    var objBaseHtml = objBase.view.$root.html();
+    var objNewModel = {first:'Joe', last:'Doe'};
+    var objNew = $$(objBase, objNewModel);
+
+    ok($.isEmptyObject(objBase.get()), "parent model untouched");
+    equals(objBase.view.$root.html(), objBaseHtml, "parent html untouched");
+    equals(objNew.get('first'), objNewModel.first, "child model OK");
+    equals(objNew.view.$root.html(), 'Joe Doe', "child html OK");
+  });
 
   // ------------------------------------
   //

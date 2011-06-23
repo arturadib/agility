@@ -35,20 +35,27 @@
   //
   // --------------------------      
   
-  // Scans object for functions (depth=2) and proxies their 'this' to object
-  util.proxyAll = function(obj){
+  // Scans object for functions (depth=2) and proxies their 'this' to dest.
+  // To ensure it works with previously proxied objects, we save the original function as 
+  // a '_preProxy' method belonging to the new proxied function.
+  util.proxyAll = function(obj, dest){
+    if (!obj || !dest) {
+      throw "agility.js: util.proxyAll needs two arguments";
+    }
     for (var attr1 in obj) {
       var proxied = obj[attr1]; // default is untouched
       // Proxy root methods
       if (typeof obj[attr1] === 'function') {
-        proxied = obj[attr1]._noProxy ? obj[attr1] : $.proxy(obj[attr1], obj);
+        proxied = obj[attr1]._noProxy ? obj[attr1] : $.proxy(obj[attr1]._preProxy || obj[attr1], dest);
+        proxied._preProxy = obj[attr1]._noProxy ? undefined : (obj[attr1]._preProxy || obj[attr1]); // save original
       }
       // Proxy sub-methods (model.*, view.*, etc)
-      if (typeof obj[attr1] === 'function' || typeof obj[attr1] === 'object') {
+      else if (typeof obj[attr1] === 'object') {
         for (var attr2 in obj[attr1]) {
           var proxied2 = obj[attr1][attr2]; // default is untouched
           if (typeof obj[attr1][attr2] === 'function') {
-            proxied2 = obj[attr1][attr2]._noProxy ? obj[attr1][attr2] : $.proxy(obj[attr1][attr2], obj);
+            proxied2 = obj[attr1][attr2]._noProxy ? obj[attr1][attr2] : $.proxy(obj[attr1][attr2] || obj[attr1][attr2], dest);
+            proxied2._preProxy = obj[attr1][attr2]._noProxy ? undefined : (obj[attr1][attr2]._preProxy || obj[attr1][attr2]); // save original
           }
           proxied[attr2] = proxied2;
         } // for attr2
@@ -69,89 +76,7 @@
   // ------------------------------
   
   prototype = {
-  
-    // -------------
-    //
-    //  Base
-    //
-    // -------------
     
-    base: {
-        
-      _agility: true,
-      
-      // Adds an object to the tree
-      add: function(obj, selector){
-        if (!util.isAgility(obj)) {
-          throw "agility.js: add argument is not an agility object";
-        }
-        this._tree.push(obj);
-        this.trigger('add', [obj, selector]);
-        return this;
-      },
-  
-      // Removes self, including from parent tree
-      remove: function(){},
-  
-      // Binds eventStr to fn. eventStr can be:
-      //    'event'          : binds to custom event
-      //    'event selector' : binds to DOM event using 'selector'
-      bind: function(eventStr, fn){
-        var spacePos = eventStr.search(/\s/);
-        // DOM event 'event selector', e.g. 'click button'
-        if (spacePos > -1) {
-          var type = eventStr.substr(0, spacePos);
-          var selector = eventStr.substr(spacePos+1);
-          // Manually override selector 'root', as jQuery selectors can't select self object
-          if (selector === 'root') {
-            this.view.$root.bind(type, fn);
-          }
-          else {
-            this.view.$root.delegate(selector, type, fn);
-          }
-        }
-        // Custom 'event'
-        else {
-          $(this._customEvents).bind(eventStr, fn);
-        }
-        return this; // for chainable calls
-      }, // bind
-  
-      // Triggers eventStr. Syntax for eventStr is same as that for bind()
-      trigger: function(eventStr, params){
-        var spacePos = eventStr.search(/\s/);
-        // DOM event 'event selector', e.g. 'click button'
-        if (spacePos > -1) {
-          var type = eventStr.substr(0, spacePos);
-          var selector = eventStr.substr(spacePos+1);
-          // Manually override selector 'root', as jQuery selectors can't select self object
-          if (selector === 'root') {
-            this.view.$root.trigger(type, params);
-          }
-          else {
-            this.view.$root.find(selector).trigger(type, params);
-          }
-        }
-        // Custom 'event'
-        else {
-          $(this._customEvents).trigger(eventStr, params, params);
-        }
-        return this; // for chainable calls
-      }, // trigger
-      
-      // Shortcut to model.set()
-      set: function(){
-        this.model.set.apply(this, arguments);
-        return this; // for chainable calls
-      }, // set
-      
-      // Shortcut to model.get()
-      get: function(){
-        return this.model.get.apply(this, arguments);        
-      }
-      
-    }, // base prototype
-  
     // -------------
     //
     //  Model
@@ -162,7 +87,15 @@
 
       // Setter
       set: function(arg, params) {
-        this.model._data = arg;
+        if (typeof arg === 'string') {
+          this.model._data.content = arg; // default model attribute
+        }
+        else if (typeof arg === 'object') {
+          this.model._data = arg;
+        }
+        else {
+          throw "agility.js: unknown argument type (model.set)";
+        }
         if (params && params.silent===true) return this; // do not fire event
         this.trigger('change');
         return this; // for chainable calls
@@ -261,7 +194,85 @@
         this.view.render();
       }
       
-    } // controller prototype
+    }, // controller prototype
+
+    // -------------
+    //
+    //  Base
+    //
+    // -------------
+    
+    _agility: true,
+    
+    // Adds an object to the tree
+    add: function(obj, selector){
+      if (!util.isAgility(obj)) {
+        throw "agility.js: add argument is not an agility object";
+      }
+      this._tree.push(obj);
+      this.trigger('add', [obj, selector]);
+      return this;
+    },
+
+    // Removes self, including from parent tree
+    remove: function(){},
+
+    // Binds eventStr to fn. eventStr can be:
+    //    'event'          : binds to custom event
+    //    'event selector' : binds to DOM event using 'selector'
+    bind: function(eventStr, fn){
+      var spacePos = eventStr.search(/\s/);
+      // DOM event 'event selector', e.g. 'click button'
+      if (spacePos > -1) {
+        var type = eventStr.substr(0, spacePos);
+        var selector = eventStr.substr(spacePos+1);
+        // Manually override selector 'root', as jQuery selectors can't select self object
+        if (selector === 'root') {
+          this.view.$root.bind(type, fn);
+        }
+        else {          
+          this.view.$root.delegate(selector, type, fn);
+        }
+      }
+      // Custom 'event'
+      else {
+        $(this._customEvents).bind(eventStr, fn);
+      }
+      return this; // for chainable calls
+    }, // bind
+
+    // Triggers eventStr. Syntax for eventStr is same as that for bind()
+    trigger: function(eventStr, params){
+      var spacePos = eventStr.search(/\s/);
+      // DOM event 'event selector', e.g. 'click button'
+      if (spacePos > -1) {
+        var type = eventStr.substr(0, spacePos);
+        var selector = eventStr.substr(spacePos+1);
+        // Manually override selector 'root', as jQuery selectors can't select self object
+        if (selector === 'root') {
+          this.view.$root.trigger(type, params);
+        }
+        else {
+          this.view.$root.find(selector).trigger(type, params);
+        }
+      }
+      // Custom 'event'
+      else {
+        $(this._customEvents).trigger(eventStr, params, params);
+      }
+      return this; // for chainable calls
+    }, // trigger
+    
+    // Shortcut to model.set()
+    set: function(){
+      this.model.set.apply(this, arguments);
+      return this; // for chainable calls
+    }, // set
+    
+    // Shortcut to model.get()
+    get: function(){
+      return this.model.get.apply(this, arguments);        
+    }
   
   } // prototype
   
@@ -272,79 +283,93 @@
   // --------------------------      
   
   // Main agility object builder
-  agility = function(){    
+  agility = function(){
+    
+    // Real array of arguments
+    var args = Array.prototype.slice.call(arguments, 0),
     
     // Object to be returned by builder
-    var object = {};
-      
-    // Builds object from individual prototype parts
-    // This enables differential inheritance at the sub-object level, e.g. object.view.template
-    object = Object.create(prototype.base);
-    object.model = Object.create(prototype.model);
-    object.view = Object.create(prototype.view);
-    object.controller = Object.create(prototype.controller);
-    
-    // Instance-specific data ('own' properties)
-    object._customEvents = {};
-    object.model._data = {};
-    object._tree = [];
-    object.view.$root = {};
-    object.view.template = '<div/>';
-    object.view.style = '';
-    
-    // ---------------------------------------
-    //
-    //  Build via differential inheritance
-    //
-    // ---------------------------------------
+    object = {};
+        
+    // Build object from clone of given agility object
+    // We clone instead of inherit as it leads to issues related to prototype vs. 'own' data
+    // (i.e. we'd need to somehow know what the user wants to be own vs. what they want to be prototyped)
+    // Cloning is not as bad as it seems; the cloned objects still reuse the default prototype,
+    // so they only duplicate resources introduced by the user
+    if (typeof args[0] === "object" && util.isAgility(args[0])) {
+      object = $.extend(true, {}, args[0]); // deep copy of given object
+      args.shift(); // remaining args now work as though object wasn't specified
+    } // build from agility object
 
+    // Build object from individual prototype parts
+    // This enables differential inheritance at the sub-object level, e.g. object.view.template
+    else {
+      object = Object.create(prototype);
+      object.model = Object.create(prototype.model);
+      object.view = Object.create(prototype.view);
+      object.controller = Object.create(prototype.controller);
+
+      // Instance-specific data ('own' properties)
+      object._customEvents = {};
+      object.model._data = {};
+      object._tree = [];
+      object.view.template = '<div/>';
+      object.view.style = '';
+    }
+    
     // Just the default prototype
-    if (arguments.length === 0) {
+    if (args.length === 0) {
     }
   
     // Prototype differential from {model,view,controller} object
-    else if (arguments.length === 1 && typeof arguments[0] === 'object' && (arguments[0].model || arguments[0].view || arguments[0].controller) ) {
-      if (arguments[0].model) {
-        object.model._data = arguments[0].model;
+    else if (args.length === 1 && typeof args[0] === 'object' && (args[0].model || args[0].view || args[0].controller) ) {
+      if (args[0].model) {
+        $.extend(object.model._data, args[0].model);
       }
-      if (arguments[0].view) {
-        $.extend(object.view, arguments[0].view);
+      if (args[0].view) {
+        $.extend(object.view, args[0].view);
       }
-      if (arguments[0].controller) {
-        $.extend(object.controller, arguments[0].controller);
+      if (args[0].controller) {
+        $.extend(object.controller, args[0].controller);
       }
-    }
+    } // {model, view, controller} arg
     
-    // Prototype differential from (model, view, controller) arguments
+    // Prototype differential from ({model}, {view}, {controller}) arguments
     else {
       
-      // Model from string ('hello world', ..., ...)
-      if (typeof arguments[0] === 'string') {
-        object.model._data = {content: arguments[0]}; // do not fire events
-        object.view.template = '<div>${content}</div>'; // default template
+      // Model from string
+      if (typeof args[0] === 'string') {
+        object.model._data.content = args[0]; // extend model._data with .content
+        object.view.template = '<div>${content}</div>'; // default template in this case
       }
-
-      // Model from object ({name:'asdf', email:'asdf@asdf.com'}, ..., ...)
-      if (typeof arguments[0] === 'object') {
-        object.model._data = arguments[0];
+      else if (typeof args[0] === 'object') {
+        $.extend(object.model._data, args[0]);
+      }
+      else if (args[0]) {
+        throw "agility.js: unknown argument type (model)"
       }
 
       // View from shorthand string (..., '<div>${whatever}</div>', ...)
-      if (typeof arguments[1] === 'string') {
-        object.view.template = arguments[1];
-      }      
-  
+      if (typeof args[1] === 'string') {
+        object.view.template = args[1]; // extend view with .template
+      }  
       // View from object (..., {template:'<div>${whatever}</div>'}, ...)
-      if (typeof arguments[1] === 'object') {
-        $.extend(object.view, arguments[1]);
+      else if (typeof args[1] === 'object') {
+        $.extend(object.view, args[1]);
       }      
-  
-      // Controller from object (..., ..., {method():function(){}})
-      if (typeof arguments[2] === 'object') {
-        $.extend(object.controller, arguments[2]);
-      }      
+      else if (args[1]) {
+        throw "agility.js: unknown argument type (view)";
+      }
       
-    }
+      // Controller from object (..., ..., {method():function(){}})
+      if (typeof args[2] === 'object') {
+        $.extend(object.controller, args[2]);
+      }
+      else if (args[2]) {
+        throw "agility.js: unknown argument type (controller)";
+      }
+      
+    } // ({model}, {view}, {controller}) args
     
     // -----------------------------------------
     //
@@ -352,10 +377,11 @@
     //
     // -----------------------------------------
   
-    // object.* will have their 'this' === object. This should come before call to object.* below (just in case).
-    util.proxyAll(object);
-    
+    // object.* will have their 'this' === object. This should come before call to object.* below.
+    util.proxyAll(object, object);
+
     // Initialize $root, needed for DOM events binding below
+    object.view.$root = {};
     object.view.render();        
   
     // Binds all controller functions to corresponding events
