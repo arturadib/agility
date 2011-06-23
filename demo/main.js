@@ -22,7 +22,7 @@
 // Inheritance
 var item = $$({}, '<li>${text} <button>x</button></li>', {
   'click button': function(){
-    alert('remove!');
+    this.remove();
   }
 });
 var list = $$({}, '<div><button id="add">Add item</button> <ul id="list"></ul></div>', {

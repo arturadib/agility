@@ -18,7 +18,10 @@
   util = {},
   
   // Default object prototype
-  defaultPrototype = {};
+  defaultPrototype = {},
+  
+  // Global object counter
+  idCounter = 0;
 
   // Crockford's Object.create()
   if (typeof Object.create !== 'function') {
@@ -209,13 +212,21 @@
       if (!util.isAgility(obj)) {
         throw "agility.js: add argument is not an agility object";
       }
-      this._tree.push(obj);
+      obj._tree.parent = this;
+      this._tree.children[obj._id] = obj;      
       this.trigger('add', [obj, selector]);
       return this;
     },
 
     // Removes self, including from parent tree
-    remove: function(){},
+    remove: function(){
+      this.trigger('remove');
+      var parent = this._tree.parent;
+      var id = this._id;
+      delete parent._tree.children[id];
+      this.view.$root.remove();
+      parent.trigger('removeChild');
+    },
 
     // Binds eventStr to fn. eventStr can be:
     //    'event'          : binds to custom event
@@ -299,7 +310,7 @@
       args.shift(); // remaining args now work as though object wasn't specified
     } // build from agility object
     
-    // Build object from individual prototype parts
+    // Build object from prototype as well as the individual prototype parts model, view, controller
     // This enables differential inheritance at the sub-object level, e.g. object.view.template
     object = Object.create(prototype);
     object.model = Object.create(prototype.model);
@@ -307,9 +318,12 @@
     object.controller = Object.create(prototype.controller);
 
     // Reset object-specific data so that they're 'own' properties
+    object._id = idCounter++;
     object._customEvents = {}; // don't inherit custom events; new bindings will happen below
     object.model._data = object.model._data ? $.extend({}, object.model._data) : {}; // model is copied
-    object._tree = []; // don't inherit tree    
+    object._tree = {}; // don't inherit tree
+    object._tree.children = {};
+    object._tree.parent = {};
     object.view.template = object.view.template || '<div>${text}</div>';
     object.view.style = object.view.style || '';
     object.view.$root = {}; // don't inherit jQuery object; new bindings will happen below
@@ -369,7 +383,7 @@
     
     // -----------------------------------------
     //
-    //  Object bindings, initializations, etc
+    //  Bindings, initializations, etc
     //
     // -----------------------------------------
   
@@ -395,7 +409,7 @@
   
   // -----------------------------------------
   //
-  //  agility.document
+  //  Document object
   //
   // -----------------------------------------
   
