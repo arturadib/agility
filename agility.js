@@ -88,7 +88,7 @@
       // Setter
       set: function(arg, params) {
         if (typeof arg === 'string') {
-          this.model._data.content = arg; // default model attribute
+          this.model._data.text = arg; // default model attribute
         }
         else if (typeof arg === 'object') {
           this.model._data = arg;
@@ -309,8 +309,8 @@
     // Reset object-specific data so that they're 'own' properties
     object._customEvents = {}; // don't inherit custom events; new bindings will happen below
     object.model._data = object.model._data ? $.extend({}, object.model._data) : {}; // model is copied
-    object._tree = []; // don't inherit tree
-    object.view.template = object.view.template || '<div/>';
+    object._tree = []; // don't inherit tree    
+    object.view.template = object.view.template || '<div>${text}</div>';
     object.view.style = object.view.style || '';
     object.view.$root = {}; // don't inherit jQuery object; new bindings will happen below
   
@@ -336,8 +336,7 @@
       
       // Model from string
       if (typeof args[0] === 'string') {
-        object.model._data.content = args[0]; // extend model._data with .content
-        object.view.template = '<div>${content}</div>'; // default template in this case
+        object.model._data.text = args[0]; // extend model._data with .text
       }
       else if (typeof args[0] === 'object') {
         $.extend(object.model._data, args[0]);

@@ -42,7 +42,7 @@
   });
 
   test("Two arguments (model, view string)", function(){
-    var obj = $$('Joe Doe', '<div>${content}</div>');
+    var obj = $$('Joe Doe', '<div>${text}</div>');
     validateObject( obj );
     equals( obj.view.$root.html(), 'Joe Doe', 'template as expected');
   });
@@ -57,7 +57,7 @@
   });
 
   test("Three arguments (model string, view string, controller object)", function(){
-    var obj = $$('Joe Doe', '<div>${content}</div>', {
+    var obj = $$('Joe Doe', '<div>${text}</div>', {
       init: function(){
         this.view.render();
       }
@@ -77,7 +77,7 @@
   });
 
   test("Three arguments (model string, view object, controller object)", function(){
-    var obj = $$('Joe Doe', {template:'<div>${content}</div>'}, {
+    var obj = $$('Joe Doe', {template:'<div>${text}</div>'}, {
       init: function(){
         this.view.render();
       }
@@ -182,14 +182,14 @@
   });
 
   test("Model events", function(){
-    var obj1 = $$({}, '<div>${content}</div>');
-    obj1.set({content:'Joe Doe'});
+    var obj1 = $$({}, '<div>${text}</div>');
+    obj1.set({text:'Joe Doe'});
     ok(obj1.view.$root.html() === 'Joe Doe', 'obj.set() fires view change');
   });
 
   test("Chainable calls", function(){
     t = false;
-    var obj = $$().set({content:'Joe Doe'}).bind('click root', function(){ t = true; }).trigger('click root');
+    var obj = $$().set({text:'Joe Doe'}).bind('click root', function(){ t = true; }).trigger('click root');
     ok(t===true, 'chaining set(), bind(), and trigger()');
   });
 
@@ -230,7 +230,7 @@
 
   test("DOM events", function(){
     var t = false;
-    var obj = $$('hello', '<div><button>${content}</button></div>', {
+    var obj = $$('hello', '<div><button>${text}</button></div>', {
       'click button': function(event){
         t = true;
       }
@@ -243,7 +243,7 @@
     ok(t===false, "click event properly filtered selector");
 
     t = false;
-    obj = $$('hello', '<button>${content}</button>', {
+    obj = $$('hello', '<button>${text}</button>', {
       'click root': function(event){
         t = true;
       }

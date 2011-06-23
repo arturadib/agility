@@ -20,7 +20,7 @@
 // $$.document.add(list);
 
 // Inheritance
-var item = $$({}, '<li>${content} <button>x</button></li>', {
+var item = $$({}, '<li>${text} <button>x</button></li>', {
   'click button': function(){
     alert('remove!');
   }
