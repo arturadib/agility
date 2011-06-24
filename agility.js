@@ -80,6 +80,8 @@
   
   defaultPrototype = {
     
+    _agility: true,
+
     // -------------
     //
     //  Model
@@ -246,12 +248,70 @@
     
     // -------------
     //
-    //  Base
+    //  _Events
     //
     // -------------
     
-    _agility: true,
-    
+    _events: {
+
+      // Binds eventStr to fn. eventStr can be:
+      //    'event'          : binds to custom event
+      //    'event selector' : binds to DOM event using 'selector'
+      bind: function(eventStr, fn){
+        var spacePos = eventStr.search(/\s/);
+        // DOM event 'event selector', e.g. 'click button'
+        if (spacePos > -1) {
+          var type = eventStr.substr(0, spacePos);
+          var selector = eventStr.substr(spacePos+1);
+          // Manually override selector 'root', as jQuery selectors can't select self object
+          if (selector === 'root') {
+            this.view.$root.bind(type, fn);
+          }
+          else {          
+            this.view.$root.delegate(selector, type, fn);
+          }
+        }
+        // Custom 'event'
+        else {
+          $(this._events.data).bind(eventStr, fn);
+        }
+        return this; // for chainable calls
+      }, // bind
+
+      // Triggers eventStr. Syntax for eventStr is same as that for bind()
+      trigger: function(eventStr, params){
+        var spacePos = eventStr.search(/\s/);
+        // DOM event 'event selector', e.g. 'click button'
+        if (spacePos > -1) {
+          var type = eventStr.substr(0, spacePos);
+          var selector = eventStr.substr(spacePos+1);
+          // Manually override selector 'root', as jQuery selectors can't select self object
+          if (selector === 'root') {
+            this.view.$root.trigger(type, params);
+          }
+          else {
+            this.view.$root.find(selector).trigger(type, params);
+          }
+        }
+        // Custom 'event'
+        else {
+          $(this._events.data).trigger(eventStr, params, params);
+        }
+        return this; // for chainable calls
+      } // trigger
+      
+    },
+
+    // -------------
+    //
+    //  Shortcuts
+    //
+    // -------------
+        
+    //
+    // _Tree shortcuts
+    //
+
     // Shortcut to _tree.add()
     add: function(){      
       this._tree.add.apply(this, arguments);
@@ -264,52 +324,26 @@
       return this; // for chainable calls
     },
 
-    // Binds eventStr to fn. eventStr can be:
-    //    'event'          : binds to custom event
-    //    'event selector' : binds to DOM event using 'selector'
-    bind: function(eventStr, fn){
-      var spacePos = eventStr.search(/\s/);
-      // DOM event 'event selector', e.g. 'click button'
-      if (spacePos > -1) {
-        var type = eventStr.substr(0, spacePos);
-        var selector = eventStr.substr(spacePos+1);
-        // Manually override selector 'root', as jQuery selectors can't select self object
-        if (selector === 'root') {
-          this.view.$root.bind(type, fn);
-        }
-        else {          
-          this.view.$root.delegate(selector, type, fn);
-        }
-      }
-      // Custom 'event'
-      else {
-        $(this._customEvents).bind(eventStr, fn);
-      }
-      return this; // for chainable calls
-    }, // bind
+    //
+    // _Events shortcuts
+    //
 
-    // Triggers eventStr. Syntax for eventStr is same as that for bind()
-    trigger: function(eventStr, params){
-      var spacePos = eventStr.search(/\s/);
-      // DOM event 'event selector', e.g. 'click button'
-      if (spacePos > -1) {
-        var type = eventStr.substr(0, spacePos);
-        var selector = eventStr.substr(spacePos+1);
-        // Manually override selector 'root', as jQuery selectors can't select self object
-        if (selector === 'root') {
-          this.view.$root.trigger(type, params);
-        }
-        else {
-          this.view.$root.find(selector).trigger(type, params);
-        }
-      }
-      // Custom 'event'
-      else {
-        $(this._customEvents).trigger(eventStr, params, params);
-      }
+    // Shortcut to _events.bind()
+    bind: function(){
+      this._events.bind.apply(this, arguments);
       return this; // for chainable calls
-    }, // trigger
+    },
+
+    // Shortcut to _events.trigger()
+    trigger: function(){
+      this._events.trigger.apply(this, arguments);
+      return this; // for chainable calls
+    },
     
+    //
+    // Model shortcuts
+    //
+
     // Shortcut to model.set()
     set: function(){
       this.model.set.apply(this, arguments);
@@ -319,8 +353,17 @@
     // Shortcut to model.get()
     get: function(){
       return this.model.get.apply(this, arguments);        
-    }
+    },
   
+    //
+    // View shortcuts
+    //
+
+    // Shortcut to view.$root
+    $: function(selector){
+      return selector ? this.view.$root.find(selector) : this.view.$root;
+    }
+
   } // prototype
   
   // --------------------------
@@ -353,10 +396,11 @@
     object.view = Object.create(prototype.view);
     object.controller = Object.create(prototype.controller);
     object._tree = Object.create(prototype._tree);
+    object._events = Object.create(prototype._events);
 
     // Reset object-specific data so that they're 'own' properties
     object._id = idCounter++;
-    object._customEvents = {}; // don't inherit custom events; new bindings will happen below
+    object._events.data = {}; // don't inherit custom events; new bindings will happen below
     object.model._data = object.model._data ? $.extend({}, object.model._data) : {}; // model is copied
     object._tree.children = {}; // don't inherit tree data
     object.view.template = object.view.template || '<div>${text}</div>';
