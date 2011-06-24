@@ -123,6 +123,9 @@
       // Persistence: load
       load: function(){},
       
+      // Persistence: delete
+      delete: function(){}
+      
     }, // model prototype
   
     // -------------
@@ -172,7 +175,12 @@
           if (selector) this.view.$root.find(selector).append($obj);
           else this.view.$root.append($obj);
         }
-      } // append
+      }, // append
+      
+      // Remove DOM object
+      remove: function(){
+        this.view.$root.remove();
+      }
       
     }, // view prototype
   
@@ -187,18 +195,55 @@
       // Called upon object creation
       init: function(event){},
   
-      // Called when obj is added to tree
+      // Called after obj is added to tree
       add: function(event, obj, selector){
         this.view.append(obj.view.$root, selector);
       },
       
-      // Called when model changes
-      change: function(){
+      // Called after model changes
+      change: function(event){
         this.view.render();
+      },
+      
+      // Called when self-removed
+      remove: function(event){
+        this.view.remove();
+        this.model.delete();
+      },
+      
+      // Called when a child removes itself
+      removeChild: function(event, id){
+        delete this._tree.children[id];
       }
       
     }, // controller prototype
 
+    // -------------
+    //
+    //  _Tree
+    //
+    // -------------
+    
+    _tree: {
+
+      // Adds an object to the tree, listens for child removal
+      add: function(obj, selector){
+        if (!util.isAgility(obj)) {
+          throw "agility.js: add argument is not an agility object";
+        }
+        this._tree.children[obj._id] = obj;
+        this.trigger('add', [obj, selector]);
+        obj.bind('remove', this.controller.removeChild);
+        return this;
+      },
+
+      // Removes itself (including from parent tree)
+      remove: function(){
+        this.trigger('remove', this._id); // parent must listen to 'remove' event and handle tree removal
+      }
+
+    },
+    
     // -------------
     //
     //  Base
@@ -207,25 +252,16 @@
     
     _agility: true,
     
-    // Adds an object to the tree
-    add: function(obj, selector){
-      if (!util.isAgility(obj)) {
-        throw "agility.js: add argument is not an agility object";
-      }
-      obj._tree.parent = this;
-      this._tree.children[obj._id] = obj;      
-      this.trigger('add', [obj, selector]);
-      return this;
+    // Shortcut to _tree.add()
+    add: function(){      
+      this._tree.add.apply(this, arguments);
+      return this; // for chainable calls
     },
 
-    // Removes self, including from parent tree
+    // Shortcut to _tree.remove()
     remove: function(){
-      this.trigger('remove');
-      var parent = this._tree.parent;
-      var id = this._id;
-      delete parent._tree.children[id];
-      this.view.$root.remove();
-      parent.trigger('removeChild');
+      this._tree.remove.apply(this, arguments);
+      return this; // for chainable calls
     },
 
     // Binds eventStr to fn. eventStr can be:
@@ -316,14 +352,13 @@
     object.model = Object.create(prototype.model);
     object.view = Object.create(prototype.view);
     object.controller = Object.create(prototype.controller);
+    object._tree = Object.create(prototype._tree);
 
     // Reset object-specific data so that they're 'own' properties
     object._id = idCounter++;
     object._customEvents = {}; // don't inherit custom events; new bindings will happen below
     object.model._data = object.model._data ? $.extend({}, object.model._data) : {}; // model is copied
-    object._tree = {}; // don't inherit tree
-    object._tree.children = {};
-    object._tree.parent = {};
+    object._tree.children = {}; // don't inherit tree data
     object.view.template = object.view.template || '<div>${text}</div>';
     object.view.style = object.view.style || '';
     object.view.$root = {}; // don't inherit jQuery object; new bindings will happen below

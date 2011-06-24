@@ -178,7 +178,7 @@
       obj2 = $$('hello', '<div class="test"></div>'); // default template should have a <div> root
       obj1.add(obj2, 'span');
     }
-    ok(obj1.view.$root.find('.test').size() === 10, 'add() appends multiple elements');
+    ok(obj1.view.$root.find('.test').size() === 10, 'add() appends multiple elements');    
   });
 
   test("Model events", function(){
