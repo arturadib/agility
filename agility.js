@@ -38,9 +38,14 @@
   //
   // --------------------------      
   
+  // Checks if provided obj is an agility object
+  util.isAgility = function(obj){
+   return obj._agility === true;
+  }
+
   // Scans object for functions (depth=2) and proxies their 'this' to dest.
   // To ensure it works with previously proxied objects, we save the original function as 
-  // a '_preProxy' method and when available always use that as the proxy source.
+  // a '._preProxy' method and when available always use that as the proxy source.
   util.proxyAll = function(obj, dest){
     if (!obj || !dest) {
       throw "agility.js: util.proxyAll needs two arguments";
@@ -66,12 +71,7 @@
       obj[attr1] = proxied;
     } // for attr1
   } // proxyAll
-  
-  // Checks if provided var is an agility object
-  util.isAgility = function(obj){
-   return obj._agility === true;
-  }
-  
+    
   // ------------------------------
   //
   //  Default object prototype

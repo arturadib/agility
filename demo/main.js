@@ -20,14 +20,17 @@
 // $$.document.add(list);
 
 // Inheritance
-var item = $$({}, '<li>${text} <button>x</button></li>', {
-  'click button': function(){
-    this.remove();
-  }
-});
 var list = $$({}, '<div><button id="add">Add item</button> <ul id="list"></ul></div>', {
+  init: function(){
+    // Prototype
+    this.item = $$({}, '<li>${text} <button>x</button></li>', {
+      'click button': function(){
+        this.remove();
+      }
+    });
+  },
   'click button#add': function(){
-    var newItem = $$(item, 'Hello '+Math.random());
+    var newItem = $$(this.item, 'Hello '+Math.random());
     this.add(newItem, '#list'); // now newItem.parent == this; calls view:add($$obj, '#list'), which will append to specified element
   }
 });
