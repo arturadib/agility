@@ -108,7 +108,7 @@
       
       // Getter
       get: function(arg){
-        // Entire model getter
+        // Full model getter
         if (typeof arg === 'undefined') {
           return this.model._data;
         }
