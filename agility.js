@@ -407,6 +407,12 @@
     object.view.style = object.view.style || '';
     object.view.$root = {}; // don't inherit jQuery object; new bindings will happen below
   
+    // -----------------------------------------
+    //
+    //  Extend model, view, controller
+    //
+    // -----------------------------------------
+
     // Just the default prototype
     if (args.length === 0) {
     }
@@ -429,7 +435,7 @@
       
       // Model from string
       if (typeof args[0] === 'string') {
-        object.model._data.text = args[0]; // extend model._data with .text
+        $.extend(object.model._data, {text: args[0]});
       }
       else if (typeof args[0] === 'object') {
         $.extend(object.model._data, args[0]);
