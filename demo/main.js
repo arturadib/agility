@@ -19,19 +19,43 @@
 // });
 // $$.document.add(list);
 
-// Inheritance
-var list = $$({}, '<div><button id="add">Add item</button> <ul id="list"></ul></div>', {
-  init: function(){
-    // Prototype
-    this.item = $$({}, '<li>${text} <button>x</button></li>', {
-      'click button': function(){
-        this.remove();
-      }
-    });
+// // Inheritance
+// var list = $$({}, '<div><button id="add">Add item</button> <ul id="list"></ul></div>', {
+//   init: function(){
+//     // Prototype
+//     this.item = $$({}, '<li>${text} <button>x</button></li>', {
+//       'click button': function(){
+//         this.remove();
+//       }
+//     });
+//   },
+//   'click button#add': function(){
+//     var newItem = $$(this.item, 'Hello '+Math.random());
+//     this.add(newItem, '#list'); // now newItem.parent == this; calls view:add($$obj, '#list'), which will append to specified element
+//   }
+// });
+// $$.document.add(list);
+
+// Inheritance, using {model, view, controller}
+var list = $$({
+  model: {    
   },
-  'click button#add': function(){
-    var newItem = $$(this.item, 'Hello '+Math.random());
-    this.add(newItem, '#list'); // now newItem.parent == this; calls view:add($$obj, '#list'), which will append to specified element
+  view: {
+    template: '<div><button id="add">Add item</button> <ul id="list"></ul></div>'
+  },
+  controller: {
+    init: function(){
+      // Prototype
+      this.item = $$({}, '<li>${text} <button>x</button></li>', {
+        'click button': function(){
+          this.remove();
+        }
+      });
+    },
+    'click button#add': function(){
+      var newItem = $$(this.item, 'Hello '+Math.random());
+      this.add(newItem, '#list'); // now newItem.parent == this; calls view:add($$obj, '#list'), which will append to specified element
+    }
   }
 });
 $$.document.add(list);
