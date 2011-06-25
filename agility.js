@@ -146,8 +146,8 @@
       // Persistence: load
       load: function(){},
       
-      // Persistence: delete
-      delete: function(){}
+      // Persistence: erase
+      erase: function(){}
       
     }, // model prototype
   
@@ -274,7 +274,7 @@
       // Called when self-removed
       remove: function(event){
         this.view.remove();
-        this.model.delete();
+        this.model.erase();
       },
       
       // Called when a child removes itself
