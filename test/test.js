@@ -77,23 +77,33 @@
   });
 
   test("Three arguments (model string, view object, controller object)", function(){
-    var obj = $$('Joe Doe', {template:'<div>${text}</div>'}, {
-      init: function(){
-        this.view.render();
+    var obj = $$('Joe Doe', 
+      {
+        template:'<div>${text}</div>', 
+        style:'& { color:rgb(255, 0, 0); }' 
+      }, 
+      {
+        init: function(){
+          this.view.render();
+          this.view.stylize();
+        }
       }
-    });
+    );
     validateObject( obj );
     equals( obj.$().html(), 'Joe Doe', 'template as expected');
+    equals( obj.$().css('color'), 'rgb(255, 0, 0)', 'style as expected');
   });
 
   test("Three arguments (model object, view object, controller object)", function(){
-    var obj = $$({first:'Joe', last:'Doe'}, {template:'<div>${first} ${last}</div>'}, {
+    var obj = $$({first:'Joe', last:'Doe'}, {template:'<div>${first} ${last}</div>', style:'& { color:rgb(255, 0, 0); }'}, {
       init: function(){
         this.view.render();
+        this.view.stylize();
       }
     });
     validateObject( obj );
     equals( obj.$().html(), 'Joe Doe', 'template as expected');
+    equals( obj.$().css('color'), 'rgb(255, 0, 0)', 'style as expected');
   });
   
   test("One full object argument ({model || view || controller})", function(){
@@ -103,12 +113,14 @@
         last: 'Doe'        
       },
       view: {
-        template: '<div>${first} ${last}</div>'
+        template: '<div>${first} ${last}</div>',
+        style: '& { color:rgb(255, 0, 0); }'
       },
       controller: {}
     }); // obj
     validateObject( obj );
     equals( obj.$().html(), 'Joe Doe', 'template as expected');
+    equals( obj.$().css('color'), 'rgb(255, 0, 0)', 'style as expected');
   });
   
   test("Auto-proxying", function(){
@@ -143,15 +155,18 @@
   });
   
   test("Object inheritance", function(){
-    var objBase = $$({}, '<div>${first} ${last}</div>');
+    var objBase = $$({}, {template:'<div>${first} ${last}</div>', style:'& { color:rgb(255, 0, 0); }'});
     var objBaseHtml = objBase.$().html();
     var objNewModel = {first:'Joe', last:'Doe'};
     var objNew = $$(objBase, objNewModel);
 
     ok($.isEmptyObject(objBase.get()), "parent model untouched ("+JSON.stringify(objBase.get())+")");
+    equals(objBase.$().css('color'), 'rgb(255, 0, 0)', "parent style untouched");
     equals(objBase.$().html(), objBaseHtml, "parent html untouched");
     equals(objNew.get('first'), objNewModel.first, "child model OK");
     equals(objNew.$().html(), 'Joe Doe', "child html OK");
+    ok(objNew.$().hasClass('agility_'+objBase._id), "child CSS class inherited OK");
+    equals(objNew.$().css('color'), 'rgb(255, 0, 0)', "child style OK");
   });
 
   // ------------------------------------
@@ -162,26 +177,26 @@
 
   module("Post-builder - Default controller");
 
-  test("Tree events", function(){
+  test("Tree calls", function(){
     var obj1 = $$({}, '<div><span class="here"></span></div>');
     var obj2 = $$('hello');
     obj1.add(obj2, '.here');
-    ok(obj1.$('.here div').html() === 'hello', 'add() appends at given selector');
+    equals(obj1.$('.here div').html(), 'hello', 'add() appends at given selector');
 
     obj1 = $$({}, '<div><span></span></div>');
     obj2 = $$('hello'); // default template should have a <div> root
     obj1.add(obj2);
-    ok(obj1.$('span').next().html() === 'hello', 'add() appends at root element');        
+    equals(obj1.$('span').next().html(), 'hello', 'add() appends at root element');        
 
     obj1 = $$({}, '<div><span></span></div>');
     for (var i=0;i<10;i++) {
       obj2 = $$('hello', '<div class="test"></div>'); // default template should have a <div> root
       obj1.add(obj2, 'span');
     }
-    ok(obj1.$('.test').size() === 10, 'add() appends multiple elements');    
+    equals(obj1.$('.test').size(), 10, 'add() appends multiple elements');    
   });
 
-  test("Model events", function(){
+  test("Model calls", function(){
     var obj1 = $$({}, '<div>${text}</div>');
     obj1.set({text:'Joe Doe'});
     ok(obj1.$().html() === 'Joe Doe', 'obj.set() fires view change');

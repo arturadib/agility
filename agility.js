@@ -23,12 +23,32 @@
   // Global object counter
   idCounter = 0;
 
-  // Crockford's Object.create()
+  // --------------------------
+  //
+  //  Modernizing old JS
+  //
+  // --------------------------      
+
+  // Douglas Crockford's Object.create()
   if (typeof Object.create !== 'function') {
     Object.create = function(obj){
       var Aux = function(){};
       Aux.prototype = obj;
       return new Aux();
+    }
+  }
+  
+  // John Resig's Object.getPrototypeOf()
+  if ( typeof Object.getPrototypeOf !== "function" ) {
+    if ( typeof "test".__proto__ === "object" ) {
+      Object.getPrototypeOf = function(object){
+        return object.__proto__;
+      };
+    } else {
+      Object.getPrototypeOf = function(object){
+        // May break if the constructor has been tampered with
+        return object.constructor.prototype;
+      };
     }
   }  
 
@@ -51,24 +71,25 @@
       throw "agility.js: util.proxyAll needs two arguments";
     }
     for (var attr1 in obj) {
-      var proxied = obj[attr1]; // default is untouched
+      var proxied = obj[attr1];
       // Proxy root methods
       if (typeof obj[attr1] === 'function') {
         proxied = obj[attr1]._noProxy ? obj[attr1] : $.proxy(obj[attr1]._preProxy || obj[attr1], dest);
         proxied._preProxy = obj[attr1]._noProxy ? undefined : (obj[attr1]._preProxy || obj[attr1]); // save original
+        obj[attr1] = proxied;
       }
       // Proxy sub-methods (model.*, view.*, etc)
       else if (typeof obj[attr1] === 'object') {
         for (var attr2 in obj[attr1]) {
-          var proxied2 = obj[attr1][attr2]; // default is untouched
+          var proxied2 = obj[attr1][attr2];
           if (typeof obj[attr1][attr2] === 'function') {
             proxied2 = obj[attr1][attr2]._noProxy ? obj[attr1][attr2] : $.proxy(obj[attr1][attr2]._preProxy || obj[attr1][attr2], dest);
             proxied2._preProxy = obj[attr1][attr2]._noProxy ? undefined : (obj[attr1][attr2]._preProxy || obj[attr1][attr2]); // save original
+            proxied[attr2] = proxied2;
           }
-          proxied[attr2] = proxied2;
         } // for attr2
+        obj[attr1] = proxied;
       } // if not func
-      obj[attr1] = proxied;
     } // for attr1
   } // proxyAll
     
@@ -138,39 +159,79 @@
   
     view: {
         
+      // Defaults
+      template: '<div>${text}</div>',      
+      style: '',
+      
       // Render is the main handler of $root. It's responsible for:
       //   - Creating the jQuery object $root
       //   - Updating $root with DOM/HTML from template
-      render: function(){
+      render: function(args){
+        if (!args) args = { parseTemplate:true }; // defaults
+        
         // Without template there is no view
         if (this.view.template.length === 0) {
           return;
         }
-        var firstCall = $.isEmptyObject(this.view.$root);
+        if (!args.parseTemplate) {
+          this.view.$root = $(this.view.template); // initialize root element
+          return;
+        }
+        
+        //
+        // Parse template
+        //
+        
+        if (this.view.$root.size() === 0) {
+          throw 'agility.js: root element was not initialized';
+        }        
         // Renders template without data, if no model
         if ($.isEmptyObject( this.model.get() )) {
-          if (firstCall) {
-            this.view.$root = $(this.view.template); // firstCall only, otherwise it would destroy $root's previously bound events
-          }
-          else {
-            this.view.$root.html(this.view.template); // this won't destroy events bound to $root
-          }
+          this.view.$root.html( $(this.view.template).html() ); // first .html() as it won't destroy events already bound to $root
+                                                                // second .html() as it will bypass redundant root element
         }
         // Renders from model and template
         else {
-          if (firstCall) {
-            this.view.$root = $.tmpl(this.view.template, this.model.get()); // firstCall only, otherwise it would destroy $root's previously bound events
-          }
-          else {
-            this.view.$root.html( $.tmpl(this.view.template, this.model.get()).html() ); // this won't destroy events bound to $root
-          }
+          this.view.$root.html( $.tmpl(this.view.template, this.model.get()).html() ); // see above for why .html()
         }
         // Ensure we have a valid (non-empty) $root
         if (this.view.$root.size() === 0) {
-          throw 'agility.js: invalid template';
-        }
+          throw 'agility.js: could not generate html from template';
+        }        
       }, // render
   
+      // Applies style dynamically
+      stylize: function(){
+        if (this.view.style.length === 0 || this.view.$root.size() === 0) {
+          return;
+        }
+        // Own style
+        // Object gets own class name ".agility_123", and <head> gets a corresponding <style>
+        if (this.view.hasOwnProperty('style')) {
+          var objClass = 'agility_' + this._id;
+          var styleStr = this.view.style.replace(/&/g, '.'+objClass);
+          $('head', window.document).append('<style type="text/css">'+styleStr+'</style>');
+          this.view.$root.addClass(objClass);
+        }
+        // Inherited style
+        // Object inherits CSS class name from first ancestor to have own view.style
+        else {
+          // Returns id of first ancestor to have 'own' view.style
+          var ancestorWithStyle = function(object) {
+            while (object != null) {
+              object = Object.getPrototypeOf(object);
+              if (object.view.hasOwnProperty('style'))
+                return object._id;
+            }
+            return undefined;
+          } // ancestorWithStyle
+          
+          var ancestorId = ancestorWithStyle(this);
+          var objClass = 'agility_' + ancestorId;
+          this.view.$root.addClass(objClass);
+        }
+      },
+      
       // Appends jQuery object $obj into selector of own jQuery object
       append: function($obj, selector){
         if (!$.isEmptyObject(this.view.$root)) {
@@ -195,7 +256,10 @@
     controller: {
   
       // Called upon object creation
-      init: function(event){},
+      init: function(event){
+        this.view.stylize();
+        this.view.render();
+      },
   
       // Called after obj is added to tree
       add: function(event, obj, selector){
@@ -383,7 +447,13 @@
     
     prototype = defaultPrototype;
             
-    // Build object from given prototype
+    // -----------------------------------------
+    //
+    //  Define object prototype
+    //
+    // -----------------------------------------
+
+    // Inherit object prototype
     if (typeof args[0] === "object" && util.isAgility(args[0])) {
       prototype = args[0];
       args.shift(); // remaining args now work as though object wasn't specified
@@ -398,15 +468,15 @@
     object._tree = Object.create(prototype._tree);
     object._events = Object.create(prototype._events);
 
-    // Reset object-specific data so that they're 'own' properties
+    // Fresh 'own' properties (i.e. properties that are not inherited at all)
     object._id = idCounter++;
-    object._events.data = {}; // don't inherit custom events; new bindings will happen below
-    object.model._data = object.model._data ? $.extend({}, object.model._data) : {}; // model is copied
-    object._tree.children = {}; // don't inherit tree data
-    object.view.template = object.view.template || '<div>${text}</div>';
-    object.view.style = object.view.style || '';
-    object.view.$root = {}; // don't inherit jQuery object; new bindings will happen below
-  
+    object._events.data = {}; // event bindings will happen below
+    object._tree.children = {};
+    object.view.$root = {}; // ensures we don't mess with the DOM element of ancestor object
+
+    // Cloned own properties (i.e. properties that are inherited by direct copy instead of by prototype chain)
+    object.model._data = object.model._data ? $.extend({}, object.model._data) : {};
+
     // -----------------------------------------
     //
     //  Extend model, view, controller
@@ -417,7 +487,7 @@
     if (args.length === 0) {
     }
   
-    // Prototype differential from {model,view,controller} object
+    // Prototype differential from single {model,view,controller} object
     else if (args.length === 1 && typeof args[0] === 'object' && (args[0].model || args[0].view || args[0].controller) ) {
       if (args[0].model) {
         $.extend(object.model._data, args[0].model);
@@ -430,7 +500,7 @@
       }
     } // {model, view, controller} arg
     
-    // Prototype differential from ({model}, {view}, {controller}) arguments
+    // Prototype differential from separate {model}, {view}, {controller} arguments
     else {
       
       // Model from string
@@ -444,7 +514,7 @@
         throw "agility.js: unknown argument type (model)"
       }
 
-      // View from shorthand string (..., '<div>${whatever}</div>', ...)
+      // View template from shorthand string (..., '<div>${whatever}</div>', ...)
       if (typeof args[1] === 'string') {
         object.view.template = args[1]; // extend view with .template
       }  
@@ -454,6 +524,12 @@
       }      
       else if (args[1]) {
         throw "agility.js: unknown argument type (view)";
+      }
+      
+      // View style from shorthand string (..., ..., 'p {color:red}', ...)
+      if (typeof args[2] === 'string') {
+        object.view.style = args[2];
+        args.splice(2, 1); // so that controller code below works
       }
       
       // Controller from object (..., ..., {method():function(){}})
@@ -476,7 +552,7 @@
     util.proxyAll(object, object);
 
     // Initialize $root, needed for DOM events binding below
-    object.view.render();        
+    object.view.render({ parseTemplate:false });
   
     // Binds all controller functions to corresponding events
     for (ev in object.controller) {

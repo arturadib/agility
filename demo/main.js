@@ -19,23 +19,42 @@
 // });
 // $$.document.add(list);
 
-// Inheritance
-var list = $$({}, '<div><button id="add">Add item</button> <ul id="list"></ul></div>', {
-  init: function(){
-    // Item prototype
-    this.itemProto = $$({}, '<li>${text} <button>x</button></li>', {
-      'click button': function(){
-        this.remove();
-      }
-    });
-  },
-  'click button#add': function(){
-    // Item object
-    var item = $$(this.itemProto, 'Hello '+Math.random());
-    this.add(item, '#list');
-  }
-});
-$$.document.add(list);
+// // No inheritance with Style
+// var list = $$({}, 
+//   {
+//     template: '<div><button id="add">Add item</button> <ul id="list"></ul></div>', 
+//     style: '& #list { color:red; }'
+//   },
+//   {
+//     'click button#add': function(){
+//       var newItem = $$('Hello World', '<li>${text} <button>x</button></li>', {
+//         'click button': function(){
+//           alert('remove!');
+//         }
+//       });
+//       this.add(newItem, '#list'); // now newItem.parent == this; calls view:add($$obj, '#list'), which will append to specified element
+//     }
+//   }
+// );
+// $$.document.add(list);
+
+// // Inheritance
+// var list = $$({}, '<div><button id="add">Add item</button> <ul id="list"></ul></div>', {
+//   init: function(){
+//     // Item prototype
+//     this.itemProto = $$({}, '<li>${text} <button>x</button></li>', {
+//       'click button': function(){
+//         this.remove();
+//       }
+//     });
+//   },
+//   'click button#add': function(){
+//     // Item object
+//     var item = $$(this.itemProto, 'Hello '+Math.random());
+//     this.add(item, '#list');
+//   }
+// });
+// $$.document.add(list);
 
 // // Inheritance, using {model, view, controller}
 // var list = $$({
@@ -61,27 +80,29 @@ $$.document.add(list);
 // });
 // $$.document.add(list);
 
-// Inheritance, using {model, view, controller}
-var list = $$({
-  model: {    
+// Inheritance with Style
+var list = $$(
+  {}, 
+  {
+    template: '<div><button id="add">Add item</button> <ul id="list"></ul></div>', 
+    style: '& { width:400px; margin-left:auto; margin-right:auto; background:#eee; }  & > button { font-size:150%; }'
   },
-  view: {
-    template: '<div><button id="add">Add item</button> <ul id="list"></ul></div>',
-    style: ''
-  },
-  controller: {
+  {
     init: function(){
-      // Prototype
-      this.item = $$({}, '<li>${text} <button>x</button></li>', {
+      this.view.render();
+      this.view.stylize();      
+      // Item prototype
+      this.itemProto = $$({}, '<li>${text} <button>x</button></li>', '& { color:red }', {
         'click button': function(){
           this.remove();
         }
       });
     },
     'click button#add': function(){
-      var newItem = $$(this.item, 'Hello '+Math.random());
-      this.add(newItem, '#list');
+      // Item object
+      var item = $$(this.itemProto, 'Hello '+Math.random());      
+      this.add(item, '#list');
     }
   }
-});
+);
 $$.document.add(list);
