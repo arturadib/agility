@@ -264,7 +264,7 @@
           var type = eventStr.substr(0, spacePos);
           var selector = eventStr.substr(spacePos+1);
           // Manually override selector 'root', as jQuery selectors can't select self object
-          if (selector === 'root') {
+          if (selector === ':root') {
             this.view.$root.bind(type, fn);
           }
           else {          
@@ -286,7 +286,7 @@
           var type = eventStr.substr(0, spacePos);
           var selector = eventStr.substr(spacePos+1);
           // Manually override selector 'root', as jQuery selectors can't select self object
-          if (selector === 'root') {
+          if (selector === ':root') {
             this.view.$root.trigger(type, params);
           }
           else {

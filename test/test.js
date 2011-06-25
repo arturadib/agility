@@ -189,7 +189,7 @@
 
   test("Chainable calls", function(){
     t = false;
-    var obj = $$().set({text:'Joe Doe'}).bind('click root', function(){ t = true; }).trigger('click root');
+    var obj = $$().set({text:'Joe Doe'}).bind('click :root', function(){ t = true; }).trigger('click :root');
     ok(t===true, 'chaining set(), bind(), and trigger()');
   });
 
@@ -244,12 +244,12 @@
 
     t = false;
     obj = $$('hello', '<button>${text}</button>', {
-      'click root': function(event){
+      'click :root': function(event){
         t = true;
       }
     });
     obj.$().trigger('click');
-    ok(t===true, "root click event caught");
+    ok(t===true, ":root click event caught");
   });
 
 })(jQuery, agility);
