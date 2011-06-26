@@ -318,48 +318,58 @@
     
     _events: {
 
-      // Binds eventStr to fn. eventStr can be:
-      //    'event'          : binds to custom event
-      //    'event selector' : binds to DOM event using 'selector'
-      bind: function(eventStr, fn){
-        var spacePos = eventStr.search(/\s/);
+      // Parses event string like:
+      //    'event'          : custom event
+      //    'event selector' : DOM event using 'selector'
+      parseEventStr: function(eventStr){
+        var eventObj = { type:eventStr }, 
+            spacePos = eventStr.search(/\s/);
         // DOM event 'event selector', e.g. 'click button'
         if (spacePos > -1) {
-          var type = eventStr.substr(0, spacePos);
-          var selector = eventStr.substr(spacePos+1);
-          // Manually override selector 'root', as jQuery selectors can't select self object
-          if (selector === ':root') {
-            this.view.$root.bind(type, fn);
+          eventObj.type = eventStr.substr(0, spacePos);
+          eventObj.selector = eventStr.substr(spacePos+1);
+        }
+        return eventObj;
+      },
+
+      // Binds eventStr to fn. eventStr is parsed as per parseEventStr()
+      bind: function(eventStr, fn){
+        var eventObj = this._events.parseEventStr(eventStr);
+        // DOM event 'event selector', e.g. 'click button'
+        if (eventObj.selector) {
+          // Manually override selector ':root', as jQuery selectors can't select self object
+          // This is borrowed from CSS3
+          if (eventObj.selector === ':root') {
+            this.view.$root.bind(eventObj.type, fn);
           }
           else {          
-            this.view.$root.delegate(selector, type, fn);
+            this.view.$root.delegate(eventObj.selector, eventObj.type, fn);
           }
         }
-        // Custom 'event'
+        // Custom event
         else {
-          $(this._events.data).bind(eventStr, fn);
+          $(this._events.data).bind(eventObj.type, fn);
         }
         return this; // for chainable calls
       }, // bind
 
       // Triggers eventStr. Syntax for eventStr is same as that for bind()
       trigger: function(eventStr, params){
-        var spacePos = eventStr.search(/\s/);
+        var eventObj = this._events.parseEventStr(eventStr);
         // DOM event 'event selector', e.g. 'click button'
-        if (spacePos > -1) {
-          var type = eventStr.substr(0, spacePos);
-          var selector = eventStr.substr(spacePos+1);
-          // Manually override selector 'root', as jQuery selectors can't select self object
-          if (selector === ':root') {
-            this.view.$root.trigger(type, params);
+        if (eventObj.selector) {
+          // Manually override selector ':root', as jQuery selectors can't select self object
+          // This is borrowed from CSS3
+          if (eventObj.selector === ':root') {
+            this.view.$root.trigger(eventObj.type, params);
           }
-          else {
-            this.view.$root.find(selector).trigger(type, params);
+          else {          
+            this.view.$root.find(eventObj.selector).trigger(eventObj.type, params);
           }
         }
-        // Custom 'event'
+        // Custom event
         else {
-          $(this._events.data).trigger(eventStr, params, params);
+          $(this._events.data).trigger(eventObj.type, params);
         }
         return this; // for chainable calls
       } // trigger
