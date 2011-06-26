@@ -105,6 +105,98 @@
 
     // -------------
     //
+    //  _Tree
+    //
+    // -------------
+    
+    _tree: {
+
+      // Adds an object to the tree, listens for child removal
+      add: function(obj, selector){
+        if (!util.isAgility(obj)) {
+          throw "agility.js: add argument is not an agility object";
+        }
+        this._tree.children[obj._id] = obj;
+        this.trigger('add', [obj, selector]);
+        obj.bind('remove', this.controller.removeChild);
+        return this;
+      },
+
+      // Removes itself (including from parent tree)
+      remove: function(){
+        this.trigger('remove', this._id); // parent must listen to 'remove' event and handle tree removal
+      }
+
+    },
+    
+    // -------------
+    //
+    //  _Events
+    //
+    // -------------
+    
+    _events: {
+
+      // Parses event string like:
+      //    'event'          : custom event
+      //    'event selector' : DOM event using 'selector'
+      parseEventStr: function(eventStr){
+        var eventObj = { type:eventStr }, 
+            spacePos = eventStr.search(/\s/);
+        // DOM event 'event selector', e.g. 'click button'
+        if (spacePos > -1) {
+          eventObj.type = eventStr.substr(0, spacePos);
+          eventObj.selector = eventStr.substr(spacePos+1);
+        }
+        return eventObj;
+      },
+
+      // Binds eventStr to fn. eventStr is parsed as per parseEventStr()
+      bind: function(eventStr, fn){
+        var eventObj = this._events.parseEventStr(eventStr);
+        // DOM event 'event selector', e.g. 'click button'
+        if (eventObj.selector) {
+          // Manually override selector ':root', as jQuery selectors can't select self object
+          // This is borrowed from CSS3
+          if (eventObj.selector === ':root') {
+            this.view.$root.bind(eventObj.type, fn);
+          }
+          else {          
+            this.view.$root.delegate(eventObj.selector, eventObj.type, fn);
+          }
+        }
+        // Custom event
+        else {
+          $(this._events.data).bind(eventObj.type, fn);
+        }
+        return this; // for chainable calls
+      }, // bind
+
+      // Triggers eventStr. Syntax for eventStr is same as that for bind()
+      trigger: function(eventStr, params){
+        var eventObj = this._events.parseEventStr(eventStr);
+        // DOM event 'event selector', e.g. 'click button'
+        if (eventObj.selector) {
+          // Manually override selector ':root', as jQuery selectors can't select self object
+          // This is borrowed from CSS3
+          if (eventObj.selector === ':root') {
+            this.view.$root.trigger(eventObj.type, params);
+          }
+          else {          
+            this.view.$root.find(eventObj.selector).trigger(eventObj.type, params);
+          }
+        }
+        // Custom event
+        else {
+          $(this._events.data).trigger(eventObj.type, params);
+        }
+        return this; // for chainable calls
+      } // trigger
+      
+    }, // _events
+
+    // -------------
+    //
     //  Model
     //
     // -------------
@@ -163,6 +255,11 @@
       template: '<div>${text}</div>',      
       style: '',
       
+      // Shortcut to view.$root or view.$root.find(), depending on selector presence
+      $: function(selector){
+        return selector ? this.view.$root.find(selector) : this.view.$root;
+      },
+
       // Render is the main handler of $root. It's responsible for:
       //   - Creating the jQuery object $root
       //   - Updating $root with DOM/HTML from template
@@ -286,98 +383,6 @@
 
     // -------------
     //
-    //  _Tree
-    //
-    // -------------
-    
-    _tree: {
-
-      // Adds an object to the tree, listens for child removal
-      add: function(obj, selector){
-        if (!util.isAgility(obj)) {
-          throw "agility.js: add argument is not an agility object";
-        }
-        this._tree.children[obj._id] = obj;
-        this.trigger('add', [obj, selector]);
-        obj.bind('remove', this.controller.removeChild);
-        return this;
-      },
-
-      // Removes itself (including from parent tree)
-      remove: function(){
-        this.trigger('remove', this._id); // parent must listen to 'remove' event and handle tree removal
-      }
-
-    },
-    
-    // -------------
-    //
-    //  _Events
-    //
-    // -------------
-    
-    _events: {
-
-      // Parses event string like:
-      //    'event'          : custom event
-      //    'event selector' : DOM event using 'selector'
-      parseEventStr: function(eventStr){
-        var eventObj = { type:eventStr }, 
-            spacePos = eventStr.search(/\s/);
-        // DOM event 'event selector', e.g. 'click button'
-        if (spacePos > -1) {
-          eventObj.type = eventStr.substr(0, spacePos);
-          eventObj.selector = eventStr.substr(spacePos+1);
-        }
-        return eventObj;
-      },
-
-      // Binds eventStr to fn. eventStr is parsed as per parseEventStr()
-      bind: function(eventStr, fn){
-        var eventObj = this._events.parseEventStr(eventStr);
-        // DOM event 'event selector', e.g. 'click button'
-        if (eventObj.selector) {
-          // Manually override selector ':root', as jQuery selectors can't select self object
-          // This is borrowed from CSS3
-          if (eventObj.selector === ':root') {
-            this.view.$root.bind(eventObj.type, fn);
-          }
-          else {          
-            this.view.$root.delegate(eventObj.selector, eventObj.type, fn);
-          }
-        }
-        // Custom event
-        else {
-          $(this._events.data).bind(eventObj.type, fn);
-        }
-        return this; // for chainable calls
-      }, // bind
-
-      // Triggers eventStr. Syntax for eventStr is same as that for bind()
-      trigger: function(eventStr, params){
-        var eventObj = this._events.parseEventStr(eventStr);
-        // DOM event 'event selector', e.g. 'click button'
-        if (eventObj.selector) {
-          // Manually override selector ':root', as jQuery selectors can't select self object
-          // This is borrowed from CSS3
-          if (eventObj.selector === ':root') {
-            this.view.$root.trigger(eventObj.type, params);
-          }
-          else {          
-            this.view.$root.find(eventObj.selector).trigger(eventObj.type, params);
-          }
-        }
-        // Custom event
-        else {
-          $(this._events.data).trigger(eventObj.type, params);
-        }
-        return this; // for chainable calls
-      } // trigger
-      
-    },
-
-    // -------------
-    //
     //  Shortcuts
     //
     // -------------
@@ -427,17 +432,8 @@
     // Shortcut to model.get()
     get: function(){
       return this.model.get.apply(this, arguments);        
-    },
-  
-    //
-    // View shortcuts
-    //
-
-    // Shortcut to view.$root
-    $: function(selector){
-      return selector ? this.view.$root.find(selector) : this.view.$root;
     }
-
+  
   } // prototype
   
   // --------------------------

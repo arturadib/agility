@@ -29,7 +29,7 @@
   test("One argument (model string)", function(){
     var obj = $$('Joe Doe');
     validateObject( obj );
-    equals( obj.$().html(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().html(), 'Joe Doe', 'template as expected');
   });
 
   test("One argument (model object)", function(){
@@ -38,13 +38,13 @@
       last: 'Doe'
     });
     validateObject( obj );
-    equals( obj.$().html(), '', 'template as expected'); // lib doesn't have a default template for an arbitrary model
+    equals( obj.view.$().html(), '', 'template as expected'); // lib doesn't have a default template for an arbitrary model
   });
 
   test("Two arguments (model, view string)", function(){
     var obj = $$('Joe Doe', '<div>${text}</div>');
     validateObject( obj );
-    equals( obj.$().html(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().html(), 'Joe Doe', 'template as expected');
   });
 
   test("Two arguments (model object, view string)", function(){
@@ -53,7 +53,7 @@
       last: 'Doe'
     }, '<div>${first} ${last}</div>');
     validateObject( obj );
-    equals( obj.$().html(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().html(), 'Joe Doe', 'template as expected');
   });
 
   test("Three arguments (model string, view string, controller object)", function(){
@@ -63,7 +63,7 @@
       }
     });
     validateObject( obj );
-    equals( obj.$().html(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().html(), 'Joe Doe', 'template as expected');
   });
 
   test("Three arguments (model object, view string, controller object)", function(){
@@ -73,7 +73,7 @@
       }
     });
     validateObject( obj );
-    equals( obj.$().html(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().html(), 'Joe Doe', 'template as expected');
   });
 
   test("Three arguments (model string, view object, controller object)", function(){
@@ -90,8 +90,8 @@
       }
     );
     validateObject( obj );
-    equals( obj.$().html(), 'Joe Doe', 'template as expected');
-    equals( obj.$().css('color'), 'rgb(255, 0, 0)', 'style as expected');
+    equals( obj.view.$().html(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().css('color'), 'rgb(255, 0, 0)', 'style as expected');
   });
 
   test("Three arguments (model object, view object, controller object)", function(){
@@ -102,8 +102,8 @@
       }
     });
     validateObject( obj );
-    equals( obj.$().html(), 'Joe Doe', 'template as expected');
-    equals( obj.$().css('color'), 'rgb(255, 0, 0)', 'style as expected');
+    equals( obj.view.$().html(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().css('color'), 'rgb(255, 0, 0)', 'style as expected');
   });
   
   test("One full object argument ({model || view || controller})", function(){
@@ -119,8 +119,8 @@
       controller: {}
     }); // obj
     validateObject( obj );
-    equals( obj.$().html(), 'Joe Doe', 'template as expected');
-    equals( obj.$().css('color'), 'rgb(255, 0, 0)', 'style as expected');
+    equals( obj.view.$().html(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().css('color'), 'rgb(255, 0, 0)', 'style as expected');
   });
   
   test("Auto-proxying", function(){
@@ -156,17 +156,17 @@
   
   test("Object inheritance", function(){
     var objBase = $$({}, {template:'<div>${first} ${last}</div>', style:'& { color:rgb(255, 0, 0); }'});
-    var objBaseHtml = objBase.$().html();
+    var objBaseHtml = objBase.view.$().html();
     var objNewModel = {first:'Joe', last:'Doe'};
     var objNew = $$(objBase, objNewModel);
 
     ok($.isEmptyObject(objBase.get()), "parent model untouched ("+JSON.stringify(objBase.get())+")");
-    equals(objBase.$().css('color'), 'rgb(255, 0, 0)', "parent style untouched");
-    equals(objBase.$().html(), objBaseHtml, "parent html untouched");
+    equals(objBase.view.$().css('color'), 'rgb(255, 0, 0)', "parent style untouched");
+    equals(objBase.view.$().html(), objBaseHtml, "parent html untouched");
     equals(objNew.get('first'), objNewModel.first, "child model OK");
-    equals(objNew.$().html(), 'Joe Doe', "child html OK");
-    ok(objNew.$().hasClass('agility_'+objBase._id), "child CSS class inherited OK");
-    equals(objNew.$().css('color'), 'rgb(255, 0, 0)', "child style OK");
+    equals(objNew.view.$().html(), 'Joe Doe', "child html OK");
+    ok(objNew.view.$().hasClass('agility_'+objBase._id), "child CSS class inherited OK");
+    equals(objNew.view.$().css('color'), 'rgb(255, 0, 0)', "child style OK");
   });
 
   // ------------------------------------
@@ -181,25 +181,25 @@
     var obj1 = $$({}, '<div><span class="here"></span></div>');
     var obj2 = $$('hello');
     obj1.add(obj2, '.here');
-    equals(obj1.$('.here div').html(), 'hello', 'add() appends at given selector');
+    equals(obj1.view.$('.here div').html(), 'hello', 'add() appends at given selector');
 
     obj1 = $$({}, '<div><span></span></div>');
     obj2 = $$('hello'); // default template should have a <div> root
     obj1.add(obj2);
-    equals(obj1.$('span').next().html(), 'hello', 'add() appends at root element');        
+    equals(obj1.view.$('span').next().html(), 'hello', 'add() appends at root element');        
 
     obj1 = $$({}, '<div><span></span></div>');
     for (var i=0;i<10;i++) {
       obj2 = $$('hello', '<div class="test"></div>'); // default template should have a <div> root
       obj1.add(obj2, 'span');
     }
-    equals(obj1.$('.test').size(), 10, 'add() appends multiple elements');    
+    equals(obj1.view.$('.test').size(), 10, 'add() appends multiple elements');    
   });
 
   test("Model calls", function(){
     var obj1 = $$({}, '<div>${text}</div>');
     obj1.set({text:'Joe Doe'});
-    ok(obj1.$().html() === 'Joe Doe', 'obj.set() fires view change');
+    ok(obj1.view.$().html() === 'Joe Doe', 'obj.set() fires view change');
   });
 
   test("Chainable calls", function(){
@@ -250,11 +250,11 @@
         t = true;
       }
     });
-    obj.$('button').trigger('click');
+    obj.view.$('button').trigger('click');
     ok(t===true, "click event caught");
     
     t = false;
-    obj.$('span').trigger('click');
+    obj.view.$('span').trigger('click');
     ok(t===false, "click event properly filtered selector");
 
     t = false;
@@ -263,7 +263,7 @@
         t = true;
       }
     });
-    obj.$().trigger('click');
+    obj.view.$().trigger('click');
     ok(t===true, ":root click event caught");
   });
 
