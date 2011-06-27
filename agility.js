@@ -35,7 +35,7 @@
       var Aux = function(){};
       Aux.prototype = obj;
       return new Aux();
-    }
+    };
   }
   
   // John Resig's Object.getPrototypeOf()
@@ -61,7 +61,7 @@
   // Checks if provided obj is an agility object
   util.isAgility = function(obj){
    return obj._agility === true;
-  }
+  };
 
   // Scans object for functions (depth=2) and proxies their 'this' to dest.
   // To ensure it works with previously proxied objects, we save the original function as 
@@ -91,7 +91,7 @@
         obj[attr1] = proxied;
       } // if not func
     } // for attr1
-  } // proxyAll
+  }; // proxyAll
     
   // ------------------------------
   //
@@ -299,13 +299,14 @@
   
       // Applies style dynamically
       stylize: function(){
+        var objClass;
         if (this.view.style.length === 0 || this.view.$root.size() === 0) {
           return;
         }
         // Own style
         // Object gets own class name ".agility_123", and <head> gets a corresponding <style>
         if (this.view.hasOwnProperty('style')) {
-          var objClass = 'agility_' + this._id;
+          objClass = 'agility_' + this._id;
           var styleStr = this.view.style.replace(/&/g, '.'+objClass);
           $('head', window.document).append('<style type="text/css">'+styleStr+'</style>');
           this.view.$root.addClass(objClass);
@@ -315,16 +316,16 @@
         else {
           // Returns id of first ancestor to have 'own' view.style
           var ancestorWithStyle = function(object) {
-            while (object != null) {
+            while (object !== null) {
               object = Object.getPrototypeOf(object);
               if (object.view.hasOwnProperty('style'))
                 return object._id;
             }
             return undefined;
-          } // ancestorWithStyle
+          }; // ancestorWithStyle
           
           var ancestorId = ancestorWithStyle(this);
-          var objClass = 'agility_' + ancestorId;
+          objClass = 'agility_' + ancestorId;
           this.view.$root.addClass(objClass);
         }
       },
@@ -434,7 +435,7 @@
       return this.model.get.apply(this, arguments);        
     }
   
-  } // prototype
+  }; // prototype
   
   // --------------------------
   //
@@ -517,7 +518,7 @@
         $.extend(object.model._data, args[0]);
       }
       else if (args[0]) {
-        throw "agility.js: unknown argument type (model)"
+        throw "agility.js: unknown argument type (model)";
       }
 
       // View template from shorthand string (..., '<div>${whatever}</div>', ...)
@@ -561,7 +562,7 @@
     object.view.render({ parseTemplate:false });
   
     // Binds all controller functions to corresponding events
-    for (ev in object.controller) {
+    for (var ev in object.controller) {
       if (typeof object.controller[ev] === 'function') {
         object.bind(ev, object.controller[ev]);
       }
@@ -572,7 +573,7 @@
     
     return object;
     
-  } // agility
+  }; // agility
   
   // -----------------------------------------
   //
@@ -582,7 +583,7 @@
   
   agility.document = agility({}, {}, {
     init: function(){
-      this.view.$root = $(document.body)
+      this.view.$root = $(document.body);
     }
   });
 
