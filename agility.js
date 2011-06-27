@@ -231,7 +231,7 @@
       
       // Shortcut to view.$root or view.$root.find(), depending on selector presence
       $: function(selector){
-        return selector ? this.view.$root.find(selector) : this.view.$root;
+        return (!selector || selector === ':root') ? this.view.$root : this.view.$root.find(selector);
       },
 
       // Render is the main handler of $root. It's responsible for:
