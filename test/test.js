@@ -193,7 +193,8 @@
       obj2 = $$('hello', '<div class="test"></div>'); // default template should have a <div> root
       obj1.add(obj2, 'span');
     }
-    equals(obj1.view.$('.test').size(), 10, 'add() appends multiple elements');    
+    equals(obj1.tree.size(), 10, 'correct tree.size()');
+    equals(obj1.view.$('.test').size(), 10, 'correct DOM size');
   });
 
   test("Model calls", function(){

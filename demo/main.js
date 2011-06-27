@@ -86,7 +86,7 @@ var item = $$({},
   '& { color:red }', 
   { // item prototype
     'click button': function(){
-      this.remove();
+      this.destroy();
     }
   }
 );

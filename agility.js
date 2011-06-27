@@ -327,7 +327,7 @@
    
     controller: {
   
-      // Triggered upon self creation
+      // Triggered after self creation
       create: function(event){
         this.view.stylize();
         this.view.render();
@@ -339,7 +339,7 @@
         this.model.erase();
       },
 
-      // Triggered after model is set
+      // Triggered after model is changed
       modelChange: function(event){
         this.view.render();
       },
@@ -349,10 +349,9 @@
         this.view.append(obj.view.$root, selector);
       },
                   
-      // Triggered after a child is removed (or self-destroyed)
-      treeRemove: function(event, id){
-        delete this.tree.children[id];
-      }
+      // Triggered after a child obj is removed from tree (or self-destroyed)
+      treeRemove: function(event, id){        
+      },
       
     }, // controller prototype
 
@@ -366,17 +365,32 @@
 
       // Adds child object to tree, listens for child removal
       add: function(obj, selector){
+        var self = this;
         if (!util.isAgility(obj)) {
           throw "agility.js: add argument is not an agility object";
         }
         this.tree.children[obj._id] = obj;
         this.trigger('treeAdd', [obj, selector]);
-        obj.bind('destroy', this.controller.treeRemove);
+        obj.bind('destroy', function(event, id){ 
+          self.tree.remove(id);
+        });
         return this;
       },
       
       // Removes child object from tree
-      remove: function(){}
+      remove: function(id){
+        delete this.tree.children[id];
+        this.trigger('treeRemove', id);
+      },
+      
+      // Number of children
+      size: function() {
+        var size = 0, key;
+        for (key in this.tree.children) {
+          if (this.tree.children.hasOwnProperty(key)) size++;
+        }
+        return size;
+      }
       
     },
 
@@ -398,10 +412,6 @@
     //
     add: function(){      
       this.tree.add.apply(this, arguments);
-      return this; // for chainable calls
-    },
-    remove: function(){
-      this.tree.remove.apply(this, arguments);
       return this; // for chainable calls
     },
 
