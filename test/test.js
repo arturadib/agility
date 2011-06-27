@@ -169,6 +169,27 @@
     equals(objNew.view.$().css('color'), 'rgb(255, 0, 0)', "child style OK");
   });
 
+
+  // ----------------------------------------------
+  //
+  //  Post-builder - Overriding default controller
+  //
+  // ----------------------------------------------
+
+  module("Post-builder - Overriding default controller methods");
+
+  test("Model events", function(){
+    var t = false;
+    var o = $$({a:1}, '<div>${a}</div>', {
+      _modelChange: function(){
+        t = true;        
+      }
+    });
+    o.set({a:2});
+    equals(t, true, 'custom _modelChange fired');
+    equals(o.view.$(':root').text(), '1', 'default _modelChange properly overriden');
+  });
+
   // ------------------------------------
   //
   //  Post-builder - Default controller
@@ -269,3 +290,4 @@
   });
 
 })(jQuery, agility);
+

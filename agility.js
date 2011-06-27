@@ -162,6 +162,7 @@
         }
         // Custom event
         else {
+          $(this._events.data).trigger('_'+eventObj.type, params);
           $(this._events.data).trigger(eventObj.type, params);
         }
         return this; // for chainable calls
@@ -328,29 +329,29 @@
     controller: {
   
       // Triggered after self creation
-      create: function(event){
+      _create: function(event){
         this.view.stylize();
         this.view.render();
       },
   
       // Triggered upon removing self
-      destroy: function(event){
+      _destroy: function(event){
         this.view.remove();
         this.model.erase();
       },
 
       // Triggered after model is changed
-      modelChange: function(event){
+      _modelChange: function(event){
         this.view.render();
       },
 
       // Triggered after child obj is added to tree
-      treeAdd: function(event, obj, selector){
+      _treeAdd: function(event, obj, selector){
         this.view.append(obj.view.$root, selector);
       },
                   
       // Triggered after a child obj is removed from tree (or self-destroyed)
-      treeRemove: function(event, id){        
+      _treeRemove: function(event, id){        
       },
       
     }, // controller prototype
