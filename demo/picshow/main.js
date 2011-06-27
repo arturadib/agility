@@ -6,26 +6,28 @@
 // CREATE CHECKBOXES FOR EACH PICTURE TO DO BATCH-ERASE PICS
 
 
-var pic = $$({}, 
-  '<div><img/></div>',
-  '& { border:1px; float:left; width:100px; height:100px; margin-right:10px; margin-bottom:10px;}  & > img { max-width:100px; max-height:100px; }', 
-  {
-    create: function(){
-      if (this.get('src')) {
-        this.view.$('img').attr('src', this.get('src'));
-      }
-    },
+var pic = $$({ 
+  view: {
+    template: '<div><img src="${src}"/> <button id="destroy">X</button></div>',
+    style: '& { position:relative; border:1px solid black; float:left; width:100px; height:100px; margin-right:10px; margin-bottom:10px; text-align:center; } \
+            & > img { max-width:100px; max-height:100px; } \
+            & > button#destroy { display:none; position:absolute; top:3px; right:3px; }'
+  },
+  controller: {
+    // DOM events
     'mouseenter :root': function(){
-      console.log('entered')
+      this.view.$('button#destroy').show();
     },
     'mouseleave :root': function(){
-      console.log('left')
+      this.view.$('button#destroy').hide();
+    },
+    'click button#destroy': function(){
+      this.destroy();
     }
   }
-);
+});
 
 var app = $$({
-  model: {},
   view: {
     template: '<div>\
                  <button id="add">Add picture</button> \

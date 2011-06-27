@@ -92,7 +92,16 @@
       } // if not func
     } // for attr1
   }; // proxyAll
-    
+  
+  // Determines # of attributes of given object (prototype inclusive)
+  util.size = function(obj){
+    var size = 0, key;
+    for (key in obj) {
+      size++;
+    }
+    return size;
+  };
+  
   // ------------------------------
   //
   //  Default object prototype
@@ -206,6 +215,11 @@
         }
         throw 'agility.js: unknown argument for getter';
       },
+      
+      // Number of model properties
+      size: function(){
+        return util.size(this.model._data);
+      },
   
       // Persistence: save
       save: function(){},
@@ -214,7 +228,7 @@
       load: function(){},
       
       // Persistence: erase
-      erase: function(){}
+      erase: function(){}      
       
     }, // model prototype
   
@@ -239,14 +253,18 @@
       //   - Creating the jQuery object $root
       //   - Updating $root with DOM/HTML from template
       render: function(args){
-        if (!args) args = { parseTemplate:true }; // defaults
+        var invalidTemplateContent = this.model.size()===0 && (this.view.template.search(/\$\{[A-Za-z0-9_\$]+\}/) > -1); // model empty, but ref'd in template?
+        if (!args) args = { parseTemplate: !invalidTemplateContent }; // defaults
         
         // Without template there is no view
         if (this.view.template.length === 0) {
           return;
         }
         if (!args.parseTemplate) {
-          this.view.$root = $(this.view.template); // initialize root element
+          // Initialize root element with empty content
+          // This avoids parsing templates that are not quite ready for parsing (e.g. containing references to invalid/empty models)
+          var firstTagClosing = this.view.template.search(/\>/); // first template tag closing position '<tag attr="asdf"> ...'
+          this.view.$root = $(this.view.template.substr(0, firstTagClosing+1));
           return;
         }
         
@@ -352,7 +370,7 @@
                   
       // Triggered after a child obj is removed from tree (or self-destroyed)
       _treeRemove: function(event, id){        
-      },
+      }
       
     }, // controller prototype
 
@@ -386,11 +404,7 @@
       
       // Number of children
       size: function() {
-        var size = 0, key;
-        for (key in this.tree.children) {
-          if (this.tree.children.hasOwnProperty(key)) size++;
-        }
-        return size;
+        return util.size(this.tree.children);
       }
       
     },

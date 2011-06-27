@@ -156,17 +156,22 @@
   
   test("Object inheritance", function(){
     var objBase = $$({}, {template:'<div>${first} ${last}</div>', style:'& { color:rgb(255, 0, 0); }'});
-    var objBaseHtml = objBase.view.$().html();
     var objNewModel = {first:'Joe', last:'Doe'};
     var objNew = $$(objBase, objNewModel);
 
     ok($.isEmptyObject(objBase.get()), "parent model untouched ("+JSON.stringify(objBase.get())+")");
-    equals(objBase.view.$().css('color'), 'rgb(255, 0, 0)', "parent style untouched");
-    equals(objBase.view.$().html(), objBaseHtml, "parent html untouched");
+    equals(objBase.view.$().size(), 1, "parent html untouched");
     equals(objNew.get('first'), objNewModel.first, "child model OK");
     equals(objNew.view.$().html(), 'Joe Doe', "child html OK");
     ok(objNew.view.$().hasClass('agility_'+objBase._id), "child CSS class inherited OK");
     equals(objNew.view.$().css('color'), 'rgb(255, 0, 0)', "child style OK");
+
+    // this should trigger a 404 error if template is parsed to the DOM
+    objBase = $$({}, "<div class='test'> <img src='${src}'/> </div>");
+    equals(objBase.model.size(), 0, 'model is empty');
+    equals(objBase.view.$('img').size(), 0, 'skip template parsing on (empty model) && (model present in template)');
+    objNew = $$(objBase, {src:'http://google.com/favicon.ico'});
+    equals(objNew.view.$('img').attr('src'), 'http://google.com/favicon.ico', 'img src correctly set');
   });
 
 
@@ -221,13 +226,13 @@
   test("Model calls", function(){
     var obj1 = $$({}, '<div>${text}</div>');
     obj1.set({text:'Joe Doe'});
-    ok(obj1.view.$().html() === 'Joe Doe', 'obj.set() fires view change');
+    equals(obj1.view.$().html(), 'Joe Doe', 'obj.set() fires view change');
   });
 
   test("Chainable calls", function(){
     t = false;
     var obj = $$().set({text:'Joe Doe'}).bind('click :root', function(){ t = true; }).trigger('click :root');
-    ok(t===true, 'chaining set(), bind(), and trigger()');
+    equals(t, true, 'chaining set(), bind(), and trigger()');
   });
 
   // ----------------------------------------------
