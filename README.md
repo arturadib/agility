@@ -1,18 +1,5 @@
-Nothing here yet.
+# Agility.js
 
-# Anti-patterns:
+Agility.js is going to change the way you code Javascript on the browser.
 
-## Overriding functions post-building
-
-    var obj = $$();
-    obj.view.format = '...etc...';
-    
-Use instead:
-
-    var obj = $$({
-      view: {
-        format: '...etc...'
-      }
-    });
-
-This ensures proper initializations, bindings, etc.
+Stay tuned...
