@@ -102,32 +102,6 @@
   defaultPrototype = {
     
     _agility: true,
-
-    // -------------
-    //
-    //  _Tree
-    //
-    // -------------
-    
-    _tree: {
-
-      // Adds an object to the tree, listens for child removal
-      add: function(obj, selector){
-        if (!util.isAgility(obj)) {
-          throw "agility.js: add argument is not an agility object";
-        }
-        this._tree.children[obj._id] = obj;
-        this.trigger('add', [obj, selector]);
-        obj.bind('remove', this.controller.removeChild);
-        return this;
-      },
-
-      // Removes itself (including from parent tree)
-      remove: function(){
-        this.trigger('remove', this._id); // parent must listen to 'remove' event and handle tree removal
-      }
-
-    },
     
     // -------------
     //
@@ -215,7 +189,7 @@
           throw "agility.js: unknown argument type (model.set)";
         }
         if (params && params.silent===true) return this; // do not fire event
-        this.trigger('change');
+        this.trigger('modelChange');
         return this; // for chainable calls
       },
       
@@ -353,34 +327,58 @@
    
     controller: {
   
-      // Called upon object creation
-      init: function(event){
+      // Triggered upon self creation
+      create: function(event){
         this.view.stylize();
         this.view.render();
       },
   
-      // Called after obj is added to tree
-      add: function(event, obj, selector){
-        this.view.append(obj.view.$root, selector);
-      },
-      
-      // Called after model changes
-      change: function(event){
-        this.view.render();
-      },
-      
-      // Called when self-removed
-      remove: function(event){
+      // Triggered upon removing self
+      destroy: function(event){
         this.view.remove();
         this.model.erase();
       },
-      
-      // Called when a child removes itself
-      removeChild: function(event, id){
-        delete this._tree.children[id];
+
+      // Triggered after model is set
+      modelChange: function(event){
+        this.view.render();
+      },
+
+      // Triggered after child obj is added to tree
+      treeAdd: function(event, obj, selector){
+        this.view.append(obj.view.$root, selector);
+      },
+                  
+      // Triggered after a child is removed (or self-destroyed)
+      treeRemove: function(event, id){
+        delete this.tree.children[id];
       }
       
     }, // controller prototype
+
+    // -------------
+    //
+    //  Tree
+    //
+    // -------------
+    
+    tree: {
+
+      // Adds child object to tree, listens for child removal
+      add: function(obj, selector){
+        if (!util.isAgility(obj)) {
+          throw "agility.js: add argument is not an agility object";
+        }
+        this.tree.children[obj._id] = obj;
+        this.trigger('treeAdd', [obj, selector]);
+        obj.bind('destroy', this.controller.treeRemove);
+        return this;
+      },
+      
+      // Removes child object from tree
+      remove: function(){}
+      
+    },
 
     // -------------
     //
@@ -389,32 +387,31 @@
     // -------------
         
     //
-    // _Tree shortcuts
-    //
-
-    // Shortcut to _tree.add()
-    add: function(){      
-      this._tree.add.apply(this, arguments);
-      return this; // for chainable calls
+    // Controller shortcuts
+    //    
+    destroy: function(){
+      this.trigger('destroy', this._id); // parent must listen to 'destroy' event and handle tree removal!
     },
 
-    // Shortcut to _tree.remove()
+    //
+    // Tree shortcuts
+    //
+    add: function(){      
+      this.tree.add.apply(this, arguments);
+      return this; // for chainable calls
+    },
     remove: function(){
-      this._tree.remove.apply(this, arguments);
+      this.tree.remove.apply(this, arguments);
       return this; // for chainable calls
     },
 
     //
     // _Events shortcuts
     //
-
-    // Shortcut to _events.bind()
     bind: function(){
       this._events.bind.apply(this, arguments);
       return this; // for chainable calls
     },
-
-    // Shortcut to _events.trigger()
     trigger: function(){
       this._events.trigger.apply(this, arguments);
       return this; // for chainable calls
@@ -423,16 +420,13 @@
     //
     // Model shortcuts
     //
-
-    // Shortcut to model.set()
     set: function(){
       this.model.set.apply(this, arguments);
       return this; // for chainable calls
     }, // set
-    
-    // Shortcut to model.get()
     get: function(){
-      return this.model.get.apply(this, arguments);        
+      return this.model.get.apply(this, arguments);    
+      // can't do chainable here!
     }
   
   }; // prototype
@@ -472,13 +466,13 @@
     object.model = Object.create(prototype.model);
     object.view = Object.create(prototype.view);
     object.controller = Object.create(prototype.controller);
-    object._tree = Object.create(prototype._tree);
+    object.tree = Object.create(prototype.tree);
     object._events = Object.create(prototype._events);
 
     // Fresh 'own' properties (i.e. properties that are not inherited at all)
     object._id = idCounter++;
     object._events.data = {}; // event bindings will happen below
-    object._tree.children = {};
+    object.tree.children = {};
     object.view.$root = {}; // ensures we don't mess with the DOM element of ancestor object
 
     // Cloned own properties (i.e. properties that are inherited by direct copy instead of by prototype chain)
@@ -568,8 +562,8 @@
       }
     }
   
-    // Auto-triggers init event
-    object.trigger('init');
+    // Auto-triggers create event
+    object.trigger('create');
     
     return object;
     
@@ -577,12 +571,12 @@
   
   // -----------------------------------------
   //
-  //  Document object
+  //  Global objects
   //
   // -----------------------------------------
   
   agility.document = agility({}, {}, {
-    init: function(){
+    create: function(){
       this.view.$root = $(document.body);
     }
   });

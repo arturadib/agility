@@ -222,25 +222,25 @@
     var obj1 = $$();
     var obj2 = $$({
       controller: {
-        add: function(ev, $$o, selector){
+        treeAdd: function(ev, $$o, selector){
           o = $$o;
           s = selector;
         }
       }
     });  
     obj2.add(obj1, 'sel');
-    ok(o===obj1 && s==='sel', "add() called");
+    ok(o===obj1 && s==='sel', "treeAdd() called");
   });
 
   test("Model events", function(){
     var t = false;
     var obj = $$({}, {}, {
-      change: function(){
+      modelChange: function(){
         t = true;
       }
     });
     obj.set({a:'hello'});
-    ok(t===true, "change() called");
+    ok(t===true, "modelChange() called");
   });
 
   test("DOM events", function(){
