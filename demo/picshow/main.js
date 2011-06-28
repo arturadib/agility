@@ -7,23 +7,34 @@
 
 
 var pic = $$({ 
+  // Custom
+  checked: false,
+  
+  // Agility view
   view: {
-    template: '<div><img src="${src}"/> <button id="destroy">X</button></div>',
-    style: '& { position:relative; border:1px solid black; float:left; width:100px; height:100px; margin-right:10px; margin-bottom:10px; text-align:center; } \
-            & > img { max-width:100px; max-height:100px; } \
-            & > button#destroy { display:none; position:absolute; top:3px; right:3px; }'
+    template: '<div>\
+                  <div id="opts"> <input type="checkbox" id="check"/> <button id="destroy">X</button> </div>\
+                  <div id="img-container"> <img src="${src}"/> </div> \
+               </div>',
+    style: '& { float:left; margin-right:40px; margin-bottom:20px; width:100px; } \
+            & div#opts { } \
+            & input#check { float:left; } \
+            & button#destroy { float:right; } \
+            & div#img-container { clear:both; border:1px solid black; width:100px; height:100px; text-align:center; } \
+            & img { max-width:100px; max-height:100px; }'
   },
+  
+  // Agility controller
   controller: {
-    // DOM events
-    'mouseenter &': function(){
-      this.view.$('button#destroy').show();
-    },
-    'mouseleave &': function(){
-      this.view.$('button#destroy').hide();
+    'click img': function(){
+      this.view.$('input#check').click();
     },
     'click button#destroy': function(){
       this.destroy();
-    }
+    },
+    'change input#check': function(event){
+      this.checked = $(event.target).is(':checked');
+    }    
   }
 });
 
@@ -33,8 +44,8 @@ var app = $$({
                  <button id="add">Add picture</button> \
                  <div id="list"/> \
                </div>', 
-    style: '& { margin-top:20px; width:500px; margin-left:auto; margin-right:auto; }  \
-            & > #add { font-size:150%; } \
+    style: '& { margin-top:20px; width:600px; margin-left:auto; margin-right:auto; }  \
+            & > #add { font-size:120%; } \
             & > #list { margin-top:20px; }'
   },
   controller: {
