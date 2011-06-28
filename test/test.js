@@ -219,7 +219,7 @@
       obj2 = $$('hello', '<div class="test"></div>'); // default template should have a <div> root
       obj1.add(obj2, 'span');
     }
-    equals(obj1.collection.size(), 10, 'correct collection.size()');
+    equals(obj1.tree.size(), 10, 'correct tree.size()');
     equals(obj1.view.$('.test').size(), 10, 'correct DOM size');
   });
 
@@ -249,14 +249,14 @@
     var obj1 = $$();
     var obj2 = $$({
       controller: {
-        collectionAdd: function(ev, $$o, selector){
+        treeAdd: function(ev, $$o, selector){
           o = $$o;
           s = selector;
         }
       }
     });  
     obj2.add(obj1, 'sel');
-    ok(o===obj1 && s==='sel', "collectionAdd() called");
+    ok(o===obj1 && s==='sel', "treeAdd() called");
   });
 
   test("Model events", function(){

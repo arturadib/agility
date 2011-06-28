@@ -367,48 +367,48 @@
         this.view.render();
       },
 
-      // Triggered after child obj is added to collection
-      _collectionAdd: function(event, obj, selector){
+      // Triggered after child obj is added to tree
+      _treeAdd: function(event, obj, selector){
         this.view.append(obj.view.$root, selector);
       },
                   
-      // Triggered after a child obj is removed from collection (or self-destroyed)
-      _collectionRemove: function(event, id){        
+      // Triggered after a child obj is removed from tree (or self-destroyed)
+      _treeRemove: function(event, id){        
       }
       
     }, // controller prototype
 
     // -------------
     //
-    //  Collection
+    //  Tree
     //
     // -------------
     
-    collection: {
+    tree: {
 
-      // Adds child object to collection, listens for child removal
+      // Adds child object to tree, listens for child removal
       add: function(obj, selector){
         var self = this;
         if (!util.isAgility(obj)) {
           throw "agility.js: add argument is not an agility object";
         }
-        this.collection.children[obj._id] = obj;
-        this.trigger('collectionAdd', [obj, selector]);
+        this.tree.children[obj._id] = obj;
+        this.trigger('treeAdd', [obj, selector]);
         obj.bind('destroy', function(event, id){ 
-          self.collection.remove(id);
+          self.tree.remove(id);
         });
         return this;
       },
       
-      // Removes child object from collection
+      // Removes child object from tree
       remove: function(id){
-        delete this.collection.children[id];
-        this.trigger('collectionRemove', id);
+        delete this.tree.children[id];
+        this.trigger('treeRemove', id);
       },
       
       // Number of children
       size: function() {
-        return util.size(this.collection.children);
+        return util.size(this.tree.children);
       }
       
     },
@@ -423,14 +423,14 @@
     // Controller shortcuts
     //    
     destroy: function(){
-      this.trigger('destroy', this._id); // parent must listen to 'destroy' event and handle collection removal!
+      this.trigger('destroy', this._id); // parent must listen to 'destroy' event and handle tree removal!
     },
 
     //
-    // Collection shortcuts
+    // Tree shortcuts
     //
     add: function(){      
-      this.collection.add.apply(this, arguments);
+      this.tree.add.apply(this, arguments);
       return this; // for chainable calls
     },
 
@@ -489,19 +489,19 @@
       args.shift(); // remaining args now work as though object wasn't specified
     } // build from agility object
     
-    // Build object from prototype as well as the individual prototype parts model, view, controller
+    // Build object from prototype as well as the individual prototype parts
     // This enables differential inheritance at the sub-object level, e.g. object.view.template
     object = Object.create(prototype);
     object.model = Object.create(prototype.model);
     object.view = Object.create(prototype.view);
     object.controller = Object.create(prototype.controller);
-    object.collection = Object.create(prototype.collection);
+    object.tree = Object.create(prototype.tree);
     object._events = Object.create(prototype._events);
 
     // Fresh 'own' properties (i.e. properties that are not inherited at all)
     object._id = idCounter++;
     object._events.data = {}; // event bindings will happen below
-    object.collection.children = {};
+    object.tree.children = {};
     object.view.$root = {}; // ensures we don't mess with the DOM element of ancestor object
 
     // Cloned own properties (i.e. properties that are inherited by direct copy instead of by prototype chain)
