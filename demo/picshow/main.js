@@ -15,10 +15,10 @@ var pic = $$({
   },
   controller: {
     // DOM events
-    'mouseenter :root': function(){
+    'mouseenter &': function(){
       this.view.$('button#destroy').show();
     },
-    'mouseleave :root': function(){
+    'mouseleave &': function(){
       this.view.$('button#destroy').hide();
     },
     'click button#destroy': function(){

@@ -1,6 +1,6 @@
 // // One-liners: one item
 // var hello = $$('Hello World', '<button>${text}</button>', {
-//   'click :root': function(event){
+//   'click &': function(event){
 //     alert('hey there');
 //   }
 // });

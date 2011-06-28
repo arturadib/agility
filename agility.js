@@ -1,12 +1,16 @@
-// Sandboxed, so kids don't get hurt
+// Sandboxed, so kids don't get hurt. Inspired by jQuery's code.
+// Also:
+//   Creates local ref to window for performance reasons (as JS looks up local vars first)
+//   Redefines undefined as it could have been tampered with
 (function(window, undefined){
 
   if (!window.jQuery) {
     throw "agility.js: jQuery not found";
   }
   
-  // Local reference
+  // Local references
   var document = window.document,
+      location = window.location,
   
   // In case $ is being used by another lib
   $ = jQuery,
@@ -21,7 +25,10 @@
   defaultPrototype = {},
   
   // Global object counter
-  idCounter = 0;
+  idCounter = 0,
+  
+  // Constant
+  ROOT_SELECTOR = '&';
 
   // --------------------------
   //
@@ -139,9 +146,8 @@
         var eventObj = this._events.parseEventStr(eventStr);
         // DOM event 'event selector', e.g. 'click button'
         if (eventObj.selector) {
-          // Manually override selector ':root', as jQuery selectors can't select self object
-          // This is borrowed from CSS3
-          if (eventObj.selector === ':root') {
+          // Manually override root selector, as jQuery selectors can't select self object
+          if (eventObj.selector === ROOT_SELECTOR) {
             this.view.$root.bind(eventObj.type, fn);
           }
           else {          
@@ -160,9 +166,8 @@
         var eventObj = this._events.parseEventStr(eventStr);
         // DOM event 'event selector', e.g. 'click button'
         if (eventObj.selector) {
-          // Manually override selector ':root', as jQuery selectors can't select self object
-          // This is borrowed from CSS3
-          if (eventObj.selector === ':root') {
+          // Manually override root selector, as jQuery selectors can't select self object
+          if (eventObj.selector === ROOT_SELECTOR) {
             this.view.$root.trigger(eventObj.type, params);
           }
           else {          
@@ -246,7 +251,7 @@
       
       // Shortcut to view.$root or view.$root.find(), depending on selector presence
       $: function(selector){
-        return (!selector || selector === ':root') ? this.view.$root : this.view.$root.find(selector);
+        return (!selector || selector === ROOT_SELECTOR) ? this.view.$root : this.view.$root.find(selector);
       },
 
       // Render is the main handler of $root. It's responsible for:
@@ -254,8 +259,7 @@
       //   - Updating $root with DOM/HTML from template
       render: function(args){
         var invalidTemplateContent = this.model.size()===0 && (this.view.template.search(/\$\{[A-Za-z0-9_\$]+\}/) > -1); // model empty, but ref'd in template?
-        if (!args) args = { parseTemplate: !invalidTemplateContent }; // defaults
-        
+        if (!args) args = { parseTemplate: !invalidTemplateContent }; // defaults        
         // Without template there is no view
         if (this.view.template.length === 0) {
           return;
@@ -270,8 +274,7 @@
         
         //
         // Parse template
-        //
-        
+        //        
         if (this.view.$root.size() === 0) {
           throw 'agility.js: root element was not initialized';
         }        
@@ -292,7 +295,8 @@
   
       // Applies style dynamically
       stylize: function(){
-        var objClass;
+        var objClass,
+            regex = new RegExp(ROOT_SELECTOR, 'g');
         if (this.view.style.length === 0 || this.view.$root.size() === 0) {
           return;
         }
@@ -300,7 +304,7 @@
         // Object gets own class name ".agility_123", and <head> gets a corresponding <style>
         if (this.view.hasOwnProperty('style')) {
           objClass = 'agility_' + this._id;
-          var styleStr = this.view.style.replace(/&/g, '.'+objClass);
+          var styleStr = this.view.style.replace(regex, '.'+objClass);
           $('head', window.document).append('<style type="text/css">'+styleStr+'</style>');
           this.view.$root.addClass(objClass);
         }
