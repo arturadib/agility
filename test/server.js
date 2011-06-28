@@ -12,14 +12,8 @@ app.use(express.static(__dirname + '/public'));
 //
 // Entry point
 //
-app.get('/api/select', function(req, res){
-  var cookie = JSON.parse( req.cookies['aws-credentials'] );
-  var creds = { keyid:cookie.keyid, secret:cookie.secret };
-  var sdb = new simpledb.SimpleDB(creds);  
-
-  sdb.select(req.query.queryStr, function(_err, _res, _meta){
-    res.send(_res);
-  });
+app.get('/api', function(req, res){
+  res.send('agility is the way of the future');
 });
 
 app.listen(port);
