@@ -192,7 +192,7 @@
     });
     o.set({a:2});
     equals(t, true, 'custom _modelChange fired');
-    equals(o.view.$(':root').text(), '1', 'default _modelChange properly overriden');
+    equals(o.view.$('&').text(), '1', 'default _modelChange properly overriden');
   });
 
   // ------------------------------------
@@ -231,7 +231,7 @@
 
   test("Chainable calls", function(){
     t = false;
-    var obj = $$().set({text:'Joe Doe'}).bind('click :root', function(){ t = true; }).trigger('click :root');
+    var obj = $$().set({text:'Joe Doe'}).bind('click &', function(){ t = true; }).trigger('click &');
     equals(t, true, 'chaining set(), bind(), and trigger()');
   });
 
@@ -286,12 +286,12 @@
 
     t = false;
     obj = $$('hello', '<button>${text}</button>', {
-      'click :root': function(event){
+      'click &': function(event){
         t = true;
       }
     });
     obj.view.$().trigger('click');
-    ok(t===true, ":root click event caught");
+    ok(t===true, "root click event caught");
   });
 
 })(jQuery, agility);
