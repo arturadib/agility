@@ -23,7 +23,7 @@
 // // No inheritance with Style
 // var list = $$({}, 
 //   {
-//     template: '<div><button id="add">Add item</button> <ul id="list"></ul></div>', 
+//     format: '<div><button id="add">Add item</button> <ul id="list"></ul></div>', 
 //     style: '& > button { font-size:150%; }'
 //   },
 //   {
@@ -66,7 +66,7 @@
 //   model: {    
 //   },
 //   view: {
-//     template: '<div><button id="add">Add item</button> <ul id="list"></ul></div>'
+//     format: '<div><button id="add">Add item</button> <ul id="list"></ul></div>'
 //   },
 //   controller: {
 //     'click button#add': function(){
@@ -89,7 +89,7 @@ var item = $$({},
 );
 var list = $$({}, 
   {
-    template: '<div><button id="add">Add item</button> <ul id="list"/></div>', 
+    format: '<div><button id="add">Add item</button> <ul id="list"/></div>', 
     style: '& { width:400px; margin-left:auto; margin-right:auto; background:#eee; }  & > button { font-size:150%; }'
   },
   {

@@ -12,7 +12,7 @@ var pic = $$({
   
   // Agility view
   view: {
-    template: '<div>\
+    format: '<div>\
                   <div id="opts"> <input type="checkbox" id="check"/> <button id="destroy">X</button> </div>\
                   <div id="img-container"> <img src="${src}"/> </div> \
                </div>',
@@ -40,7 +40,7 @@ var pic = $$({
 
 var app = $$({
   view: {
-    template: '<div>\
+    format: '<div>\
                  <button id="add">Add picture</button> \
                  <div id="list"/> \
                </div>', 

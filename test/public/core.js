@@ -29,7 +29,7 @@
   test("One argument (model string)", function(){
     var obj = $$('Joe Doe');
     validateObject( obj );
-    equals( obj.view.$().html(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().html(), 'Joe Doe', 'format as expected');
   });
 
   test("One argument (model object)", function(){
@@ -38,13 +38,13 @@
       last: 'Doe'
     });
     validateObject( obj );
-    equals( obj.view.$().text(), '', 'template as expected'); // lib doesn't have a default template for an arbitrary model
+    equals( obj.view.$().text(), '', 'format as expected'); // lib doesn't have a default format for an arbitrary model
   });
 
   test("Two arguments (model, view string)", function(){
     var obj = $$('Joe Doe', '<div data-bind="text"></div>');
     validateObject( obj );
-    equals( obj.view.$().text(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
   });
 
   test("Two arguments (model object, view string)", function(){
@@ -53,7 +53,7 @@
       last: 'Doe'
     }, '<div><span data-bind="first"/> <span data-bind="last"/></div>');
     validateObject( obj );
-    equals( obj.view.$().text(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
   });
 
   test("Three arguments (model string, view string, controller object)", function(){
@@ -63,7 +63,7 @@
       }
     });
     validateObject( obj );
-    equals( obj.view.$().text(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
   });
 
   test("Three arguments (model object, view string, controller object)", function(){
@@ -73,13 +73,13 @@
       }
     });
     validateObject( obj );
-    equals( obj.view.$().text(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
   });
 
   test("Three arguments (model string, view object, controller object)", function(){
     var obj = $$('Joe Doe', 
       {
-        template:'<div data-bind="text"></div>', 
+        format:'<div data-bind="text"></div>', 
         style:'& { color:rgb(255, 0, 0); }' 
       }, 
       {
@@ -90,19 +90,19 @@
       }
     );
     validateObject( obj );
-    equals( obj.view.$().text(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
     equals( obj.view.$().css('color'), 'rgb(255, 0, 0)', 'style as expected');
   });
 
   test("Three arguments (model object, view object, controller object)", function(){
-    var obj = $$({first:'Joe', last:'Doe'}, {template:'<div><span data-bind="first"/> <span data-bind="last"/></div>', style:'& { color:rgb(255, 0, 0); }'}, {
+    var obj = $$({first:'Joe', last:'Doe'}, {format:'<div><span data-bind="first"/> <span data-bind="last"/></div>', style:'& { color:rgb(255, 0, 0); }'}, {
       init: function(){
         this.view.render();
         this.view.stylize();
       }
     });
     validateObject( obj );
-    equals( obj.view.$().text(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
     equals( obj.view.$().css('color'), 'rgb(255, 0, 0)', 'style as expected');
   });
   
@@ -113,13 +113,13 @@
         last: 'Doe'        
       },
       view: {
-        template: '<div><span data-bind="first"/> <span data-bind="last"/></div>',
+        format: '<div><span data-bind="first"/> <span data-bind="last"/></div>',
         style: '& { color:rgb(255, 0, 0); }'
       },
       controller: {}
     }); // obj
     validateObject( obj );
-    equals( obj.view.$().text(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
     equals( obj.view.$().css('color'), 'rgb(255, 0, 0)', 'style as expected');
   });
   
@@ -155,7 +155,7 @@
   });
   
   test("Object inheritance", function(){
-    var objBase = $$({}, {template:'<div><span data-bind="first"/> <span data-bind="last"/></div>', style:'& { color:rgb(255, 0, 0); }'});
+    var objBase = $$({}, {format:'<div><span data-bind="first"/> <span data-bind="last"/></div>', style:'& { color:rgb(255, 0, 0); }'});
     var objNewModel = {first:'Joe', last:'Doe'};
     var objNew = $$(objBase, objNewModel);
 
@@ -166,7 +166,7 @@
     ok(objNew.view.$().hasClass('agility_'+objBase._id), "child CSS class inherited OK");
     equals(objNew.view.$().css('color'), 'rgb(255, 0, 0)', "child style OK");
 
-    // this should trigger a 404 error if template is parsed to the DOM
+    // this should trigger a 404 error if format is parsed to the DOM
     objBase = $$({}, "<div class='test'> <img data-bind='src'/> </div>");
     equals(objBase.model.size(), 0, 'model is empty');
     objNew = $$(objBase, {src:'http://google.com/favicon.ico'});
@@ -197,13 +197,13 @@
     equals(obj1.view.$('.here div').html(), 'hello', 'add() appends at given selector');
 
     obj1 = $$({}, '<div><span></span></div>');
-    obj2 = $$('hello'); // default template should have a <div> root
+    obj2 = $$('hello'); // default format should have a <div> root
     obj1.add(obj2);
     equals(obj1.view.$('span').next().html(), 'hello', 'add() appends at root element');        
 
     obj1 = $$({}, '<div><span></span></div>');
     for (var i=0;i<10;i++) {
-      obj2 = $$('hello', '<div class="test"></div>'); // default template should have a <div> root
+      obj2 = $$('hello', '<div class="test"></div>'); // default format should have a <div> root
       obj1.add(obj2, 'span');
     }
     equals(obj1.tree.size(), 10, 'correct tree.size()');

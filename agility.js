@@ -262,7 +262,7 @@
     view: {
         
       // Defaults
-      template: '<div data-bind="text"></div>',
+      format: '<div data-bind="text"></div>',
       style: '',
       
       // Shortcut to view.$root or view.$root.find(), depending on selector presence
@@ -272,19 +272,19 @@
       
       // Render $root
       render: function(){
-        // Without template there is no view
-        if (this.view.template.length === 0) {
-          throw "agility.js: empty template in view.render()";
+        // Without format there is no view
+        if (this.view.format.length === 0) {
+          throw "agility.js: empty format in view.render()";
         }                
         if (this.view.$root.size() === 0) {
-          this.view.$root = $(this.view.template);
+          this.view.$root = $(this.view.format);
         }
         else {
-          this.view.$root.html( $(this.view.template).html() ); // can't overwrite $root as this would reset its presence in the DOM and all events already bound, and 
+          this.view.$root.html( $(this.view.format).html() ); // can't overwrite $root as this would reset its presence in the DOM and all events already bound, and 
         }
         // Ensure we have a valid (non-empty) $root
         if (this.view.$root.size() === 0) {
-          throw 'agility.js: could not generate html from template';
+          throw 'agility.js: could not generate html from format';
         }
       }, // render
   
@@ -535,7 +535,7 @@
     } // build from agility object
     
     // Build object from prototype as well as the individual prototype parts
-    // This enables differential inheritance at the sub-object level, e.g. object.view.template
+    // This enables differential inheritance at the sub-object level, e.g. object.view.format
     object = Object.create(prototype);
     object.model = Object.create(prototype.model);
     object.view = Object.create(prototype.view);
@@ -589,11 +589,11 @@
         throw "agility.js: unknown argument type (model)";
       }
 
-      // View template from shorthand string (..., '<div>${whatever}</div>', ...)
+      // View format from shorthand string (..., '<div>${whatever}</div>', ...)
       if (typeof args[1] === 'string') {
-        object.view.template = args[1]; // extend view with .template
+        object.view.format = args[1]; // extend view with .format
       }  
-      // View from object (..., {template:'<div>${whatever}</div>'}, ...)
+      // View from object (..., {format:'<div>${whatever}</div>'}, ...)
       else if (typeof args[1] === 'object') {
         $.extend(object.view, args[1]);
       }      
