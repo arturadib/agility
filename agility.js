@@ -200,7 +200,12 @@
           modified.push('text');
         }
         else if (typeof arg === 'object') {
-          this.model._data = arg;
+          if (params && params.reset) {
+            this.model._data = arg; // erases previous model attributes
+          }
+          else {
+            $.extend(this.model._data, arg); // default is extend
+          }
           for (var key in arg) {
             modified.push(key);
           }

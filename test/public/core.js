@@ -212,14 +212,17 @@
 
   test("Model calls", function(){
     var t = false;
-    var obj1 = $$({}, '<div data-bind="text"></div>', {
+    var obj1 = $$({a:1}, '<div data-bind="text"></div>', {
       'modelChange:text': function(){
         t = true;
       }
     });
     obj1.set({text:'Joe Doe'});
+    equals(obj1.model.get('a'), 1, 'obj.set() extends by default');
     equals(obj1.view.$().text(), 'Joe Doe', 'obj.set() fires view change');
     equals(t, true, 'obj.set() fires modelChange:var');
+    obj1.set({text:'New Text'}, {reset:true});
+    equals(obj1.model.get('a'), undefined, 'obj.set() resets OK');    
   });
 
   test("Chainable calls", function(){
