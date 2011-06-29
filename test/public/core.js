@@ -228,6 +228,15 @@
     equals(t, true, 'chaining set(), bind(), and trigger()');
   });
 
+  test("Two-way bindings", function(){
+    var obj = $$({name:'Mary'}, "<input type='text' data-bind='name' />");
+    equals(obj.get('name'), 'Mary', 'binding properly initialized');
+    obj.set({name:'Joe Doe'});
+    equals(obj.view.$().val(), 'Joe Doe', 'Model --> DOM binding OK');
+    obj.view.$().val('Art Blakey').change();
+    equals(obj.get('name'), 'Art Blakey', 'DOM --> Model binding OK');
+  });
+
   // ----------------------------------------------
   //
   //  Post-builder - Custom controller methods

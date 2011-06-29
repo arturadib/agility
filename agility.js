@@ -300,6 +300,16 @@
 
           // <input>: 2-way binding
           if ($this.is('input')) {
+            // Model --> DOM
+            self.bind('modelChange:'+modelKey, function(){
+              $node.val(self.model.get(modelKey)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
+            });            
+            // Model <-- DOM
+            $node.change(function(){
+              var obj = {};
+              obj[modelKey] = $(this).val();
+              self.model.set(obj); // not silent as user might be listening to modelChange events
+            });
           }
           // <a>: 1-way binding to [href]
           else if ($this.is('a')) {
