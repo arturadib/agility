@@ -10,6 +10,7 @@
 // var obj = $$({name:'initial value'}, "<div><input type='text' data-bind='name'/> <br/><br/> Content: <span data-bind='name'/></div>");
 // $$.document.add(obj);
 
+
 // // No inheritance
 // var list = $$({}, '<div><button id="add">Add item</button> <ul id="list"></ul></div>', {
 //   'click button#add': function(){
@@ -105,5 +106,8 @@
 // );
 // $$.document.add(list);
 
-var obj = $$({name:'initial value'}, "<div><input type='text' data-bind='name'/> <br/><br/> Content: <span data-bind='name'/></div>");
+// One-liner: Two-way binding
+var obj = $$({}, "<div><input type='checkbox' data-bind='a'/> <br/><br/> Content: <span data-bind='a'/></div>");
+// obj.bind('modelChange', function(){console.log('model changed!')});
+// obj.bind('change input', function(){console.log('input changed!')});
 $$.document.add(obj);

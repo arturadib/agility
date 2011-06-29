@@ -230,11 +230,18 @@
 
   test("Two-way bindings", function(){
     var obj = $$({name:'Mary'}, "<input type='text' data-bind='name' />");
-    equals(obj.get('name'), 'Mary', 'binding properly initialized');
+    equals(obj.get('name'), 'Mary', 'text input: binding properly initialized');
     obj.set({name:'Joe Doe'});
-    equals(obj.view.$().val(), 'Joe Doe', 'Model --> DOM binding OK');
+    equals(obj.view.$().val(), 'Joe Doe', 'text input: Model --> DOM binding OK');
     obj.view.$().val('Art Blakey').change();
-    equals(obj.get('name'), 'Art Blakey', 'DOM --> Model binding OK');
+    equals(obj.get('name'), 'Art Blakey', 'text input: DOM --> Model binding OK');
+
+    obj = $$({a:true}, "<input type='checkbox' data-bind='a' />");
+    equals(obj.get('a'), true, 'checkbox input: binding properly initialized');
+    obj.set({a:false});
+    equals(obj.view.$().prop("checked"), false, 'checkbox input: Model --> DOM binding OK');
+    obj.view.$().prop('checked', true).change();
+    equals(obj.get('a'), true, 'checkbox input: DOM --> Model binding OK');
   });
 
   // ----------------------------------------------

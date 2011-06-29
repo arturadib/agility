@@ -293,12 +293,24 @@
         var $rootNode = this.view.$().filter('[data-bind]');
         var $childNodes = this.view.$('[data-bind]');
         $rootNode.add($childNodes).each(function(){
-          var $this = $(this);
-          var modelKey = $this.data('bind');
-          var $node = $this;
+          var $node = $(this);
+          var modelKey = $node.data('bind');
 
-          // <input>: 2-way binding
-          if ($this.is('input')) {
+          // <input type="checkbox">: 2-way binding
+          if ($node.is('input[type="checkbox"]')) {
+            // Model --> DOM
+            self.bind('modelChange:'+modelKey, function(){
+              $node.prop("checked", self.model.get(modelKey)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
+            });            
+            // Model <-- DOM
+            $node.change(function(){
+              var obj = {};
+              obj[modelKey] = $(this).prop("checked");
+              self.model.set(obj); // not silent as user might be listening to modelChange events
+            });
+          }
+          // <input type="text">: 2-way binding
+          else if ($node.is('input[type="text"]')) {
             // Model --> DOM
             self.bind('modelChange:'+modelKey, function(){
               $node.val(self.model.get(modelKey)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
@@ -311,13 +323,13 @@
             });
           }
           // <a>: 1-way binding to [href]
-          else if ($this.is('a')) {
+          else if ($node.is('a')) {
             self.bind('modelChange:'+modelKey, function(){
               $node.attr('href', self.model.get(modelKey));
             });
           }
           // <img>: 1-way binding to [src]
-          else if ($this.is('img')) {
+          else if ($node.is('img')) {
             self.bind('modelChange:'+modelKey, function(){
               $node.attr('src', self.model.get(modelKey));
             });
@@ -325,7 +337,7 @@
           // <div>, <span>, and all other elements: 1-way binding to .html()
           else {
             self.bind('modelChange:'+modelKey, function(){
-              $node.html(self.model.get(modelKey));
+              $node.html(self.model.get(modelKey).toString());
             });
           }
         });        
