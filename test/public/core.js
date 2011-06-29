@@ -38,48 +38,48 @@
       last: 'Doe'
     });
     validateObject( obj );
-    equals( obj.view.$().html(), '', 'template as expected'); // lib doesn't have a default template for an arbitrary model
+    equals( obj.view.$().text(), '', 'template as expected'); // lib doesn't have a default template for an arbitrary model
   });
 
   test("Two arguments (model, view string)", function(){
-    var obj = $$('Joe Doe', '<div>${text}</div>');
+    var obj = $$('Joe Doe', '<div data-bind="text"></div>');
     validateObject( obj );
-    equals( obj.view.$().html(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().text(), 'Joe Doe', 'template as expected');
   });
 
   test("Two arguments (model object, view string)", function(){
     var obj = $$({
       first: 'Joe',
       last: 'Doe'
-    }, '<div>${first} ${last}</div>');
+    }, '<div><span data-bind="first"/> <span data-bind="last"/></div>');
     validateObject( obj );
-    equals( obj.view.$().html(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().text(), 'Joe Doe', 'template as expected');
   });
 
   test("Three arguments (model string, view string, controller object)", function(){
-    var obj = $$('Joe Doe', '<div>${text}</div>', {
+    var obj = $$('Joe Doe', '<div data-bind="text"></div>', {
       init: function(){
         this.view.render();
       }
     });
     validateObject( obj );
-    equals( obj.view.$().html(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().text(), 'Joe Doe', 'template as expected');
   });
 
   test("Three arguments (model object, view string, controller object)", function(){
-    var obj = $$({first:'Joe', last:'Doe'}, '<div>${first} ${last}</div>', {
+    var obj = $$({first:'Joe', last:'Doe'}, '<div><span data-bind="first"/> <span data-bind="last"/></div>', {
       init: function(){
         this.view.render();
       }
     });
     validateObject( obj );
-    equals( obj.view.$().html(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().text(), 'Joe Doe', 'template as expected');
   });
 
   test("Three arguments (model string, view object, controller object)", function(){
     var obj = $$('Joe Doe', 
       {
-        template:'<div>${text}</div>', 
+        template:'<div data-bind="text"></div>', 
         style:'& { color:rgb(255, 0, 0); }' 
       }, 
       {
@@ -90,19 +90,19 @@
       }
     );
     validateObject( obj );
-    equals( obj.view.$().html(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().text(), 'Joe Doe', 'template as expected');
     equals( obj.view.$().css('color'), 'rgb(255, 0, 0)', 'style as expected');
   });
 
   test("Three arguments (model object, view object, controller object)", function(){
-    var obj = $$({first:'Joe', last:'Doe'}, {template:'<div>${first} ${last}</div>', style:'& { color:rgb(255, 0, 0); }'}, {
+    var obj = $$({first:'Joe', last:'Doe'}, {template:'<div><span data-bind="first"/> <span data-bind="last"/></div>', style:'& { color:rgb(255, 0, 0); }'}, {
       init: function(){
         this.view.render();
         this.view.stylize();
       }
     });
     validateObject( obj );
-    equals( obj.view.$().html(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().text(), 'Joe Doe', 'template as expected');
     equals( obj.view.$().css('color'), 'rgb(255, 0, 0)', 'style as expected');
   });
   
@@ -113,13 +113,13 @@
         last: 'Doe'        
       },
       view: {
-        template: '<div>${first} ${last}</div>',
+        template: '<div><span data-bind="first"/> <span data-bind="last"/></div>',
         style: '& { color:rgb(255, 0, 0); }'
       },
       controller: {}
     }); // obj
     validateObject( obj );
-    equals( obj.view.$().html(), 'Joe Doe', 'template as expected');
+    equals( obj.view.$().text(), 'Joe Doe', 'template as expected');
     equals( obj.view.$().css('color'), 'rgb(255, 0, 0)', 'style as expected');
   });
   
@@ -155,21 +155,20 @@
   });
   
   test("Object inheritance", function(){
-    var objBase = $$({}, {template:'<div>${first} ${last}</div>', style:'& { color:rgb(255, 0, 0); }'});
+    var objBase = $$({}, {template:'<div><span data-bind="first"/> <span data-bind="last"/></div>', style:'& { color:rgb(255, 0, 0); }'});
     var objNewModel = {first:'Joe', last:'Doe'};
     var objNew = $$(objBase, objNewModel);
 
     ok($.isEmptyObject(objBase.get()), "parent model untouched ("+JSON.stringify(objBase.get())+")");
-    equals(objBase.view.$().size(), 1, "parent html untouched");
+    equals(objBase.view.$().text(), ' ', "parent html untouched");
     equals(objNew.get('first'), objNewModel.first, "child model OK");
-    equals(objNew.view.$().html(), 'Joe Doe', "child html OK");
+    equals(objNew.view.$().text(), 'Joe Doe', "child html OK");
     ok(objNew.view.$().hasClass('agility_'+objBase._id), "child CSS class inherited OK");
     equals(objNew.view.$().css('color'), 'rgb(255, 0, 0)', "child style OK");
 
     // this should trigger a 404 error if template is parsed to the DOM
-    objBase = $$({}, "<div class='test'> <img src='${src}'/> </div>");
+    objBase = $$({}, "<div class='test'> <img data-bind='src'/> </div>");
     equals(objBase.model.size(), 0, 'model is empty');
-    equals(objBase.view.$('img').size(), 0, 'skip template parsing on (empty model) && (model present in template)');
     objNew = $$(objBase, {src:'http://google.com/favicon.ico'});
     equals(objNew.view.$('img').attr('src'), 'http://google.com/favicon.ico', 'img src correctly set');
   });
@@ -182,18 +181,6 @@
   // ----------------------------------------------
 
   module("Post-builder - Overriding default controller methods");
-
-  test("Model events", function(){
-    var t = false;
-    var o = $$({a:1}, '<div>${a}</div>', {
-      _modelChange: function(){
-        t = true;        
-      }
-    });
-    o.set({a:2});
-    equals(t, true, 'custom _modelChange fired');
-    equals(o.view.$('&').text(), '1', 'default _modelChange properly overriden');
-  });
 
   // ------------------------------------
   //
@@ -224,9 +211,15 @@
   });
 
   test("Model calls", function(){
-    var obj1 = $$({}, '<div>${text}</div>');
+    var t = false;
+    var obj1 = $$({}, '<div data-bind="text"></div>', {
+      'modelChange:text': function(){
+        t = true;
+      }
+    });
     obj1.set({text:'Joe Doe'});
-    equals(obj1.view.$().html(), 'Joe Doe', 'obj.set() fires view change');
+    equals(obj1.view.$().text(), 'Joe Doe', 'obj.set() fires view change');
+    equals(t, true, 'obj.set() fires modelChange:var');
   });
 
   test("Chainable calls", function(){

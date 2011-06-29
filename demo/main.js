@@ -1,20 +1,21 @@
 // // One-liners: one item
-// var hello = $$('Hello World', '<button>${text}</button>', {
-//   'click &': function(event){
-//     alert('hey there');
-//   }
-// });
+// var hello = $$('Hello World');
 // $$.document.add(hello);
+
+// // One-liners: one item
+// var hello = $$('Hello World', '<div>model.text: <span data-bind="text"></span></div>');
+// $$.document.add(hello);
+
 
 // // No inheritance
 // var list = $$({}, '<div><button id="add">Add item</button> <ul id="list"></ul></div>', {
 //   'click button#add': function(){
-//     var newItem = $$('Hello World', '<li>${text} <button>x</button></li>', {
+//     var newItem = $$('Hello World', '<li><span data-bind="text"></span> <button>x</button></li>', {
 //       'click button': function(){
 //         alert('remove!');
 //       }
 //     });
-//     this.add(newItem, '#list'); // now newItem.parent == this; calls view:add($$obj, '#list'), which will append to specified element
+//     this.add(newItem, '#list');
 //   }
 // });
 // $$.document.add(list);
@@ -27,36 +28,40 @@
 //   },
 //   {
 //     'click button#add': function(){
-//       var newItem = $$('Hello World', '<li>${text} <button>x</button></li>', '& { color:red; }', {
+//       var newItem = $$('Hello World', '<li><span data-bind="text"></span> <button>x</button></li>', '& { color:red; }', {
 //         'click button': function(){
 //           alert('remove!');
 //         }
 //       });
-//       this.add(newItem, '#list'); // now newItem.parent == this; calls view:add($$obj, '#list'), which will append to specified element
+//       this.add(newItem, '#list');
 //     }
 //   }
 // );
 // $$.document.add(list);
 
 // // Inheritance
+// // Item prototype
+// var item = $$({}, '<li><span data-bind="text"></span> <button>x</button></li>', {
+//   'click button': function(){
+//     this.remove();
+//   }
+// });
 // var list = $$({}, '<div><button id="add">Add item</button> <ul id="list"></ul></div>', {
-//   init: function(){
-//     // Item prototype
-//     this.itemProto = $$({}, '<li>${text} <button>x</button></li>', {
-//       'click button': function(){
-//         this.remove();
-//       }
-//     });
-//   },
 //   'click button#add': function(){
 //     // Item object
-//     var item = $$(this.itemProto, 'Hello '+Math.random());
-//     this.add(item, '#list');
+//     var newItem = $$(item, 'Hello '+Math.random());
+//     this.add(newItem, '#list');
 //   }
 // });
 // $$.document.add(list);
 
 // // Inheritance, using {model, view, controller}
+// // Prototype
+// var item = $$({}, '<li><span data-bind="text"></span> <button>x</button></li>', {
+//   'click button': function(){
+//     this.remove();
+//   }
+// });
 // var list = $$({
 //   model: {    
 //   },
@@ -64,16 +69,8 @@
 //     template: '<div><button id="add">Add item</button> <ul id="list"></ul></div>'
 //   },
 //   controller: {
-//     init: function(){
-//       // Prototype
-//       this.item = $$({}, '<li>${text} <button>x</button></li>', {
-//         'click button': function(){
-//           this.remove();
-//         }
-//       });
-//     },
 //     'click button#add': function(){
-//       var newItem = $$(this.item, 'Hello '+Math.random());
+//       var newItem = $$(item, 'Hello '+Math.random());
 //       this.add(newItem, '#list');
 //     }
 //   }
@@ -82,11 +79,11 @@
 
 // Inheritance with Style
 var item = $$({}, 
-  '<li>${text} <button>x</button></li>', 
+  '<li><span data-bind="text"></span> <button>x</button></li>', 
   '& { color:red }', 
   { // item prototype
     'click button': function(){
-      this.destroy();
+      this.remove();
     }
   }
 );

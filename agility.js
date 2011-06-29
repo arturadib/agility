@@ -194,17 +194,28 @@
 
       // Setter
       set: function(arg, params) {
+        var self = this;
+        var modified = [];
         if (typeof arg === 'string') {
           this.model._data.text = arg; // default model attribute
+          modified.push('text');
         }
         else if (typeof arg === 'object') {
           this.model._data = arg;
+          for (var key in arg) {
+            modified.push(key);
+          }
         }
         else {
-          throw "agility.js: unknown argument type (model.set)";
+          throw "agility.js: unknown argument type in model.set()";
         }
-        if (params && params.silent===true) return this; // do not fire event
+
+        // Events
+        if (params && params.silent===true) return this; // do not fire events
         this.trigger('modelChange');
+        $.each(modified, function(index, val){
+          self.trigger('modelChange:'+val);
+        });
         return this; // for chainable calls
       },
       
@@ -225,7 +236,12 @@
       size: function(){
         return util.size(this.model._data);
       },
-  
+      
+      // Convenience function - loops over each model property
+      each: function(fn){
+        $.each(this.model._data, fn);
+      },
+      
       // Persistence: save
       save: function(){},
   
@@ -246,53 +262,78 @@
     view: {
         
       // Defaults
-      template: '<div>${text}</div>',      
+      template: '<div data-bind="text"></div>',
       style: '',
       
       // Shortcut to view.$root or view.$root.find(), depending on selector presence
       $: function(selector){
         return (!selector || selector === ROOT_SELECTOR) ? this.view.$root : this.view.$root.find(selector);
       },
-
-      // Render is the main handler of $root. It's responsible for:
-      //   - Creating the jQuery object $root
-      //   - Updating $root with DOM/HTML from template
-      render: function(args){
-        var invalidTemplateContent = this.model.size()===0 && (this.view.template.search(/\$\{[A-Za-z0-9_\$]+\}/) > -1); // model empty, but ref'd in template?
-        if (!args) args = { parseTemplate: !invalidTemplateContent }; // defaults        
+      
+      // Render $root
+      render: function(){
         // Without template there is no view
         if (this.view.template.length === 0) {
-          return;
-        }
-        if (!args.parseTemplate) {
-          // Initialize root element with empty content
-          // This avoids parsing templates that are not quite ready for parsing (e.g. containing references to invalid/empty models)
-          var firstTagClosing = this.view.template.search(/\>/); // first template tag closing position '<tag attr="asdf"> ...'
-          this.view.$root = $(this.view.template.substr(0, firstTagClosing+1));
-          return;
-        }
-        
-        //
-        // Parse template
-        //        
+          throw "agility.js: empty template in view.render()";
+        }                
         if (this.view.$root.size() === 0) {
-          throw 'agility.js: root element was not initialized';
-        }        
-        // Renders template without data, if no model
-        if ($.isEmptyObject( this.model.get() )) {
-          this.view.$root.html( $(this.view.template).html() ); // first .html() as it won't destroy events already bound to $root
-                                                                // second .html() as it will bypass redundant root element
+          this.view.$root = $(this.view.template);
         }
-        // Renders from model and template
         else {
-          this.view.$root.html( $.tmpl(this.view.template, this.model.get()).html() ); // see above for why .html()
+          this.view.$root.html( $(this.view.template).html() ); // can't overwrite $root as this would reset its presence in the DOM and all events already bound, and 
         }
         // Ensure we have a valid (non-empty) $root
         if (this.view.$root.size() === 0) {
           throw 'agility.js: could not generate html from template';
-        }        
+        }
       }, // render
   
+      // Apply two-way (DOM <--> Model) bindings to elements with 'data-bind' attributes
+      bindings: function(){
+        var self = this;
+        var $rootNode = this.view.$().filter('[data-bind]');
+        var $childNodes = this.view.$('[data-bind]');
+        $rootNode.add($childNodes).each(function(){
+          var $this = $(this);
+          var modelKey = $this.data('bind');
+          var $node = $this;
+
+          // <input>: 2-way binding
+          if ($this.is('input')) {
+          }
+          // <a>: 1-way binding to [href]
+          else if ($this.is('a')) {
+            self.bind('modelChange:'+modelKey, function(){
+              $node.attr('href', self.model.get(modelKey));
+            });
+          }
+          // <img>: 1-way binding to [src]
+          else if ($this.is('img')) {
+            self.bind('modelChange:'+modelKey, function(){
+              $node.attr('src', self.model.get(modelKey));
+            });
+          }
+          // <div>, <span>, and all other elements: 1-way binding to .html()
+          else {
+            self.bind('modelChange:'+modelKey, function(){
+              $node.html(self.model.get(modelKey));
+            });
+          }
+        });        
+      },
+      
+      // Triggers modelChange and modelChange:* events so that view is updated as per view.bindings()
+      refresh: function(){
+        var self = this;
+        // Trigger modelChange events so that view is updated according to model
+        this.model.each(function(key, val){
+          self.trigger('modelChange:'+key);
+        });
+        if (this.model.size() > 0) {
+          this.trigger('modelChange');
+        }
+      },
+
       // Applies style dynamically
       stylize: function(){
         var objClass,
@@ -353,18 +394,18 @@
       // Triggered after self creation
       _create: function(event){
         this.view.stylize();
-        this.view.render();
+        this.view.bindings(); // Model-View bindings
+        this.view.refresh(); // syncs View with Model
       },
   
       // Triggered upon removing self
-      _destroy: function(event){
+      _remove: function(event){
         this.view.remove();
         this.model.erase();
       },
 
       // Triggered after model is changed
       _modelChange: function(event){
-        this.view.render();
       },
 
       // Triggered after child obj is added to tree
@@ -372,7 +413,7 @@
         this.view.append(obj.view.$root, selector);
       },
                   
-      // Triggered after a child obj is removed from tree (or self-destroyed)
+      // Triggered after a child obj is removed from tree (or self-removed)
       _treeRemove: function(event, id){        
       }
       
@@ -394,7 +435,7 @@
         }
         this.tree.children[obj._id] = obj;
         this.trigger('treeAdd', [obj, selector]);
-        obj.bind('destroy', function(event, id){ 
+        obj.bind('remove', function(event, id){ 
           self.tree.remove(id);
         });
         return this;
@@ -420,18 +461,22 @@
     // -------------
         
     //
-    // Controller shortcuts
-    //    
-    destroy: function(){
-      this.trigger('destroy', this._id); // parent must listen to 'destroy' event and handle tree removal!
-    },
-
-    //
     // Tree shortcuts
     //
     add: function(){      
       this.tree.add.apply(this, arguments);
       return this; // for chainable calls
+    },
+    // Hybrid shortcut: removes self or tree element, depending on argument presence
+    remove: function(args){
+      if (!args) {
+        this.trigger('remove', this._id); // parent must listen to 'remove' event and handle tree removal!
+        // can't return this as it might not exist anymore!
+      } 
+      else {
+        this.tree.remove.apply(this, arguments);
+        return this;
+      }
     },
 
     //
@@ -502,7 +547,7 @@
     object._id = idCounter++;
     object._events.data = {}; // event bindings will happen below
     object.tree.children = {};
-    object.view.$root = {}; // ensures we don't mess with the DOM element of ancestor object
+    object.view.$root = $(); // empty jQuery object
 
     // Cloned own properties (i.e. properties that are inherited by direct copy instead of by prototype chain)
     object.model._data = object.model._data ? $.extend({}, object.model._data) : {};
@@ -572,19 +617,19 @@
       
     } // ({model}, {view}, {controller}) args
     
-    // -----------------------------------------
+    // ----------------------------------------------
     //
-    //  Bindings, initializations, etc
+    //  Bootstrap: Bindings, initializations, etc
     //
-    // -----------------------------------------
+    // ----------------------------------------------
   
     // object.* will have their 'this' === object. This should come before call to object.* below.
     util.proxyAll(object, object);
 
     // Initialize $root, needed for DOM events binding below
-    object.view.render({ parseTemplate:false });
+    object.view.render();
   
-    // Binds all controller functions to corresponding events
+    // Binds all existing controller functions to corresponding events
     for (var ev in object.controller) {
       if (typeof object.controller[ev] === 'function') {
         object.bind(ev, object.controller[ev]);
