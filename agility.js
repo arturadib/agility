@@ -280,16 +280,7 @@
       // Convenience function - loops over each model property
       each: function(fn){
         $.each(this.model._data, fn);
-      },
-      
-      // Persistence: save
-      save: function(){},
-  
-      // Persistence: load
-      load: function(){},
-      
-      // Persistence: erase
-      erase: function(){}      
+      }
       
     }, // model prototype
   
@@ -662,11 +653,11 @@
         throw "agility.js: unknown argument type (model)";
       }
 
-      // View format from shorthand string (..., '<div>${whatever}</div>', ...)
+      // View format from shorthand string (..., '<div>whatever</div>', ...)
       if (typeof args[1] === 'string') {
         object.view.format = args[1]; // extend view with .format
       }  
-      // View from object (..., {format:'<div>${whatever}</div>'}, ...)
+      // View from object (..., {format:'<div>whatever</div>'}, ...)
       else if (typeof args[1] === 'object') {
         $.extend(object.view, args[1]);
       }      
