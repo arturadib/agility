@@ -5,13 +5,13 @@ var pic = $$({
   
   view: {
     format: '<div>\
-                <div id="opts"> <input type="checkbox" id="check"/> <button id="remove">X</button> </div>\
+                <div id="opts"> <input type="checkbox" id="check"/> <button id="destroy">X</button> </div>\
                 <div id="img-container"> <img data-bind="path src"/> </div> \
              </div>',
     style: '& { float:left; margin-right:40px; margin-bottom:20px; width:100px; } \
             & div#opts { } \
             & input#check { float:left; } \
-            & button#remove { float:right; } \
+            & button#destroy { float:right; } \
             & div#img-container { clear:both; border:1px solid black; width:100px; height:100px; text-align:center; } \
             & img { max-width:100px; max-height:100px; }'
   },
@@ -20,8 +20,8 @@ var pic = $$({
     'click img': function(){
       this.view.$('input#check').click();
     },
-    'click button#remove': function(){
-      this.remove();
+    'click button#destroy': function(){
+      this.destroy();
     },
     'change input#check': function(event){
       this.checked = $(event.target).prop('checked');

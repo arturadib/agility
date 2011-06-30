@@ -275,14 +275,14 @@
     var obj1 = $$();
     var obj2 = $$({
       controller: {
-        treeAdd: function(ev, $$o, selector){
+        add: function(ev, $$o, selector){
           o = $$o;
           s = selector;
         }
       }
     });  
     obj2.add(obj1, 'sel');
-    ok(o===obj1 && s==='sel', "treeAdd() called");
+    ok(o===obj1 && s==='sel', "add() called");
   });
 
   test("Model events", function(){

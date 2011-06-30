@@ -446,7 +446,7 @@
       }, // append
       
       // Remove DOM object
-      remove: function(){
+      destroy: function(){
         this.view.$root.remove();
       }
       
@@ -468,22 +468,22 @@
       },
   
       // Triggered upon removing self
-      _remove: function(event){
-        this.view.remove();
+      _destroy: function(event){
+        this.view.destroy();
         this.model.erase();
       },
 
-      // Triggered after model is changed
-      _modelChange: function(event){
-      },
-
       // Triggered after child obj is added to tree
-      _treeAdd: function(event, obj, selector){
+      _add: function(event, obj, selector){
         this.view.append(obj.view.$root, selector);
       },
                   
       // Triggered after a child obj is removed from tree (or self-removed)
-      _treeRemove: function(event, id){        
+      _remove: function(event, id){        
+      },
+
+      // Triggered after model is changed
+      _modelChange: function(event){
       }
       
     }, // controller prototype
@@ -503,8 +503,8 @@
           throw "agility.js: add argument is not an agility object";
         }
         this.tree.children[obj._id] = obj;
-        this.trigger('treeAdd', [obj, selector]);
-        obj.bind('remove', function(event, id){ 
+        this.trigger('add', [obj, selector]);
+        obj.bind('destroy', function(event, id){ 
           self.tree.remove(id);
         });
         return this;
@@ -513,7 +513,7 @@
       // Removes child object from tree
       remove: function(id){
         delete this.tree.children[id];
-        this.trigger('treeRemove', id);
+        this.trigger('remove', id);
       },
       
       // Number of children
@@ -530,22 +530,23 @@
     // -------------
         
     //
+    // Self
+    //    
+    destroy: function() {
+      this.trigger('destroy', this._id); // parent must listen to 'remove' event and handle tree removal!
+      // can't return this as it might not exist anymore!
+    },
+    
+    //
     // Tree shortcuts
     //
     add: function(){      
       this.tree.add.apply(this, arguments);
       return this; // for chainable calls
     },
-    // Hybrid shortcut: removes self or tree element, depending on argument presence
     remove: function(args){
-      if (!args) {
-        this.trigger('remove', this._id); // parent must listen to 'remove' event and handle tree removal!
-        // can't return this as it might not exist anymore!
-      } 
-      else {
-        this.tree.remove.apply(this, arguments);
-        return this;
-      }
+      this.tree.remove.apply(this, arguments);
+      return this;
     },
 
     //
