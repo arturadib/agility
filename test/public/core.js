@@ -167,9 +167,9 @@
     equals(objNew.view.$().css('color'), 'rgb(255, 0, 0)', "child style OK");
 
     // this should trigger a 404 error if format is parsed to the DOM
-    objBase = $$({}, "<div class='test'> <img data-bind='src'/> </div>");
+    objBase = $$({}, "<div class='test'> <img data-bind='path src'/> </div>");
     equals(objBase.model.size(), 0, 'model is empty');
-    objNew = $$(objBase, {src:'http://google.com/favicon.ico'});
+    objNew = $$(objBase, {path:'http://google.com/favicon.ico'});
     equals(objNew.view.$('img').attr('src'), 'http://google.com/favicon.ico', 'img src correctly set');
   });
 
@@ -233,18 +233,25 @@
 
   test("Two-way bindings", function(){
     var obj = $$({name:'Mary'}, "<input type='text' data-bind='name' />");
-    equals(obj.get('name'), 'Mary', 'text input: binding properly initialized');
+    equals(obj.view.$().val(), 'Mary', 'text input: binding properly initialized');
     obj.set({name:'Joe Doe'});
     equals(obj.view.$().val(), 'Joe Doe', 'text input: Model --> DOM binding OK');
     obj.view.$().val('Art Blakey').change();
     equals(obj.get('name'), 'Art Blakey', 'text input: DOM --> Model binding OK');
 
     obj = $$({a:true}, "<input type='checkbox' data-bind='a' />");
-    equals(obj.get('a'), true, 'checkbox input: binding properly initialized');
+    equals(obj.view.$().prop('checked'), true, 'checkbox input: binding properly initialized');
     obj.set({a:false});
     equals(obj.view.$().prop("checked"), false, 'checkbox input: Model --> DOM binding OK');
     obj.view.$().prop('checked', true).change();
     equals(obj.get('a'), true, 'checkbox input: DOM --> Model binding OK');
+
+    obj = $$({opt:'opt-b'}, "<div><input type='radio' name='test' data-bind='opt' value='opt-a' id='a'/> a<br/> <input type='radio' name='test' data-bind='opt' value='opt-b' id='b'/> b</div>");
+    equals(obj.view.$('input#b').prop("checked"), true, 'radio input: binding properly initialized');
+    obj.set({opt:'opt-a'});
+    equals(obj.view.$('input#a').prop("checked"), true, 'radio input: Model --> DOM binding OK');
+    obj.view.$('input#b').prop('checked', true).change();
+    equals(obj.get('opt'), 'opt-b', 'radio input: DOM --> Model binding OK');
   });
 
   // ----------------------------------------------
