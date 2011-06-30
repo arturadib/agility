@@ -327,13 +327,28 @@
               self.model.set(obj); // not silent as user might be listening to modelChange events
             });
           }
+          // <select>: 2-way binding
+          else if ($node.is('select')) {
+            // Model --> DOM
+            self.bind('modelChange:'+bindData.var, function(){
+              var nodeName = $node.attr('name');
+              var modelValue = self.model.get(bindData.var);
+              $node.val(modelValue);
+            });            
+            // DOM --> Model
+            $node.change(function(){
+              var obj = {};
+              obj[bindData.var] = $node.val();
+              self.model.set(obj); // not silent as user might be listening to modelChange events
+            });
+          }
           // <input type="radio">: 2-way binding
           else if ($node.is('input[type="radio"]')) {
             // Model --> DOM
             self.bind('modelChange:'+bindData.var, function(){
               var nodeName = $node.attr('name');
               var modelValue = self.model.get(bindData.var);
-              $node.siblings('[name="'+nodeName+'"]').filter('[value="'+modelValue+'"]').prop("checked", true); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
+              $node.siblings('input[name="'+nodeName+'"]').filter('[value="'+modelValue+'"]').prop("checked", true); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
             });            
             // DOM --> Model
             $node.change(function(){

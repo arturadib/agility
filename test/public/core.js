@@ -252,6 +252,13 @@
     equals(obj.view.$('input#a').prop("checked"), true, 'radio input: Model --> DOM binding OK');
     obj.view.$('input#b').prop('checked', true).change();
     equals(obj.get('opt'), 'opt-b', 'radio input: DOM --> Model binding OK');
+
+    obj = $$({opt:'opt-b'}, "<select data-bind='opt'> <option value='opt-a'/> <br/> <option value='opt-b'/> </select>");
+    equals(obj.view.$().val(), 'opt-b', 'select input: binding properly initialized');
+    obj.set({opt:'opt-a'});
+    equals(obj.view.$().val(), 'opt-a', 'select input: Model --> DOM binding OK');
+    obj.view.$().val('opt-b').change();
+    equals(obj.get('opt'), 'opt-b', 'select input: DOM --> Model binding OK');
   });
 
   // ----------------------------------------------

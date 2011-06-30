@@ -21,22 +21,38 @@
 // var obj = $$(
 //   {a:false, b:true},
 //   "<div> \
-//       <input type='checkbox' name='test' id='a' data-bind='a'/> checked: <span data-bind='a'/><br/> \
-//       <input type='checkbox' name='test' id='b' data-bind='b'/> checked: <span data-bind='b'/><br/> \
+//       <input type='checkbox' name='test' data-bind='a'/> checked: <span data-bind='a'/><br/> \
+//       <input type='checkbox' name='test' data-bind='b'/> checked: <span data-bind='b'/><br/> \
 //    </div>"
 // );
 // $$.document.add(obj);
 
-// Two-way binding (radio)
-var obj = $$(
-  {opt:'opt-a'},
-  "<div> \
-      <input type='radio' name='test' id='a' value='opt-a' data-bind='opt'/> <br/> \
-      <input type='radio' name='test' id='b' value='opt-b' data-bind='opt'/> <br/> \
-      You selected: <span data-bind='opt'/> \
-   </div>"
-);
-$$.document.add(obj);
+// // Two-way binding (radio)
+// var obj = $$(
+//   {opt:'opt-a'},
+//   "<div> \
+//       <input type='radio' name='test' value='opt-a' data-bind='opt'/> <br/> \
+//       <input type='radio' name='test' value='opt-b' data-bind='opt'/> <br/> \
+//       You selected: <span data-bind='opt'/> \
+//    </div>"
+// );
+// $$.document.add(obj);
+
+// // Two-way binding (select)
+// var obj = $$(
+//   {opt:'opt-a'},
+//   "<div> \
+//     <select data-bind='opt'> \
+//       <option value='opt-a'>Hello</option>\
+//       <option value='opt-b'>World</option>\
+//     </select> \
+//     You selected: <span data-bind='opt'/> \
+//    </div>",
+//    {
+//      'change option': function(event){console.log($(event.target))}
+//    }
+// );
+// $$.document.add(obj);
 
 // // No inheritance
 // var list = $$({}, '<div><button id="add">Add item</button> <ul id="list"></ul></div>', {
