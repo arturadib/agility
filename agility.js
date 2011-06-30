@@ -120,6 +120,41 @@
     
     // -------------
     //
+    //  _Container
+    //
+    // -------------
+    
+    _container: {
+
+      // Adds child object to container, listens for child removal
+      add: function(obj, selector){
+        var self = this;
+        if (!util.isAgility(obj)) {
+          throw "agility.js: add argument is not an agility object";
+        }
+        this._container.children[obj._id] = obj;
+        this.trigger('add', [obj, selector]);
+        obj.bind('destroy', function(event, id){ 
+          self._container.remove(id);
+        });
+        return this;
+      },
+      
+      // Removes child object from container
+      remove: function(id){
+        delete this._container.children[id];
+        this.trigger('remove', id);
+      },
+      
+      // Number of children
+      size: function() {
+        return util.size(this._container.children);
+      }
+      
+    },
+
+    // -------------
+    //
     //  _Events
     //
     // -------------
@@ -473,12 +508,12 @@
         this.model.erase();
       },
 
-      // Triggered after child obj is added to tree
+      // Triggered after child obj is added to container
       _add: function(event, obj, selector){
         this.view.append(obj.view.$root, selector);
       },
                   
-      // Triggered after a child obj is removed from tree (or self-removed)
+      // Triggered after a child obj is removed from container (or self-removed)
       _remove: function(event, id){        
       },
 
@@ -490,41 +525,6 @@
 
     // -------------
     //
-    //  Tree
-    //
-    // -------------
-    
-    tree: {
-
-      // Adds child object to tree, listens for child removal
-      add: function(obj, selector){
-        var self = this;
-        if (!util.isAgility(obj)) {
-          throw "agility.js: add argument is not an agility object";
-        }
-        this.tree.children[obj._id] = obj;
-        this.trigger('add', [obj, selector]);
-        obj.bind('destroy', function(event, id){ 
-          self.tree.remove(id);
-        });
-        return this;
-      },
-      
-      // Removes child object from tree
-      remove: function(id){
-        delete this.tree.children[id];
-        this.trigger('remove', id);
-      },
-      
-      // Number of children
-      size: function() {
-        return util.size(this.tree.children);
-      }
-      
-    },
-
-    // -------------
-    //
     //  Shortcuts
     //
     // -------------
@@ -533,20 +533,23 @@
     // Self
     //    
     destroy: function() {
-      this.trigger('destroy', this._id); // parent must listen to 'remove' event and handle tree removal!
+      this.trigger('destroy', this._id); // parent must listen to 'remove' event and handle container removal!
       // can't return this as it might not exist anymore!
     },
     
     //
-    // Tree shortcuts
+    // _Container shortcuts
     //
     add: function(){      
-      this.tree.add.apply(this, arguments);
+      this._container.add.apply(this, arguments);
       return this; // for chainable calls
     },
-    remove: function(args){
-      this.tree.remove.apply(this, arguments);
-      return this;
+    remove: function(){
+      this._container.remove.apply(this, arguments);
+      return this; // for chainable calls
+    },
+    size: function(){
+      return this._container.size.apply(this, arguments);
     },
 
     //
@@ -610,13 +613,13 @@
     object.model = Object.create(prototype.model);
     object.view = Object.create(prototype.view);
     object.controller = Object.create(prototype.controller);
-    object.tree = Object.create(prototype.tree);
+    object._container = Object.create(prototype._container);
     object._events = Object.create(prototype._events);
 
     // Fresh 'own' properties (i.e. properties that are not inherited at all)
     object._id = idCounter++;
     object._events.data = {}; // event bindings will happen below
-    object.tree.children = {};
+    object._container.children = {};
     object.view.$root = $(); // empty jQuery object
 
     // Cloned own properties (i.e. properties that are inherited by direct copy instead of by prototype chain)

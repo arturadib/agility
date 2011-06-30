@@ -190,7 +190,7 @@
 
   module("Post-builder - Default controller");
 
-  test("Tree calls", function(){
+  test("Container calls", function(){
     var obj1 = $$({}, '<div><span class="here"></span></div>');
     var obj2 = $$('hello');
     obj1.add(obj2, '.here');
@@ -206,7 +206,7 @@
       obj2 = $$('hello', '<div class="test"></div>'); // default format should have a <div> root
       obj1.add(obj2, 'span');
     }
-    equals(obj1.tree.size(), 10, 'correct tree.size()');
+    equals(obj1.size(), 10, 'correct container size()');
     equals(obj1.view.$('.test').size(), 10, 'correct DOM size');
   });
 
@@ -269,7 +269,7 @@
 
   module("Post-builder - Custom controller methods");
 
-  test("Tree events", function(){
+  test("Container events", function(){
     var o = {};
     var s = '';
     var obj1 = $$();
