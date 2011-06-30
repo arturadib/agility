@@ -38,21 +38,21 @@
 // );
 // $$.document.add(obj);
 
-// // Two-way binding (select)
-// var obj = $$(
-//   {opt:'opt-a'},
-//   "<div> \
-//     <select data-bind='opt'> \
-//       <option value='opt-a'>Hello</option>\
-//       <option value='opt-b'>World</option>\
-//     </select> \
-//     You selected: <span data-bind='opt'/> \
-//    </div>",
-//    {
-//      'change option': function(event){console.log($(event.target))}
-//    }
-// );
-// $$.document.add(obj);
+// Two-way binding (select)
+var obj = $$(
+  {opt:'opt-a'},
+  "<div> \
+    <select data-bind='opt'> \
+      <option value='opt-a'>Hello</option>\
+      <option value='opt-b'>World</option>\
+    </select> \
+    You selected: <span data-bind='opt'/> \
+   </div>",
+   {
+     'change option': function(event){console.log($(event.target))}
+   }
+);
+$$.document.add(obj);
 
 // // No inheritance
 // var list = $$({}, '<div><button id="add">Add item</button> <ul id="list"></ul></div>', {

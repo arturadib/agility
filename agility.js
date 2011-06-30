@@ -294,12 +294,12 @@
       }, // render
   
       // Parse data-bind string of the type 'variable [attribute]'
-      // Returns { var:'variable' [, attr:'attribute'] }
+      // Returns { key:'model key' [, attr:'attribute'] }
       _parseBindStr: function(str){
-        var obj = { var:str }, 
+        var obj = { key:str }, 
             spacePos = str.search(/\s/);
         if (spacePos > -1) {
-          obj.var = str.substr(0, spacePos);
+          obj.key = str.substr(0, spacePos);
           obj.attr = str.substr(spacePos+1);
         }
         return obj;
@@ -317,75 +317,79 @@
           // <input type="checkbox">: 2-way binding
           if ($node.is('input[type="checkbox"]')) {
             // Model --> DOM
-            self.bind('modelChange:'+bindData.var, function(){
-              $node.prop("checked", self.model.get(bindData.var)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
+            self.bind('modelChange:'+bindData.key, function(){
+              $node.prop("checked", self.model.get(bindData.key)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
             });            
             // DOM --> Model
             $node.change(function(){
               var obj = {};
-              obj[bindData.var] = $(this).prop("checked");
+              obj[bindData.key] = $(this).prop("checked");
               self.model.set(obj); // not silent as user might be listening to modelChange events
             });
           }
+          
           // <select>: 2-way binding
           else if ($node.is('select')) {
             // Model --> DOM
-            self.bind('modelChange:'+bindData.var, function(){
+            self.bind('modelChange:'+bindData.key, function(){
               var nodeName = $node.attr('name');
-              var modelValue = self.model.get(bindData.var);
+              var modelValue = self.model.get(bindData.key);
               $node.val(modelValue);
             });            
             // DOM --> Model
             $node.change(function(){
               var obj = {};
-              obj[bindData.var] = $node.val();
+              obj[bindData.key] = $node.val();
               self.model.set(obj); // not silent as user might be listening to modelChange events
             });
           }
+          
           // <input type="radio">: 2-way binding
           else if ($node.is('input[type="radio"]')) {
             // Model --> DOM
-            self.bind('modelChange:'+bindData.var, function(){
+            self.bind('modelChange:'+bindData.key, function(){
               var nodeName = $node.attr('name');
-              var modelValue = self.model.get(bindData.var);
+              var modelValue = self.model.get(bindData.key);
               $node.siblings('input[name="'+nodeName+'"]').filter('[value="'+modelValue+'"]').prop("checked", true); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
             });            
             // DOM --> Model
             $node.change(function(){
               if (!$node.prop("checked")) return; // only handles check=true events
               var obj = {};
-              obj[bindData.var] = $node.val();
+              obj[bindData.key] = $node.val();
               self.model.set(obj); // not silent as user might be listening to modelChange events
             });
           }
+          
           // <input type="text"> and <textarea>: 2-way binding
           else if ($node.is('input[type="text"], textarea')) {
             // Model --> DOM
-            self.bind('modelChange:'+bindData.var, function(){
-              $node.val(self.model.get(bindData.var)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
+            self.bind('modelChange:'+bindData.key, function(){
+              $node.val(self.model.get(bindData.key)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
             });            
             // Model <-- DOM
             $node.change(function(){
               var obj = {};
-              obj[bindData.var] = $(this).val();
+              obj[bindData.key] = $(this).val();
               self.model.set(obj); // not silent as user might be listening to modelChange events
             });
           }
+          
           // all other <tag>s: 1-way binding
           else {
             if (bindData.attr) {
-              self.bind('modelChange:'+bindData.var, function(){
-                $node.attr(bindData.attr, self.model.get(bindData.var));
+              self.bind('modelChange:'+bindData.key, function(){
+                $node.attr(bindData.attr, self.model.get(bindData.key));
               });
             }
             else {
-              self.bind('modelChange:'+bindData.var, function(){
-                $node.text(self.model.get(bindData.var).toString());
+              self.bind('modelChange:'+bindData.key, function(){
+                $node.text(self.model.get(bindData.key).toString());
               });
             }
           }
-        });        
-      },
+        }); // nodes.each()
+      }, // bindings()
       
       // Triggers modelChange and modelChange:* events so that view is updated as per view.bindings()
       refresh: function(){
