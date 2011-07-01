@@ -9,7 +9,7 @@
 // // Two-way binding (manual)
 // var obj = $$({name:'initial value'}, "<div><input type='text'/> <br/><br/> Content: <span/></div>",{
 //   'change input': function(event){ this.model.set({name:$(event.target).val()}); },
-//   'modelChange:name': function(){ this.view.$('input').val(this.model.get('name')); this.view.$('span').text(this.model.get('name')); }
+//   'model:change:name': function(){ this.view.$('input').val(this.model.get('name')); this.view.$('span').text(this.model.get('name')); }
 // });
 // $$.document.add(obj);
 

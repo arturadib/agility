@@ -252,9 +252,9 @@
 
         // Events
         if (params && params.silent===true) return this; // do not fire events
-        this.trigger('modelChange');
+        this.trigger('model:change');
         $.each(modified, function(index, val){
-          self.trigger('modelChange:'+val);
+          self.trigger('model:change:'+val);
         });
         return this; // for chainable calls
       },
@@ -343,21 +343,21 @@
           // <input type="checkbox">: 2-way binding
           if ($node.is('input[type="checkbox"]')) {
             // Model --> DOM
-            self.bind('modelChange:'+bindData.key, function(){
+            self.bind('model:change:'+bindData.key, function(){
               $node.prop("checked", self.model.get(bindData.key)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
             });            
             // DOM --> Model
             $node.change(function(){
               var obj = {};
               obj[bindData.key] = $(this).prop("checked");
-              self.model.set(obj); // not silent as user might be listening to modelChange events
+              self.model.set(obj); // not silent as user might be listening to model:change events
             });
           }
           
           // <select>: 2-way binding
           else if ($node.is('select')) {
             // Model --> DOM
-            self.bind('modelChange:'+bindData.key, function(){
+            self.bind('model:change:'+bindData.key, function(){
               var nodeName = $node.attr('name');
               var modelValue = self.model.get(bindData.key);
               $node.val(modelValue);
@@ -366,14 +366,14 @@
             $node.change(function(){
               var obj = {};
               obj[bindData.key] = $node.val();
-              self.model.set(obj); // not silent as user might be listening to modelChange events
+              self.model.set(obj); // not silent as user might be listening to model:change events
             });
           }
           
           // <input type="radio">: 2-way binding
           else if ($node.is('input[type="radio"]')) {
             // Model --> DOM
-            self.bind('modelChange:'+bindData.key, function(){
+            self.bind('model:change:'+bindData.key, function(){
               var nodeName = $node.attr('name');
               var modelValue = self.model.get(bindData.key);
               $node.siblings('input[name="'+nodeName+'"]').filter('[value="'+modelValue+'"]').prop("checked", true); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
@@ -383,33 +383,33 @@
               if (!$node.prop("checked")) return; // only handles check=true events
               var obj = {};
               obj[bindData.key] = $node.val();
-              self.model.set(obj); // not silent as user might be listening to modelChange events
+              self.model.set(obj); // not silent as user might be listening to model:change events
             });
           }
           
           // <input type="text"> and <textarea>: 2-way binding
           else if ($node.is('input[type="text"], textarea')) {
             // Model --> DOM
-            self.bind('modelChange:'+bindData.key, function(){
+            self.bind('model:change:'+bindData.key, function(){
               $node.val(self.model.get(bindData.key)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
             });            
             // Model <-- DOM
             $node.change(function(){
               var obj = {};
               obj[bindData.key] = $(this).val();
-              self.model.set(obj); // not silent as user might be listening to modelChange events
+              self.model.set(obj); // not silent as user might be listening to model:change events
             });
           }
           
           // all other <tag>s: 1-way binding
           else {
             if (bindData.attr) {
-              self.bind('modelChange:'+bindData.key, function(){
+              self.bind('model:change:'+bindData.key, function(){
                 $node.attr(bindData.attr, self.model.get(bindData.key));
               });
             }
             else {
-              self.bind('modelChange:'+bindData.key, function(){
+              self.bind('model:change:'+bindData.key, function(){
                 $node.text(self.model.get(bindData.key).toString());
               });
             }
@@ -417,15 +417,15 @@
         }); // nodes.each()
       }, // bindings()
       
-      // Triggers modelChange and modelChange:* events so that view is updated as per view.bindings()
+      // Triggers model:change and model:change:* events so that view is updated as per view.bindings()
       refresh: function(){
         var self = this;
-        // Trigger modelChange events so that view is updated according to model
+        // Trigger model:change events so that view is updated according to model
         this.model.each(function(key, val){
-          self.trigger('modelChange:'+key);
+          self.trigger('model:change:'+key);
         });
         if (this.model.size() > 0) {
-          this.trigger('modelChange');
+          this.trigger('model:change');
         }
       },
 
@@ -508,7 +508,7 @@
       },
 
       // Triggered after model is changed
-      _modelChange: function(event){
+      '_model:change': function(event){
       }
       
     }, // controller prototype
@@ -736,7 +736,7 @@
   // Main initializer
   agility.fn.persist = function(adapter, params){
     if (!adapter || !params) throw "agility.js plugin persist: missing argument";
-    this._data.persist = $.extend({adapter:adapter}, params);
+    this._data.persist = $.extend({adapter:adapter}, params);    
     return this; // for chainable calls
   };
   
@@ -748,7 +748,7 @@
 
   // Loads collection and appends at selector
   // All persistence data including adapter comes from proto, not self
-  agility.fn.gather = function(proto, selector){
+  agility.fn.gather = function(proto, selector, params){
     if (!proto) throw "agility.js plugin persist: gather() needs object prototype";
     if (!proto._data.persist) throw "agility.js plugin persist: prototype doesn't seem to contain persist() data";
     var self = this, result;
