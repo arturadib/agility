@@ -252,9 +252,9 @@
 
         // Events
         if (params && params.silent===true) return this; // do not fire events
-        this.trigger('modelChange');
+        this.trigger('model:change');
         $.each(modified, function(index, val){
-          self.trigger('modelChange:'+val);
+          self.trigger('model:change:'+val);
         });
         return this; // for chainable calls
       },
@@ -343,21 +343,21 @@
           // <input type="checkbox">: 2-way binding
           if ($node.is('input[type="checkbox"]')) {
             // Model --> DOM
-            self.bind('modelChange:'+bindData.key, function(){
+            self.bind('model:change:'+bindData.key, function(){
               $node.prop("checked", self.model.get(bindData.key)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
             });            
             // DOM --> Model
             $node.change(function(){
               var obj = {};
               obj[bindData.key] = $(this).prop("checked");
-              self.model.set(obj); // not silent as user might be listening to modelChange events
+              self.model.set(obj); // not silent as user might be listening to model:change events
             });
           }
           
           // <select>: 2-way binding
           else if ($node.is('select')) {
             // Model --> DOM
-            self.bind('modelChange:'+bindData.key, function(){
+            self.bind('model:change:'+bindData.key, function(){
               var nodeName = $node.attr('name');
               var modelValue = self.model.get(bindData.key);
               $node.val(modelValue);
@@ -366,14 +366,14 @@
             $node.change(function(){
               var obj = {};
               obj[bindData.key] = $node.val();
-              self.model.set(obj); // not silent as user might be listening to modelChange events
+              self.model.set(obj); // not silent as user might be listening to model:change events
             });
           }
           
           // <input type="radio">: 2-way binding
           else if ($node.is('input[type="radio"]')) {
             // Model --> DOM
-            self.bind('modelChange:'+bindData.key, function(){
+            self.bind('model:change:'+bindData.key, function(){
               var nodeName = $node.attr('name');
               var modelValue = self.model.get(bindData.key);
               $node.siblings('input[name="'+nodeName+'"]').filter('[value="'+modelValue+'"]').prop("checked", true); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
@@ -383,33 +383,33 @@
               if (!$node.prop("checked")) return; // only handles check=true events
               var obj = {};
               obj[bindData.key] = $node.val();
-              self.model.set(obj); // not silent as user might be listening to modelChange events
+              self.model.set(obj); // not silent as user might be listening to model:change events
             });
           }
           
           // <input type="text"> and <textarea>: 2-way binding
           else if ($node.is('input[type="text"], textarea')) {
             // Model --> DOM
-            self.bind('modelChange:'+bindData.key, function(){
+            self.bind('model:change:'+bindData.key, function(){
               $node.val(self.model.get(bindData.key)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
             });            
             // Model <-- DOM
             $node.change(function(){
               var obj = {};
               obj[bindData.key] = $(this).val();
-              self.model.set(obj); // not silent as user might be listening to modelChange events
+              self.model.set(obj); // not silent as user might be listening to model:change events
             });
           }
           
           // all other <tag>s: 1-way binding
           else {
             if (bindData.attr) {
-              self.bind('modelChange:'+bindData.key, function(){
+              self.bind('model:change:'+bindData.key, function(){
                 $node.attr(bindData.attr, self.model.get(bindData.key));
               });
             }
             else {
-              self.bind('modelChange:'+bindData.key, function(){
+              self.bind('model:change:'+bindData.key, function(){
                 $node.text(self.model.get(bindData.key).toString());
               });
             }
@@ -417,15 +417,15 @@
         }); // nodes.each()
       }, // bindings()
       
-      // Triggers modelChange and modelChange:* events so that view is updated as per view.bindings()
+      // Triggers model:change and model:change:* events so that view is updated as per view.bindings()
       refresh: function(){
         var self = this;
-        // Trigger modelChange events so that view is updated according to model
+        // Trigger model:change events so that view is updated according to model
         this.model.each(function(key, val){
-          self.trigger('modelChange:'+key);
+          self.trigger('model:change:'+key);
         });
         if (this.model.size() > 0) {
-          this.trigger('modelChange');
+          this.trigger('model:change');
         }
       },
 
@@ -496,7 +496,6 @@
       // Triggered upon removing self
       _destroy: function(event){
         this.view.destroy();
-        this.model.erase();
       },
 
       // Triggered after child obj is added to container
@@ -509,7 +508,7 @@
       },
 
       // Triggered after model is changed
-      _modelChange: function(event){
+      '_model:change': function(event){
       }
       
     }, // controller prototype
@@ -609,6 +608,7 @@
 
     // Fresh 'own' properties (i.e. properties that are not inherited at all)
     object._id = idCounter++;
+    object._data = {};
     object._events.data = {}; // event bindings will happen below
     object._container.children = {};
     object.view.$root = $(); // empty jQuery object
@@ -701,7 +701,7 @@
     }
   
     // Auto-triggers create event
-    object.trigger('create');
+    object.trigger('create');    
     
     return object;
     
@@ -718,8 +718,79 @@
       this.view.$root = $(document.body);
     }
   });
+  
+  // For plugins
+  agility.fn = defaultPrototype;
 
   // Globals
   window.agility = window.$$ = agility;
+
+
+
+  // -----------------------------------------
+  //
+  //  Bundled plugin: persist
+  //
+  // -----------------------------------------
+  
+  // Main initializer
+  agility.fn.persist = function(adapter, params){
+    if (!adapter || !params) throw "agility.js plugin persist: missing argument";
+    this._data.persist = $.extend({adapter:adapter}, params);    
+    return this; // for chainable calls
+  };
+  
+  agility.fn.save = function(){};
+  
+  agility.fn.load = function(){};
+
+  agility.fn.erase = function(){};
+
+  // Loads collection and appends at selector
+  // All persistence data including adapter comes from proto, not self
+  agility.fn.gather = function(proto, selector, params){
+    if (!proto) throw "agility.js plugin persist: gather() needs object prototype";
+    if (!proto._data.persist) throw "agility.js plugin persist: prototype doesn't seem to contain persist() data";
+    var self = this, result;
+
+    self.trigger('persist:start');
+    self.trigger('persist:gather:start');
+    result = proto._data.persist.adapter.call(proto, {
+      type: 'GET',
+      complete: function(){
+        self.trigger('persist:end');
+        self.trigger('persist:gather:end');
+      },
+      success: function(data){
+        $.each(data, function(index, entry){
+          var obj = $$(proto, entry);
+          self.add(obj, selector);
+        })
+        self.trigger('persist:success', {data:data});
+        self.trigger('persist:gather:success', {data:data});
+      },
+      error: function(){
+        self.trigger('persist:error');
+        self.trigger('persist:gather:error');
+      }
+    });
     
+    return result;
+  };
+
+  // Persistence adapters
+  // These are functions. Required parameters:
+  //    {type: 'GET' || 'POST' || 'UPDATE' || 'DELETE'}
+  agility.adapter = {};
+
+  // RESTful JSON adapter using jQuery's ajax()
+  agility.adapter.restful = function(_params){
+    var self = this; // agility object called from
+    var params = $.extend({
+      url: (self._data.persist.baseUrl || '/api/') + self._data.persist.collection,
+    }, _params);
+    return $.ajax(params);
+  };
+
+  
 })(window);
