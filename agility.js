@@ -496,7 +496,6 @@
       // Triggered upon removing self
       _destroy: function(event){
         this.view.destroy();
-        this.model.erase();
       },
 
       // Triggered after child obj is added to container
