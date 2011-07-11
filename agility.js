@@ -343,7 +343,7 @@
           // <input type="checkbox">: 2-way binding
           if ($node.is('input[type="checkbox"]')) {
             // Model --> DOM
-            self.bind('change:'+bindData.key, function(){
+            self.bind('_change:'+bindData.key, function(){
               $node.prop("checked", self.model.get(bindData.key)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
             });            
             // DOM --> Model
@@ -357,7 +357,7 @@
           // <select>: 2-way binding
           else if ($node.is('select')) {
             // Model --> DOM
-            self.bind('change:'+bindData.key, function(){
+            self.bind('_change:'+bindData.key, function(){
               var nodeName = $node.attr('name');
               var modelValue = self.model.get(bindData.key);
               $node.val(modelValue);
@@ -373,7 +373,7 @@
           // <input type="radio">: 2-way binding
           else if ($node.is('input[type="radio"]')) {
             // Model --> DOM
-            self.bind('change:'+bindData.key, function(){
+            self.bind('_change:'+bindData.key, function(){
               var nodeName = $node.attr('name');
               var modelValue = self.model.get(bindData.key);
               $node.siblings('input[name="'+nodeName+'"]').filter('[value="'+modelValue+'"]').prop("checked", true); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
@@ -390,7 +390,7 @@
           // <input type="text"> and <textarea>: 2-way binding
           else if ($node.is('input[type="text"], textarea')) {
             // Model --> DOM
-            self.bind('change:'+bindData.key, function(){
+            self.bind('_change:'+bindData.key, function(){
               $node.val(self.model.get(bindData.key)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
             });            
             // Model <-- DOM
@@ -404,12 +404,12 @@
           // all other <tag>s: 1-way binding
           else {
             if (bindData.attr) {
-              self.bind('change:'+bindData.key, function(){
+              self.bind('_change:'+bindData.key, function(){
                 $node.attr(bindData.attr, self.model.get(bindData.key));
               });
             }
             else {
-              self.bind('change:'+bindData.key, function(){
+              self.bind('_change:'+bindData.key, function(){
                 $node.text(self.model.get(bindData.key).toString());
               });
             }
@@ -417,15 +417,15 @@
         }); // nodes.each()
       }, // bindings()
       
-      // Triggers change and change:* events so that view is updated as per view.bindings()
+      // Triggers _change and _change:* events so that view is updated as per view.bindings()
       refresh: function(){
         var self = this;
         // Trigger change events so that view is updated according to model
         this.model.each(function(key, val){
-          self.trigger('change:'+key);
+          self.trigger('_change:'+key);
         });
         if (this.model.size() > 0) {
-          this.trigger('change');
+          this.trigger('_change');
         }
       },
 
