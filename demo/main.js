@@ -9,13 +9,13 @@
 // // Two-way binding (manual)
 // var obj = $$({name:'initial value'}, "<div><input type='text'/> <br/><br/> Content: <span/></div>",{
 //   'change input': function(event){ this.model.set({name:$(event.target).val()}); },
-//   'model:change:name': function(){ this.view.$('input').val(this.model.get('name')); this.view.$('span').text(this.model.get('name')); }
+//   'change:name': function(){ this.view.$('input').val(this.model.get('name')); this.view.$('span').text(this.model.get('name')); }
 // });
 // $$.document.add(obj);
 
-// // Two-way binding (text input)
-// var obj = $$({name:'initial value'}, "<div><input type='text' data-bind='name'/> <br/><br/> Content: <span data-bind='name'/></div>");
-// $$.document.add(obj);
+// Two-way binding (text input)
+var obj = $$({name:'initial value'}, "<div><input type='text' data-bind='name'/> <br/><br/> Content: <span data-bind='name'/></div>");
+$$.document.add(obj);
 
 // // Two-way binding (checkbox)
 // var obj = $$(
@@ -38,21 +38,21 @@
 // );
 // $$.document.add(obj);
 
-// Two-way binding (select)
-var obj = $$(
-  {opt:'opt-a'},
-  "<div> \
-    <select data-bind='opt'> \
-      <option value='opt-a'>Hello</option>\
-      <option value='opt-b'>World</option>\
-    </select> \
-    You selected: <span data-bind='opt'/> \
-   </div>",
-   {
-     'change option': function(event){console.log($(event.target))}
-   }
-);
-$$.document.add(obj);
+// // Two-way binding (select)
+// var obj = $$(
+//   {opt:'opt-a'},
+//   "<div> \
+//     <select data-bind='opt'> \
+//       <option value='opt-a'>Hello</option>\
+//       <option value='opt-b'>World</option>\
+//     </select> \
+//     You selected: <span data-bind='opt'/> \
+//    </div>",
+//    {
+//      'change option': function(event){console.log($(event.target))}
+//    }
+// );
+// $$.document.add(obj);
 
 // // No inheritance
 // var list = $$({}, '<div><button id="add">Add item</button> <ul id="list"></ul></div>', {

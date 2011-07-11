@@ -213,14 +213,14 @@
   test("Model calls", function(){
     var t = false;
     var obj1 = $$({a:1}, '<div data-bind="text"></div>', {
-      'model:change:text': function(){
+      'change:text': function(){
         t = true;
       }
     });
     obj1.set({text:'Joe Doe'});
     equals(obj1.model.get('a'), 1, 'obj.set() extends by default');
     equals(obj1.view.$().text(), 'Joe Doe', 'obj.set() fires view change');
-    equals(t, true, 'obj.set() fires model:change:var');
+    equals(t, true, 'obj.set() fires change:var');
     obj1.set({text:'New Text'}, {reset:true});
     equals(obj1.model.get('a'), undefined, 'obj.set() resets OK');    
   });
@@ -288,12 +288,12 @@
   test("Model events", function(){
     var t = false;
     var obj = $$({}, {}, {
-      'model:change': function(){
+      'change': function(){
         t = true;
       }
     });
     obj.set({a:'hello'});
-    ok(t===true, "model:change fired");
+    ok(t===true, "change fired");
   });
 
   test("DOM events", function(){

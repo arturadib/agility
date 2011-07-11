@@ -252,9 +252,9 @@
 
         // Events
         if (params && params.silent===true) return this; // do not fire events
-        this.trigger('model:change');
+        this.trigger('change');
         $.each(modified, function(index, val){
-          self.trigger('model:change:'+val);
+          self.trigger('change:'+val);
         });
         return this; // for chainable calls
       },
@@ -343,21 +343,21 @@
           // <input type="checkbox">: 2-way binding
           if ($node.is('input[type="checkbox"]')) {
             // Model --> DOM
-            self.bind('model:change:'+bindData.key, function(){
+            self.bind('change:'+bindData.key, function(){
               $node.prop("checked", self.model.get(bindData.key)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
             });            
             // DOM --> Model
             $node.change(function(){
               var obj = {};
               obj[bindData.key] = $(this).prop("checked");
-              self.model.set(obj); // not silent as user might be listening to model:change events
+              self.model.set(obj); // not silent as user might be listening to change events
             });
           }
           
           // <select>: 2-way binding
           else if ($node.is('select')) {
             // Model --> DOM
-            self.bind('model:change:'+bindData.key, function(){
+            self.bind('change:'+bindData.key, function(){
               var nodeName = $node.attr('name');
               var modelValue = self.model.get(bindData.key);
               $node.val(modelValue);
@@ -366,14 +366,14 @@
             $node.change(function(){
               var obj = {};
               obj[bindData.key] = $node.val();
-              self.model.set(obj); // not silent as user might be listening to model:change events
+              self.model.set(obj); // not silent as user might be listening to change events
             });
           }
           
           // <input type="radio">: 2-way binding
           else if ($node.is('input[type="radio"]')) {
             // Model --> DOM
-            self.bind('model:change:'+bindData.key, function(){
+            self.bind('change:'+bindData.key, function(){
               var nodeName = $node.attr('name');
               var modelValue = self.model.get(bindData.key);
               $node.siblings('input[name="'+nodeName+'"]').filter('[value="'+modelValue+'"]').prop("checked", true); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
@@ -383,33 +383,33 @@
               if (!$node.prop("checked")) return; // only handles check=true events
               var obj = {};
               obj[bindData.key] = $node.val();
-              self.model.set(obj); // not silent as user might be listening to model:change events
+              self.model.set(obj); // not silent as user might be listening to change events
             });
           }
           
           // <input type="text"> and <textarea>: 2-way binding
           else if ($node.is('input[type="text"], textarea')) {
             // Model --> DOM
-            self.bind('model:change:'+bindData.key, function(){
+            self.bind('change:'+bindData.key, function(){
               $node.val(self.model.get(bindData.key)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
             });            
             // Model <-- DOM
             $node.change(function(){
               var obj = {};
               obj[bindData.key] = $(this).val();
-              self.model.set(obj); // not silent as user might be listening to model:change events
+              self.model.set(obj); // not silent as user might be listening to change events
             });
           }
           
           // all other <tag>s: 1-way binding
           else {
             if (bindData.attr) {
-              self.bind('model:change:'+bindData.key, function(){
+              self.bind('change:'+bindData.key, function(){
                 $node.attr(bindData.attr, self.model.get(bindData.key));
               });
             }
             else {
-              self.bind('model:change:'+bindData.key, function(){
+              self.bind('change:'+bindData.key, function(){
                 $node.text(self.model.get(bindData.key).toString());
               });
             }
@@ -417,15 +417,15 @@
         }); // nodes.each()
       }, // bindings()
       
-      // Triggers model:change and model:change:* events so that view is updated as per view.bindings()
+      // Triggers change and change:* events so that view is updated as per view.bindings()
       refresh: function(){
         var self = this;
-        // Trigger model:change events so that view is updated according to model
+        // Trigger change events so that view is updated according to model
         this.model.each(function(key, val){
-          self.trigger('model:change:'+key);
+          self.trigger('change:'+key);
         });
         if (this.model.size() > 0) {
-          this.trigger('model:change');
+          this.trigger('change');
         }
       },
 
@@ -508,7 +508,7 @@
       },
 
       // Triggered after model is changed
-      '_model:change': function(event){
+      '_change': function(event){
       }
       
     }, // controller prototype
