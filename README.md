@@ -1,9 +1,9 @@
-# AGILITY.JS
+# Agility.js
 Agility.js is Javascript MVC for the *write less, do more* programmer. 
 
 Main site: http://arturadib.github.com/agility
 
-Write **maintainable** browser code without compromising on **development speed**. Here's a fully functional To-Do app in 17 lines:
+Agility lets you write **maintainable** browser code without compromising on **productivity**. Write fully functional apps in fewer lines, like this minimal To-Do app (17 lines):
 
     var item = $$({}, '<li><span data-bind="content"/> <button>x</button></li>', '& span { cursor:pointer; }', {
       'click span': function(){
