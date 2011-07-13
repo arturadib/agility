@@ -319,14 +319,14 @@
         }
       }, // render
   
-      // Parse data-bind string of the type 'variable [attribute]'
+      // Parse data-bind string of the type '[attribute] variable'
       // Returns { key:'model key' [, attr:'attribute'] }
       _parseBindStr: function(str){
         var obj = { key:str }, 
             spacePos = str.search(/\s/);
         if (spacePos > -1) {
-          obj.key = str.substr(0, spacePos);
-          obj.attr = str.substr(spacePos+1);
+          obj.attr = str.substr(0, spacePos);
+          obj.key = str.substr(spacePos+1);
         }
         return obj;
       },

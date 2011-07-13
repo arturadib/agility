@@ -6,7 +6,7 @@ var pic = $$({
   view: {
     format: '<div>\
                 <div id="opts"> <input type="checkbox" id="check"/> <button id="destroy">X</button> </div>\
-                <div id="img-container"> <img data-bind="path src"/> </div> \
+                <div id="img-container"> <img data-bind="src path"/> </div> \
              </div>',
     style: '& { float:left; margin-right:40px; margin-bottom:20px; width:100px; } \
             & div#opts { } \

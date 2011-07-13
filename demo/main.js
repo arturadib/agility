@@ -13,9 +13,9 @@
 // });
 // $$.document.add(obj);
 
-// Two-way binding (text input)
-var obj = $$({name:'initial value'}, "<div><input type='text' data-bind='name'/> <br/><br/> Content: <span data-bind='name'/></div>");
-$$.document.add(obj);
+// // Two-way binding (text input)
+// var obj = $$({name:'initial value'}, "<div><input type='text' data-bind='name'/> <br/><br/> Content: <span data-bind='name'/></div>");
+// $$.document.add(obj);
 
 // // Two-way binding (checkbox)
 // var obj = $$(
@@ -148,3 +148,23 @@ $$.document.add(obj);
 //   }
 // );
 // $$.document.add(list);
+
+
+var item = $$({}, '<li><span data-bind="content"/> <button>x</button></li>', '& span { cursor:pointer; }', {
+  'click span': function(){
+    var input = prompt('Edit to-do item:', this.get('content'));
+    if (!input) return;
+    this.set({content:input});
+  },
+  'click button': function(){
+    this.destroy();
+  }
+});
+var list = $$({}, '<div> <button id="new">New item</button> <ul></ul> </div>', {
+  'click #new': function(){
+    var newItem = $$(item, {content:'Click to edit'});
+    this.add(newItem, 'ul'); // add to container, appending at <ul>
+  }
+})    
+$$.document.add(list);
+

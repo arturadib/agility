@@ -167,7 +167,7 @@
     equals(objNew.view.$().css('color'), 'rgb(255, 0, 0)', "child style OK");
 
     // this should trigger a 404 error if format is parsed to the DOM
-    objBase = $$({}, "<div class='test'> <img data-bind='path src'/> </div>");
+    objBase = $$({}, "<div class='test'> <img data-bind='src path'/> </div>");
     equals(objBase.model.size(), 0, 'model is empty');
     objNew = $$(objBase, {path:'http://google.com/favicon.ico'});
     equals(objNew.view.$('img').attr('src'), 'http://google.com/favicon.ico', 'img src correctly set');
