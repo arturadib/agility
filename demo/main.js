@@ -152,9 +152,9 @@
 
 var item = $$({}, '<li><span data-bind="content"/> <button>x</button></li>', '& span { cursor:pointer; }', {
   'click span': function(){
-    var input = prompt('Edit to-do item:', this.get('content'));
+    var input = prompt('Edit to-do item:', this.model.get('content'));
     if (!input) return;
-    this.set({content:input});
+    this.model.set({content:input});
   },
   'click button': function(){
     this.destroy();

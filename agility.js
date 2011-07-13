@@ -280,6 +280,7 @@
       // Convenience function - loops over each model property
       each: function(fn){
         $.each(this.model._data, fn);
+        return this; // for chainable calls
       }
       
     }, // model prototype
@@ -553,19 +554,7 @@
       this._events.trigger.apply(this, arguments);
       return this; // for chainable calls
     },
-    
-    //
-    // Model shortcuts
-    //
-    set: function(){
-      this.model.set.apply(this, arguments);
-      return this; // for chainable calls
-    }, // set
-    get: function(){
-      return this.model.get.apply(this, arguments);    
-      // can't do chainable here!
-    }
-  
+      
   }; // prototype
   
   // --------------------------
@@ -715,7 +704,7 @@
   
   agility.document = agility({}, {}, {
     create: function(){
-      this.view.$root = $(document.body);
+      this.view.$root = $('body');
     }
   });
   

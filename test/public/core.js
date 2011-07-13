@@ -17,13 +17,13 @@
   test("No arguments", function(){
     var obj = $$(); // default object
     validateObject( obj );
-    ok($.isEmptyObject(obj.get()), "model is empty");
+    ok($.isEmptyObject(obj.model.get()), "model is empty");
   });
 
   test("Dummy arguments", function(){
     var obj = $$({}, {}, {}); // default object
     validateObject( obj );
-    ok($.isEmptyObject(obj.get()), "model is empty");
+    ok($.isEmptyObject(obj.model.get()), "model is empty");
   });
 
   test("One argument (model string)", function(){
@@ -159,9 +159,9 @@
     var objNewModel = {first:'Joe', last:'Doe'};
     var objNew = $$(objBase, objNewModel);
 
-    ok($.isEmptyObject(objBase.get()), "parent model untouched ("+JSON.stringify(objBase.get())+")");
+    ok($.isEmptyObject(objBase.model.get()), "parent model untouched ("+JSON.stringify(objBase.model.get())+")");
     equals(objBase.view.$().text(), ' ', "parent html untouched");
-    equals(objNew.get('first'), objNewModel.first, "child model OK");
+    equals(objNew.model.get('first'), objNewModel.first, "child model OK");
     equals(objNew.view.$().text(), 'Joe Doe', "child html OK");
     ok(objNew.view.$().hasClass('agility_'+objBase._id), "child CSS class inherited OK");
     equals(objNew.view.$().css('color'), 'rgb(255, 0, 0)', "child style OK");
@@ -217,48 +217,48 @@
         t = true;
       }
     });
-    obj1.set({text:'Joe Doe'});
-    equals(obj1.model.get('a'), 1, 'obj.set() extends by default');
-    equals(obj1.view.$().text(), 'Joe Doe', 'obj.set() fires view change');
-    equals(t, true, 'obj.set() fires change:var');
-    obj1.set({text:'New Text'}, {reset:true});
-    equals(obj1.model.get('a'), undefined, 'obj.set() resets OK');    
+    obj1.model.set({text:'Joe Doe'});
+    equals(obj1.model.get('a'), 1, 'obj.model.set() extends by default');
+    equals(obj1.view.$().text(), 'Joe Doe', 'obj.model.set() fires view change');
+    equals(t, true, 'obj.model.set() fires change:var');
+    obj1.model.set({text:'New Text'}, {reset:true});
+    equals(obj1.model.get('a'), undefined, 'obj.model.set() resets OK');    
   });
 
   test("Chainable calls", function(){
     t = false;
-    var obj = $$().set({text:'Joe Doe'}).bind('click &', function(){ t = true; }).trigger('click &');
+    var obj = $$().model.set({text:'Joe Doe'}).bind('click &', function(){ t = true; }).trigger('click &');
     equals(t, true, 'chaining set(), bind(), and trigger()');
   });
 
   test("Two-way bindings", function(){
     var obj = $$({name:'Mary'}, "<input type='text' data-bind='name' />");
     equals(obj.view.$().val(), 'Mary', 'text input: binding properly initialized');
-    obj.set({name:'Joe Doe'});
+    obj.model.set({name:'Joe Doe'});
     equals(obj.view.$().val(), 'Joe Doe', 'text input: Model --> DOM binding OK');
     obj.view.$().val('Art Blakey').change();
-    equals(obj.get('name'), 'Art Blakey', 'text input: DOM --> Model binding OK');
+    equals(obj.model.get('name'), 'Art Blakey', 'text input: DOM --> Model binding OK');
 
     obj = $$({a:true}, "<input type='checkbox' data-bind='a' />");
     equals(obj.view.$().prop('checked'), true, 'checkbox input: binding properly initialized');
-    obj.set({a:false});
+    obj.model.set({a:false});
     equals(obj.view.$().prop("checked"), false, 'checkbox input: Model --> DOM binding OK');
     obj.view.$().prop('checked', true).change();
-    equals(obj.get('a'), true, 'checkbox input: DOM --> Model binding OK');
+    equals(obj.model.get('a'), true, 'checkbox input: DOM --> Model binding OK');
 
     obj = $$({opt:'opt-b'}, "<div><input type='radio' name='test' data-bind='opt' value='opt-a' id='a'/> a<br/> <input type='radio' name='test' data-bind='opt' value='opt-b' id='b'/> b</div>");
     equals(obj.view.$('input#b').prop("checked"), true, 'radio input: binding properly initialized');
-    obj.set({opt:'opt-a'});
+    obj.model.set({opt:'opt-a'});
     equals(obj.view.$('input#a').prop("checked"), true, 'radio input: Model --> DOM binding OK');
     obj.view.$('input#b').prop('checked', true).change();
-    equals(obj.get('opt'), 'opt-b', 'radio input: DOM --> Model binding OK');
+    equals(obj.model.get('opt'), 'opt-b', 'radio input: DOM --> Model binding OK');
 
     obj = $$({opt:'opt-b'}, "<select data-bind='opt'> <option value='opt-a'/> <br/> <option value='opt-b'/> </select>");
     equals(obj.view.$().val(), 'opt-b', 'select input: binding properly initialized');
-    obj.set({opt:'opt-a'});
+    obj.model.set({opt:'opt-a'});
     equals(obj.view.$().val(), 'opt-a', 'select input: Model --> DOM binding OK');
     obj.view.$().val('opt-b').change();
-    equals(obj.get('opt'), 'opt-b', 'select input: DOM --> Model binding OK');
+    equals(obj.model.get('opt'), 'opt-b', 'select input: DOM --> Model binding OK');
   });
 
   // ----------------------------------------------
@@ -292,7 +292,7 @@
         t = true;
       }
     });
-    obj.set({a:'hello'});
+    obj.model.set({a:'hello'});
     ok(t===true, "change fired");
   });
 
