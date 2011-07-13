@@ -134,6 +134,7 @@
         }
         this._container.children[obj._id] = obj;
         this.trigger('add', [obj, selector]);
+        // ensures object is removed from container when destroyed:
         obj.bind('destroy', function(event, id){ 
           self._container.remove(id);
         });
@@ -144,6 +145,7 @@
       remove: function(id){
         delete this._container.children[id];
         this.trigger('remove', id);
+        return this;
       },
       
       // Number of children
@@ -318,6 +320,7 @@
         if (this.view.$root.size() === 0) {
           throw 'agility.js: could not generate html from format';
         }
+        return this;
       }, // render
   
       // Parse data-bind string of the type '[attribute] variable'
@@ -416,10 +419,11 @@
             }
           }
         }); // nodes.each()
+        return this;
       }, // bindings()
       
       // Triggers _change and _change:* events so that view is updated as per view.bindings()
-      refresh: function(){
+      sync: function(){
         var self = this;
         // Trigger change events so that view is updated according to model
         this.model.each(function(key, val){
@@ -428,6 +432,7 @@
         if (this.model.size() > 0) {
           this.trigger('_change');
         }
+        return this;
       },
 
       // Applies style dynamically
@@ -462,6 +467,7 @@
           objClass = 'agility_' + ancestorId;
           this.view.$root.addClass(objClass);
         }
+        return this;
       },
       
       // Appends jQuery object $obj into selector of own jQuery object
@@ -470,12 +476,8 @@
           if (selector) this.view.$root.find(selector).append($obj);
           else this.view.$root.append($obj);
         }
-      }, // append
-      
-      // Remove DOM object
-      destroy: function(){
-        this.view.$root.remove();
-      }
+        return this;
+      } // append
       
     }, // view prototype
   
@@ -491,12 +493,12 @@
       _create: function(event){
         this.view.stylize();
         this.view.bindings(); // Model-View bindings
-        this.view.refresh(); // syncs View with Model
+        this.view.sync(); // syncs View with Model
       },
   
       // Triggered upon removing self
       _destroy: function(event){
-        this.view.destroy();
+        this.view.$().remove();
       },
 
       // Triggered after child obj is added to container
