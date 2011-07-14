@@ -468,16 +468,7 @@
           this.view.$root.addClass(objClass);
         }
         return this;
-      },
-      
-      // Appends jQuery object $obj into selector of own jQuery object
-      append: function($obj, selector){
-        if (!$.isEmptyObject(this.view.$root)) {
-          if (selector) this.view.$root.find(selector).append($obj);
-          else this.view.$root.append($obj);
-        }
-        return this;
-      } // append
+      }
       
     }, // view prototype
   
@@ -503,7 +494,7 @@
 
       // Triggered after child obj is added to container
       _add: function(event, obj, selector){
-        this.view.append(obj.view.$root, selector);
+        this.view.$(selector).append(obj.view.$root);
       },
                   
       // Triggered after a child obj is removed from container (or self-removed)
