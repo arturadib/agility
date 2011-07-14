@@ -23,4 +23,4 @@ Agility lets you write **maintainable** browser code without compromising on **p
     })    
     $$.document.add(list);
 
-Curious to learn more? Visit: http://arturadib.github.com/agility or fork ahead and contribute code!
+Curious to learn more? Visit: http://arturadib.github.com/agility or fork away and contribute code!
