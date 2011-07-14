@@ -239,6 +239,14 @@
     obj.view.$().val('Art Blakey').change();
     equals(obj.model.get('name'), 'Art Blakey', 'text input: DOM --> Model binding OK');
 
+    var obj = $$({name:'Mary'}, "<input type='search' data-bind='name' />");
+    equals(obj.view.$().val(), 'Mary', 'search input: binding properly initialized');
+    obj.model.set({name:'Joe Doe'});
+    equals(obj.view.$().val(), 'Joe Doe', 'search input: Model --> DOM binding OK');
+    // can't test these synchronously as current implementation uses a 50ms timeout
+    // obj.view.$().val('Joe Doee').keypress();
+    // equals(obj.model.get('name'), 'Joe Doee', 'search input: DOM --> Model binding OK');
+
     obj = $$({a:true}, "<input type='checkbox' data-bind='a' />");
     equals(obj.view.$().prop('checked'), true, 'checkbox input: binding properly initialized');
     obj.model.set({a:false});

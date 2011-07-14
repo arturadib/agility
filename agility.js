@@ -391,6 +391,23 @@
             });
           }
           
+          // <input type="search"> (model is updated after every keypress event)
+          else if ($node.is('input[type="search"]')) {
+            // Model --> DOM
+            self.bind('_change:'+bindData.key, function(){
+              $node.val(self.model.get(bindData.key)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
+            });
+            // Model <-- DOM
+            $node.keypress(function(){
+              // Without timeout $node.val() misses the last entered character
+              setTimeout(function(){
+                var obj = {};
+                obj[bindData.key] = $node.val();
+                self.model.set(obj); // not silent as user might be listening to change events
+              }, 50);
+            });
+          }
+
           // <input type="text"> and <textarea>: 2-way binding
           else if ($node.is('input[type="text"], textarea')) {
             // Model --> DOM

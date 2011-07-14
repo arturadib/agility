@@ -150,21 +150,15 @@
 // $$.document.add(list);
 
 
-var item = $$({}, '<li><span data-bind="content"/> <button>x</button></li>', '& span { cursor:pointer; }', {
-  'click span': function(){
-    var input = prompt('Edit to-do item:', this.model.get('content'));
-    if (!input) return;
-    this.model.set({content:input});
-  },
-  'click button': function(){
-    this.destroy();
+var search = $$({query:'Enter search terms'}, '<input type="search" data-bind="query"/>', {
+  'change': function(event){
+    console.log('model is now: ', this.model.get('query'));
   }
 });
-var list = $$({}, '<div> <button id="new">New item</button> <ul></ul> </div>', {
-  'click #new': function(){
-    var newItem = $$(item, {content:'Click to edit'});
-    this.add(newItem, 'ul'); // add to container, appending at <ul>
-  }
-})    
-$$.document.add(list);
+$$.document.add(search);
 
+    // var obj = $$({name:'Mary'}, "<input type='search' data-bind='name' />");
+    // $$.document.add(obj);
+    // // obj.model.set({name:'Joe Doe'});
+    // obj.view.$().val('Joe Doee').keypress();
+    // console.log(obj.model.get('name'));
