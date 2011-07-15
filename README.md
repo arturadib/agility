@@ -26,7 +26,7 @@ Agility lets you write **maintainable** browser code without compromising on **p
         var newItem = $$(item, {content:'Click to edit'});
         this.add(newItem, 'ul'); // add to container, appending at <ul>
       }
-    })    
+    });
     $$.document.add(list);
 
 Curious to learn more? Visit: http://arturadib.github.com/agility or fork the project and contribute away!
