@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>
+    Agility.js documentation
+  </title>
+  <meta charset="utf-8" />
+
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link type="text/css" href="highlight.css" rel="stylesheet" />	  
+      
+  <style type="text/css">
+    html,body { background:#ebebeb; margin:0; padding:0; padding-bottom:50px; font-family:'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif; font-size:16px; }
+    div.center { width:700px; margin-left:300px; margin-top:30px; }
+    a { color:#0000A0; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    
+    div#menu-wrapper { 
+      position:fixed; 
+      top:0; 
+      left:0;
+      bottom:0;
+      width:200px; 
+      padding:5px 10px;
+      background:white;
+      border-right:1px solid #aac;
+      overflow:auto;
+    }
+    
+    div#menu-wrapper a.nav { font-size:90%; }
+    div#menu div { margin-top:5px; margin-left:5px; }
+    div#menu a { color:#000; }
+    div#menu a.section { display:block; font-weight:bold; margin-top:10px; }
+    div#menu a.subsection { margin-left:2px; font-size:90%; }
+    div#menu a.func { margin-left:20px; font-size:80%; }
+    
+    div#decor { height:8px; background:#0000A0; }
+    div#top { font-size:19px; }
+    div#box {
+      margin-top:20px; 
+      background:white;
+      -moz-border-radius: 3px;
+      -webkit-border-radius: 3px;
+      border-radius: 3px;
+      -moz-box-shadow: 0px 0px 8px #999;
+      -webkit-box-shadow: 0px 0px 8px #999;
+      box-shadow: 0px 0px 8px #999;
+    }
+    div#box-wrapper { padding:10px 20px; background:white; }
+    div#box h1 { border-top:10px solid #0000A0; }
+    div#box h2 { border-top:4px solid #A0A0D0; }
+    div#box h3 { border-top:1px solid #A0A0D0; }
+
+    div#box p img { display:block; margin-left:auto; margin-right:auto; }
+
+    .demo { margin-top:-10px; margin-left:10px; font-size:80%; }
+    div#demo-wrapper { font-size:90%; font-family:Arial, sans; }
+    div#demo-wrapper #msg { margin-bottom:10px; }
+    iframe { width:600px; height:400px; border:1px solid #333; }
+    #simplemodal-overlay { background-color:#000; }
+    #simplemodal-container { background-color:white; border:8px solid #555; padding:12px; }
+  </style>
+  
+  <script>
+    if (window.location.href.search(/\?x/) < 0) {
+    }
+  </script>
+
+</head>
+
+<body>
+
+  <div id="decor"></div>
+  
+  <div id="menu-wrapper">   
+    <a href="index.html" class="nav">&laquo; Back to Home</a>
+    <p></p>
+    <div id="menu"></div>
+  </div>
+  
+  <div id="top" class='center'>
+    <div><a href="index.html" style="text-decoration:none; border:none;"><img src="logo.png" style="border:none;"/></a></div>
+    <div><em>Documentation</em></div>
+  </div>
+  
+  <div id="box" class='center'>
+    <div id='box-wrapper'>
+
+<!-- __INSERT_POINT__ -->
+<h1><a href="#intro">Introduction</a></h1>
+<p>Agility is a <a href="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">Model-View-Controller</a> (MVC) library for client-side Javascript with some specific design principles:</p>
+<ul>
+<li>Convention over configuration (CoC);</li>
+<li>Don't repeat yourself (DRY); and</li>
+<li>Full object reusability.</li>
+</ul>
+<p>The overall goal is to improve code maintainability without sacrificing productivity. It is inspired by the principles behind <a href="http://en.wikipedia.org/wiki/Ruby_on_Rails">Ruby on Rails</a> and <a href="http://www.jquery.com">jQuery</a>.</p>
+<p>Agility's programming model is framed around the concept of self-contained MVC objects, where each object can be the prototype of, as well as the container of other MVC objects. This level of abstraction should encompass most applications.</p>
+<p>See the <a href="index.html">home page</a> for a quick overview of its syntax and usage.</p>
+<h2><a href="#intro-mvc">Why MVC?</a></h2>
+<p>One might wonder, since DOM-querying/Ajax libraries like jQuery make it so easy to whip up a dynamic web app, why bother with an additional layer of complexity?</p>
+<h3><a href="#intro-mvc-quick">Short answer</a></h3>
+<p>For those who have built a complex web app "organically", i.e. purely through DOM querying and manual Ajax calls, the answer is immediate: although you were able to get that app up to speed so quickly, you probably dread maintaining and relearning that intertwined code, and wish you had known better!</p>
+<h3><a href="#intro-mvc-long">Long answer</a></h3>
+<p>For those who haven't, some things you will likely end up doing with a pure jQuery-esque solution include: storing data in the DOM; querying the DOM to find your data; defining global callbacks to DOM events e.g. click/input change; having those callbacks neatly package your data to be sent to the server; retrieving data from the server and inserting them in the DOM with the right format and event handlers; etc.</p>
+<p>Though that's all fine initially, sooner or later you will start running into maintainability problems: storing data in the DOM is very brittle, e.g. changing an id/class or restructuring the DOM requires revisiting the code just about everywhere; DOM elements that are logically related and need to be always in sync require manual updates in all callbacks associated with them; global callbacks lead to name collisions and hence cumbersome function names, as well as difficulties in finding just what function is responsible for doing X or Y; defining functions that package data for, or present data after Ajax calls is unnecessarily repetitive; etc.</p>
+<p>One established answer to these problems is the <a href="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">Model-View-Controller</a> approach, where your app is organized in "large" objects each having different parts responsible for managing content (Model), format/style (View), and behavior (Controller). For example, a series of DOM input elements such as Name, Address, Phone, etc, related to the abstract concept of "person" become part of an object "person", whose model contains the raw data, view contains the HTML/CSS presentation, and controller contains the actions that will be called in response to events in the former two.</p>
+<p>MVC libraries like Agility typically offer built-in model, view, and controller methods that encompass most use case scenarios, so you don't have to reinvent the wheel or repeat yourself. That way all functions, formatting, and data related to an abstract concept (e.g. "person") are all in one place, the DOM is always in sync with the data, and the data is always ready to be sent to/retrieved from the server in one call.</p>
+<h2><a href="#intro-agility">Why Agility?</a></h2>
+<p>In response to the difficulties above, in the last few years <a href="http://www.sproutcore.com/">several</a> <a href="http://documentcloud.github.com/backbone/">superb</a> <a href="http://knockoutjs.com/">libraries</a> have been introduced to bring MVC (or a variant thereof) to the browser. Although they do a good job of refactoring apps in terms of content, format, and behavior - and hence lead to more maintainable code - they do so at the expense of, well, agility: most are fairly verbose, and require a considerable amount of overhead and repetition.</p>
+<p>Agility borrows some concepts from these frameworks, but makes development speed a core part of its design principles. It's "write less, do more" with maintainability. Here are some of the features that Agility.js has aggregated into one framework:</p>
+<ul>
+<li>Small (&lt;10K) single-library include;</li>
+<li>Extremely compact syntax, inspired by jQuery;</li>
+<li>Pure "MVC": no additional concepts other than M, V, and C;</li>
+<li>Powerful defaults whenever possible, like two-way model-view bindings;</li>
+<li>Format and style defined in-object for plug-and-play reusability.</li>
+</ul>
+<h2><a href="#intro-architecure">Architecture</a></h2>
+<p>Agility's architecture follows one of the simplest MVC patterns: users define Controller functions, which make direct calls to, and handle events from Models and Views. The diagram below illustrates this.</p>
+<p><img alt="Architecture diagram" src="architecture.png" /></p>
+<p>So for example, when a user clicks on a DOM element, an event signal is sent from the View to any Controller functions listening to it, and these functions in turn can make direct calls to Model and View functions.</p>
+<p>Additionally, as illustrated below, every Agility object can serve as a container of other Agility objects. This is a natural abstraction for most applications, including simple lists, interactive tables, picture/video catalogs, etc, where each individual item might contain enough functionality (e.g. edit/remove buttons, mouse hover behavior, etc) to deserve its own MVC object. And because Agility objects are lightweight in memory (through pervasive use of prototypes), this comes at little performance cost.</p>
+<p><img alt="Hierarchy diagram" src="container.png" /></p>
+<h1><a href="#getting-started">Getting started</a></h1>
+<p>Agility.js depends on a recent version of jQuery (tested with 1.6.x, Zepto support coming soon), but other than that a single <code>&lt;script&gt;</code> tag in your Javascript code is all that's required, e.g.:</p>
+<div class="codehilite"><pre><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;agility.js&quot;</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">charset=</span><span class="s">&quot;utf-8&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</pre></div>
+
+
+<p>Typically the <code>&lt;body&gt;</code> of your HTML will be empty, and will be populated programmatically by adding Agility objects to the <a href="#globals-document">global object</a> <code>$$.document</code>.</p>
+<p>Here's the full source of a "hello world" example:</p>
+<div class="codehilite"><pre><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+
+<span class="nt">&lt;head&gt;</span>
+  <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;Content-type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html; charset=utf-8&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;title&gt;</span>Agility Hello World<span class="nt">&lt;/title&gt;</span>
+
+  <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;jquery.min.js&quot;</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">charset=</span><span class="s">&quot;utf-8&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+  <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;agility.js&quot;</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">charset=</span><span class="s">&quot;utf-8&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+
+<span class="nt">&lt;body&gt;</span>
+  <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;</span>
+    <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">txt</span><span class="o">:</span><span class="s1">&#39;Hello World&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;div data-bind=&quot;txt&quot;/&gt;&#39;</span><span class="p">);</span>
+    <span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>        
+  <span class="nt">&lt;/script&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+
+<span class="nt">&lt;/html&gt;</span>
+</pre></div>
+
+
+<h2><a href="#creating-objects">Creating objects</a></h2>
+<p>Agility is framed around the notion of all-in-one MVC objects, or simply "Agility objects". Such objects are created through the <a href="#factory">factory function</a> <code>$$()</code>, either from scratch (by specifying model, view, and/or controller arguments) or from a prototype object (by specifying an existing Agility object):</p>
+<div class="codehilite"><pre><span class="c1">// Create object from scratch:</span>
+<span class="kd">var</span> <span class="nx">proto</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;p data-bind=&quot;name&quot; style=&quot;color:red&quot;/&gt;&#39;</span><span class="p">);</span>
+<span class="c1">// Create object from prototype object:</span>
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span><span class="nx">proto</span><span class="p">,</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span><span class="s1">&#39;Joe Doe&#39;</span><span class="p">});</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<p>Refer to the examples in the <a href="index.html">home page</a> and elsewhere in this document for several different uses of the factory function, and the <a href="#factory">factory function reference</a> for syntax details.</p>
+<h2><a href="#bindings">Bindings</a></h2>
+<p>Agility offers painless two-way bindings to keep Models and Views in sync. Binding a given DOM element to a model property is as simple as specifying a <code>data-bind</code> attribute for the desired element:</p>
+<div class="codehilite"><pre><span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span><span class="s1">&#39;Joe Doe&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;p&gt;&lt;input type=&quot;text&quot; data-bind=&quot;name&quot;/&gt; You typed: &lt;span data-bind=&quot;name&quot;/&gt;&lt;/p&gt;&#39;</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<p>More complex bindings are also supported for other input elements:</p>
+<div class="codehilite"><pre><span class="c1">// Two-way binding (radio)</span>
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span>
+  <span class="p">{</span><span class="nx">opt</span><span class="o">:</span><span class="s1">&#39;opt-a&#39;</span><span class="p">},</span>
+  <span class="s2">&quot;&lt;div&gt; \</span>
+<span class="s2">      &lt;input type=&#39;radio&#39; name=&#39;test&#39; value=&#39;opt-a&#39; data-bind=&#39;opt&#39;&gt;a&lt;/input&gt; \</span>
+<span class="s2">      &lt;input type=&#39;radio&#39; name=&#39;test&#39; value=&#39;opt-b&#39; data-bind=&#39;opt&#39;&gt;b&lt;/input&gt; \</span>
+<span class="s2">      You selected: &lt;span data-bind=&#39;opt&#39;/&gt; \</span>
+<span class="s2">   &lt;/div&gt;&quot;</span>
+<span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<div class="codehilite"><pre><span class="c1">// Two-way binding (checkbox)</span>
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span>
+  <span class="p">{</span><span class="nx">a</span><span class="o">:</span><span class="kc">false</span><span class="p">,</span> <span class="nx">b</span><span class="o">:</span><span class="kc">true</span><span class="p">},</span>
+  <span class="s2">&quot;&lt;div&gt; \</span>
+<span class="s2">      &lt;input type=&#39;checkbox&#39; name=&#39;test&#39; data-bind=&#39;a&#39;/&gt; checked: &lt;span data-bind=&#39;a&#39;/&gt;&lt;br/&gt; \</span>
+<span class="s2">      &lt;input type=&#39;checkbox&#39; name=&#39;test&#39; data-bind=&#39;b&#39;/&gt; checked: &lt;span data-bind=&#39;b&#39;/&gt;&lt;br/&gt; \</span>
+<span class="s2">   &lt;/div&gt;&quot;</span>
+<span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<div class="codehilite"><pre><span class="c1">// Two-way binding (select)</span>
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span>
+  <span class="p">{</span><span class="nx">opt</span><span class="o">:</span><span class="s1">&#39;opt-a&#39;</span><span class="p">},</span>
+  <span class="s2">&quot;&lt;div&gt; \</span>
+<span class="s2">    &lt;select data-bind=&#39;opt&#39;&gt; \</span>
+<span class="s2">      &lt;option value=&#39;opt-a&#39;&gt;Option A&lt;/option&gt;\</span>
+<span class="s2">      &lt;option value=&#39;opt-b&#39;&gt;Option B&lt;/option&gt;\</span>
+<span class="s2">    &lt;/select&gt; \</span>
+<span class="s2">    You selected: &lt;span data-bind=&#39;opt&#39;/&gt; \</span>
+<span class="s2">   &lt;/div&gt;&quot;</span>
+<span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<h2><a href="#view-format">Format and style</a></h2>
+<p>Agility's View requires the specification of <code>format</code> (HTML), and encourages the use of <code>style</code> (CSS) in-object. This leads to better object reusability and maintainability: there is no need to fish out HTML/CSS parts from different files to reuse an existing object in a new project, and no need to maintain ids/classes throughout separate files. Content, style, and behavior are all contained in one object.</p>
+<p>Formats are specified through an HTML string, containing one (and only one) root element that wraps all other elements, so the first two examples below are <strong>not</strong> valid:</p>
+<div class="codehilite"><pre><span class="c1">// INVALID CODE!! (missing root view element)</span>
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;hey there&#39;</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+
+<span class="c1">// INVALID CODE!! (more than one root elements)</span>
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;div&gt;hey there&lt;/div&gt; &lt;button&gt;OK&lt;/button&gt;&#39;</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+
+<span class="c1">// Valid code</span>
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;p&gt;hey there&lt;/p&gt;&#39;</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+</pre></div>
+
+
+<p>Formats should always be specified upon object creation. Refer to the <a href="#factory">factory function</a> for examples on how to initialize the format.</p>
+<p>Specifying styles (CSS) in-object is optional, but again, it leads to better code reusability and maintainability. In-object CSS is implemented dynamically, so the object's style sheet is not introduced until the object is created. </p>
+<p>To ensure CSS selectors apply only to the intended object, <em>make sure all selectors are preceded by the root selector</em> <code>&amp;</code>. (In future versions this might not be necessary anymore).</p>
+<div class="codehilite"><pre><span class="c1">// ANTI-PATTERN!! (applies CSS style globally)</span>
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;p&gt;&lt;div&gt;Hello World&lt;/div&gt;&lt;/p&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;div { color:red; }&#39;</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+
+<span class="c1">// Correct: applies style locally</span>
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;p&gt;&lt;div&gt;Hello World&lt;/div&gt;&lt;/p&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&amp; div { color:red; }&#39;</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<p>More complex formats and styles can be organized in multiple lines:</p>
+<div class="codehilite"><pre><span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span>
+  <span class="nx">view</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">format</span><span class="o">:</span><span class="s1">&#39;&lt;div&gt;\</span>
+<span class="s1">              &lt;div id=&quot;hello&quot;&gt;Hello&lt;/div&gt;\</span>
+<span class="s1">              &lt;div id=&quot;world&quot;&gt;World&lt;/div&gt;\</span>
+<span class="s1">            &lt;/div&gt;&#39;</span><span class="p">,</span>
+    <span class="nx">style</span><span class="o">:</span><span class="s1">&#39;&amp; { border:5px solid green; color:white; }\</span>
+<span class="s1">           &amp; div { padding:10px 20px; }\</span>
+<span class="s1">           &amp; #hello { background:blue; }\</span>
+<span class="s1">           &amp; #world { background:red; }&#39;</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<h2><a href="#events">Events</a></h2>
+<p>There are two types of events in Agility: DOM events, and Agility events. </p>
+<h3><a href="#events-dom">DOM events</a></h3>
+<p>Usual DOM events such as <code>click</code>, <code>dblclick</code>, <code>mouseenter</code>, etc are supported through jQuery's event API. Please consult jQuery's API for a <a href="http://api.jquery.com/bind/">list of events</a> supported. </p>
+<p>When binding to controller functions, DOM events are distinguished from Agility events by the presence of a <a href="http://api.jquery.com/category/selectors/">jQuery selector</a> using the syntax:</p>
+<div class="codehilite"><pre><span class="c1">// DOM event syntax for controller functions</span>
+<span class="s1">&#39;event selector&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){}</span>
+</pre></div>
+
+
+<p>In addition to jQuery's selectors, the root selector <code>&amp;</code> is also supported to pick the root element of the view:</p>
+<div class="codehilite"><pre><span class="kd">var</span> <span class="nx">button</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">msg</span><span class="o">:</span><span class="s1">&#39;Click me&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;button data-bind=&quot;msg&quot;/&gt;&#39;</span><span class="p">,</span> <span class="p">{</span>
+  <span class="s1">&#39;click &amp;&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span><span class="nx">msg</span><span class="o">:</span><span class="s2">&quot;I&#39;ve been clicked!&quot;</span><span class="p">});</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">button</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<h3><a href="#events-agility">Agility events</a></h3>
+<p>Agility events are fired by the object core, as well as Models and plugins. When binding to a controller function, they are never followed by a space:</p>
+<div class="codehilite"><pre><span class="c1">// Agility event syntax for controller functions</span>
+<span class="s1">&#39;event&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){}</span>
+<span class="s1">&#39;event:event_parameter&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){}</span>
+</pre></div>
+
+
+<p>The example below defines both a DOM and a Model event handler:</p>
+<div class="codehilite"><pre><span class="kd">var</span> <span class="nx">catcher</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">msg</span><span class="o">:</span><span class="s1">&#39;Hover over me&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;p&gt;&lt;span data-bind=&quot;msg&quot;/&gt;&lt;/p&gt;&#39;</span><span class="p">,</span> <span class="p">{</span>
+  <span class="s1">&#39;mouseenter span&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span><span class="nx">msg</span><span class="o">:</span><span class="s1">&#39;Hovered!&#39;</span><span class="p">});</span>
+  <span class="p">},</span>
+  <span class="s1">&#39;change:msg&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">$</span><span class="p">().</span><span class="nx">append</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Model changed!&lt;/p&gt;&#39;</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">catcher</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<p>Presently, the following Agility events are fired:</p>
+<ul>
+<li><code>create</code>: Fired upon object creation.</li>
+<li><code>destroy</code>: Fired before object is destroyed.</li>
+<li><code>add</code>: Fired when a new Agility object is added to the object's container.</li>
+<li><code>remove</code>: Fired with an Agility object is removed from the object's container.</li>
+<li><code>change</code>: Fired when the model has changed.</li>
+<li><code>change:prop</code>: Fired when the property <code>prop</code> in the model has changed.</li>
+</ul>
+<h2><a href="#persistence">Persistence</a></h2>
+<p>Although Model persistence (e.g. server-side and local HTML5 storage) is not part of Agility's MVC core object, it is bundled with the library as the built-in plugin <a href="#persist">persist</a>.</p>
+<h1><a href="#reference">Reference</a></h1>
+<h2><a href="#factory">Factory $$()</a></h2>
+<p><em>Creates a new MVC object from the given model, view, and controller arguments, and optionally a prototype object.</em></p>
+<p><strong>Compact syntax:</strong> </p>
+<div class="codehilite"><pre><span class="nx">$$</span><span class="p">([</span><span class="nx">model</span> <span class="p">[,</span><span class="nx">view</span> <span class="p">[,</span><span class="nx">controller</span><span class="p">]]])</span>
+<span class="nx">$$</span><span class="p">(</span><span class="nx">prototype</span> <span class="p">[,</span><span class="nx">model</span> <span class="p">[,</span><span class="nx">view</span> <span class="p">[,</span><span class="nx">controller</span><span class="p">]]])</span>
+</pre></div>
+
+
+<p><strong>Verbose syntax:</strong> </p>
+<div class="codehilite"><pre><span class="nx">$$</span><span class="p">([</span><span class="nx">prototype</span><span class="p">,]</span> <span class="p">{</span>
+  <span class="nx">model</span><span class="o">:</span> <span class="p">{...},</span>
+  <span class="nx">view</span><span class="o">:</span> <span class="p">{...},</span>
+  <span class="nx">controller</span><span class="o">:</span> <span class="p">{...},</span>
+  <span class="nx">user_defined_property</span><span class="o">:</span> <span class="p">{...}</span>
+<span class="p">})</span>
+</pre></div>
+
+
+<p>where:</p>
+<ul>
+<li><code>model</code>: Standard Javascript object;</li>
+<li><code>view</code>: String specifying <a href="#view-format">format</a>; or two strings, one for <a href="#view-format">format</a> one for <a href="#view-style">style</a>; or object containing <code>format</code> and/or <code>style</code> properties. A format should always contain a root element;</li>
+<li><code>controller</code>: Javascript object containing named functions that match <a href="#events">event types</a>;</li>
+<li><code>prototype</code>: Agility object to serve as the prototype for new object.</li>
+</ul>
+<p><strong>Examples:</strong> </p>
+<p>Different view initialization methods:</p>
+<div class="codehilite"><pre><span class="c1">// One string: format</span>
+<span class="kd">var</span> <span class="nx">person1</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span><span class="s1">&#39;Foo Bar&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;div data-bind=&quot;name&quot;/&gt;&#39;</span><span class="p">);</span>
+<span class="c1">// Two strings: format, style</span>
+<span class="kd">var</span> <span class="nx">person2</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span><span class="s1">&#39;Foo Bar&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;div data-bind=&quot;name&quot;/&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&amp; { color:red; font-weight:bold; }&#39;</span><span class="p">);</span>
+<span class="c1">// Object: format, style</span>
+<span class="kd">var</span> <span class="nx">person3</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span>
+  <span class="p">{</span> <span class="nx">name</span><span class="o">:</span><span class="s1">&#39;Foo Bar&#39;</span> <span class="p">},</span> 
+  <span class="p">{</span> <span class="nx">format</span><span class="o">:</span> <span class="s1">&#39;&lt;div data-bind=&quot;name&quot;/&gt;&#39;</span><span class="p">,</span> <span class="nx">style</span><span class="o">:</span> <span class="s1">&#39;&amp; { color:blue; }&#39;</span> <span class="p">}</span>
+<span class="p">);</span>
+<span class="c1">// Verbose</span>
+<span class="kd">var</span> <span class="nx">person4</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span>
+  <span class="nx">model</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Foo Bar&#39;</span>
+  <span class="p">},</span>
+  <span class="nx">view</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">format</span><span class="o">:</span> <span class="s1">&#39;&lt;div data-bind=&quot;name&quot;/&gt;&#39;</span><span class="p">,</span>
+    <span class="nx">style</span><span class="o">:</span> <span class="s1">&#39;&amp; { color:green; font-style:italic; }&#39;</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">person1</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">person2</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">person3</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">person4</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<p>Specifying controller functions - compact:</p>
+<div class="codehilite"><pre><span class="kd">var</span> <span class="nx">button</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;p&gt;&lt;button&gt;Click me&lt;/button&gt;&lt;/p&gt;&#39;</span><span class="p">,</span> <span class="p">{</span>
+  <span class="s1">&#39;click button&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;You clicked me!&#39;</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">button</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<p>and verbose:</p>
+<div class="codehilite"><pre><span class="kd">var</span> <span class="nx">dataHolder</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span>
+  <span class="nx">model</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">first</span><span class="o">:</span><span class="s1">&#39;Joe&#39;</span><span class="p">,</span> 
+    <span class="nx">last</span><span class="o">:</span><span class="s1">&#39;Doe&#39;</span>
+  <span class="p">},</span> 
+  <span class="nx">view</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">format</span><span class="o">:</span> <span class="s1">&#39;&lt;p&gt;Wait...&lt;/p&gt;&#39;</span>
+  <span class="p">},</span> 
+  <span class="nx">controller</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s1">&#39;change:first&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+      <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;First name changed!&#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">dataHolder</span><span class="p">);</span>
+
+<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+  <span class="nx">dataHolder</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span><span class="nx">first</span><span class="o">:</span><span class="s1">&#39;Mary&#39;</span><span class="p">});</span>
+<span class="p">},</span> <span class="mi">2000</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<h2><a href="#methods-core">Core methods</a></h2>
+<h3><a href="#core-add">.add()</a></h3>
+<p><em>Adds an Agility object to the object's container.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">object</span> <span class="p">[,</span><span class="nx">selector</span><span class="p">])</span>
+</pre></div>
+
+
+<ul>
+<li><code>object</code>: The Agility object to be added;</li>
+<li><code>selector</code>: A jQuery selector specifying where the object's root element should be appended in the object's view.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Owner Agility object (for chainable calls).</p>
+<h3><a href="#core-remove">.remove()</a></h3>
+<p><em>Removes an Agility object from the object's container. [This function should rarely be invoked by the user; call instead <code>.destroy()</code> within the object to be removed].</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span>
+</pre></div>
+
+
+<ul>
+<li><code>id</code>: id of the object to be removed (accessed via <code>._id</code> property).</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Owner Agility object (for chainable calls).</p>
+<h3><a href="#core-size">.size()</a></h3>
+<p><em>Returns number of objects within the object's container.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">size</span><span class="p">()</span>
+</pre></div>
+
+
+<p><strong>Returns:</strong></p>
+<p>Number of Agility objects in the object's container.</p>
+<h3><a href="#core-bind">.bind()</a></h3>
+<p><em>Binds function to event.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">fn</span><span class="p">)</span>
+</pre></div>
+
+
+<ul>
+<li><code>event</code>: String specifying event type. See <a href="#events">events</a> section for event syntax.</li>
+<li><code>fn</code>: function to be called upon event triggering.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Owner Agility object (for chainable calls).</p>
+<h3><a href="#core-trigger">.trigger()</a></h3>
+<p><em>Triggers event, optionally passing parameters to listeners.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="nx">event</span> <span class="p">[,</span><span class="nx">params</span><span class="p">])</span>
+</pre></div>
+
+
+<ul>
+<li><code>event</code>: String specifying event type. See <a href="#events">events</a> section for event syntax.</li>
+<li><code>params</code>: parameters to be passed to listeners as function arguments.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Owner Agility object (for chainable calls).</p>
+<h3><a href="#core-destroy">.destroy()</a></h3>
+<p><em>Erases view, removes object from parent container.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">destroy</span><span class="p">()</span>
+</pre></div>
+
+
+<p><strong>Returns:</strong></p>
+<p>Nothing.</p>
+<h2><a href="#methods-model">Model methods</a></h2>
+<h3><a href="#model-set">.model.set()</a></h3>
+<p><em>Sets the model data. If model already exists, it's extended.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">object</span> <span class="p">[,</span><span class="nx">params</span><span class="p">])</span>
+</pre></div>
+
+
+<ul>
+<li><code>object</code>: The Javascript object containing the data, e.g. <code>{name:'Joe Doe', birthday:'08/11/71'}</code>.</li>
+<li><code>params</code>: Use <code>{silent:true}</code> to avoid firing a <code>change</code> event; use <code>{reset:true}</code> to overwrite model data (and not extend it).</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Owner Agility object (for chainable calls).</p>
+<h3><a href="#model-get">.model.get()</a></h3>
+<p><em>Gets model data.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">get</span><span class="p">([</span><span class="nx">property</span><span class="p">])</span>
+</pre></div>
+
+
+<ul>
+<li><code>property</code>: Desired property, e.g. <code>'name'</code>.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Desired property content if <code>property</code> is specified, or a Javascript object containing the entire model data if it's omitted.</p>
+<h3><a href="#model-each">.model.each()</a></h3>
+<p><em>Iterates over each model property.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">fn</span><span class="p">)</span>
+</pre></div>
+
+
+<ul>
+<li><code>fn</code>: Function to be called with each model property, with arguments <code>fn(key, value)</code> where <code>key</code> is the property name, and <code>value</code> is its content.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Owner Agility object (for chainable calls).</p>
+<h3><a href="#model-size">.model.size()</a></h3>
+<p><em>Gets number of model properties.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">size</span><span class="p">()</span>
+</pre></div>
+
+
+<p><strong>Returns:</strong></p>
+<p>Number of model properties.</p>
+<h2><a href="#methods-view">View methods</a></h2>
+<h3><a href="#view-jquery">.view.$()</a></h3>
+<p><em>Shortcut to jQuery object corresponding to root element or to given selector in the current view.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">$</span><span class="p">([</span><span class="nx">selector</span><span class="p">])</span>
+</pre></div>
+
+
+<ul>
+<li><code>selector</code>: jQuery selector for the desired DOM element in the object's view.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>jQuery object of root element if no selector, jQuery object at given <code>selector</code> otherwise, restricted to the current view's DOM.</p>
+<h3><a href="#view-render">.view.render()</a></h3>
+<p><em>Updates View's main jQuery object according to <code>format</code>. Automatically called upon creation.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">render</span><span class="p">()</span>
+</pre></div>
+
+
+<p><strong>Returns:</strong></p>
+<p>Owner Agility object (for chainable calls).</p>
+<h3><a href="#view-stylize">.view.stylize()</a></h3>
+<p><em>Applies CSS dynamically according to <code>style</code> property. Automatically called upon creation.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">stylize</span><span class="p">()</span>
+</pre></div>
+
+
+<p><strong>Returns:</strong></p>
+<p>Owner Agility object (for chainable calls).</p>
+<h3><a href="#view-sync">.view.sync()</a></h3>
+<p><em>Synchronizes all view elements with model contents, according to established bindings. Automatically called upon creation.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">sync</span><span class="p">()</span>
+</pre></div>
+
+
+<p><strong>Returns:</strong></p>
+<p>Owner Agility object (for chainable calls).</p>
+<h2><a href="#methods-controller">Controller methods</a></h2>
+<p>Built-in controllers are primarily for internal use and typically shouldn't be called by the user.</p>
+<h2><a href="#globals">Globals</a></h2>
+<h3><a href="#globals-document">$$.document</a></h3>
+<p><em>Main Agility object representing the document's body.</em></p>
+<p>Typically you just <code>.add()</code> a new Agility object to it.</p>
+<h1><a href="#plugins">Built-in plugins</a></h1>
+<h2><a href="#persist">persist</a></h2>
+<h3><a href="#persist-events">Events</a></h3>
+
+    </div>
+  </div>
+
+  <div id="demo-wrapper" style="display:none"></div>
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="jquery.simplemodal.1.4.1.min.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript">
+    (function($){
+      //
+      // Build menu
+      //
+      $('h1,h2,h3,h4').each(function(){
+        var href = $('a', this).attr('href');
+        var $link = $('<a/>').attr('href', href).html($(this).text());
+        $('div#menu').append($link);
+        $link.wrap('<div/>');
+        if ($(this).is('h1')) {
+          $link.addClass('section');
+        }
+        else if ($(this).is('h2')){
+          $link.addClass('subsection');
+          $link.html( '&rsaquo; '+$link.html() )
+        }
+        else {
+          $link.addClass('func');
+        }
+        $(this).attr('id', href.substr(1));
+      });
+      //
+      // Each "Run demo"
+      //
+      $('div.demo').each(function(){
+        var code = $(this).prevAll('.codehilite:first').text();
+        //
+        // On demo click
+        //
+        var $link = $("<button>Run demo</button>").click(function(){
+          var $frame = $('<iframe \/>').attr('src', '_demo.html');
+          $('div#demo-wrapper')
+            .hide()
+            .empty()
+            .append('<div id="msg">Loading ...</div>')
+            .append($frame)
+            .modal({overlayClose: true});            
+          //
+          // Insert dynamic frame content (pure jQuery doesn't work with script tags)
+          //
+          $frame.load(function(){
+            $('div#demo-wrapper #msg').html('Press <b>esc</b> or click outside box to close')
+            var frameWindow = this.contentWindow ? this.contentWindow : this.contentDocument.defaultView;
+            var script = frameWindow.document.createElement("script");
+            script.type = "text/javascript";
+            script.text = '\n'+code+'\n';
+            frameWindow.document.body.appendChild(script);          
+          });
+          return false;
+        }); // demo click
+        $(this).append($link);
+      }); // each demo
+    })(jQuery);
+  </script>
+
+</body>
+
+</html>

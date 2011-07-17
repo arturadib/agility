@@ -1,0 +1,591 @@
+# [Introduction](#intro) 
+
+Agility is a [Model-View-Controller](http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) (MVC) library for client-side Javascript with some specific design principles:
+
++ Convention over configuration (CoC);
++ Don't repeat yourself (DRY); and
++ Full object reusability.
+
+The overall goal is to improve code maintainability without sacrificing productivity. It is inspired by the principles behind [Ruby on Rails](http://en.wikipedia.org/wiki/Ruby_on_Rails) and [jQuery](http://www.jquery.com).
+
+Agility's programming model is framed around the concept of self-contained MVC objects, where each object can be the prototype of, as well as the container of other MVC objects. This level of abstraction should encompass most applications.
+
+See the [home page](index.html) for a quick overview of its syntax and usage.
+
+## [Why MVC?](#intro-mvc)
+
+One might wonder, since DOM-querying/Ajax libraries like jQuery make it so easy to whip up a dynamic web app, why bother with an additional layer of complexity?
+
+### [Short answer](#intro-mvc-quick)
+
+For those who have built a complex web app "organically", i.e. purely through DOM querying and manual Ajax calls, the answer is immediate: although you were able to get that app up to speed so quickly, you probably dread maintaining and relearning that intertwined code, and wish you had known better!
+
+### [Long answer](#intro-mvc-long)
+
+For those who haven't, some things you will likely end up doing with a pure jQuery-esque solution include: storing data in the DOM; querying the DOM to find your data; defining global callbacks to DOM events e.g. click/input change; having those callbacks neatly package your data to be sent to the server; retrieving data from the server and inserting them in the DOM with the right format and event handlers; etc.
+
+Though that's all fine initially, sooner or later you will start running into maintainability problems: storing data in the DOM is very brittle, e.g. changing an id/class or restructuring the DOM requires revisiting the code just about everywhere; DOM elements that are logically related and need to be always in sync require manual updates in all callbacks associated with them; global callbacks lead to name collisions and hence cumbersome function names, as well as difficulties in finding just what function is responsible for doing X or Y; defining functions that package data for, or present data after Ajax calls is unnecessarily repetitive; etc.
+
+One established answer to these problems is the [Model-View-Controller](http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) approach, where your app is organized in "large" objects each having different parts responsible for managing content (Model), format/style (View), and behavior (Controller). For example, a series of DOM input elements such as Name, Address, Phone, etc, related to the abstract concept of "person" become part of an object "person", whose model contains the raw data, view contains the HTML/CSS presentation, and controller contains the actions that will be called in response to events in the former two.
+
+MVC libraries like Agility typically offer built-in model, view, and controller methods that encompass most use case scenarios, so you don't have to reinvent the wheel or repeat yourself. That way all functions, formatting, and data related to an abstract concept (e.g. "person") are all in one place, the DOM is always in sync with the data, and the data is always ready to be sent to/retrieved from the server in one call.
+
+## [Why Agility?](#intro-agility)
+
+In response to the difficulties above, in the last few years [several](http://www.sproutcore.com/) [superb](http://documentcloud.github.com/backbone/) [libraries](http://knockoutjs.com/) have been introduced to bring MVC (or a variant thereof) to the browser. Although they do a good job of refactoring apps in terms of content, format, and behavior - and hence lead to more maintainable code - they do so at the expense of, well, agility: most are fairly verbose, and require a considerable amount of overhead and repetition.
+
+Agility borrows some concepts from these frameworks, but makes development speed a core part of its design principles. It's "write less, do more" with maintainability. Here are some of the features that Agility.js has aggregated into one framework:
+
++ Small (<10K) single-library include;
++ Extremely compact syntax, inspired by jQuery;
++ Pure "MVC": no additional concepts other than M, V, and C;
++ Powerful defaults whenever possible, like two-way model-view bindings;
++ Format and style defined in-object for plug-and-play reusability.
+
+## [Architecture](#intro-architecure)
+
+Agility's architecture follows one of the simplest MVC patterns: users define Controller functions, which make direct calls to, and handle events from Models and Views. The diagram below illustrates this.
+
+![Architecture diagram](architecture.png)
+
+So for example, when a user clicks on a DOM element, an event signal is sent from the View to any Controller functions listening to it, and these functions in turn can make direct calls to Model and View functions.
+
+Additionally, as illustrated below, every Agility object can serve as a container of other Agility objects. This is a natural abstraction for most applications, including simple lists, interactive tables, picture/video catalogs, etc, where each individual item might contain enough functionality (e.g. edit/remove buttons, mouse hover behavior, etc) to deserve its own MVC object. And because Agility objects are lightweight in memory (through pervasive use of prototypes), this comes at little performance cost.
+
+![Hierarchy diagram](container.png)
+
+# [Getting started](#getting-started)
+
+Agility.js depends on a recent version of jQuery (tested with 1.6.x, Zepto support coming soon), but other than that a single `<script>` tag in your Javascript code is all that's required, e.g.:
+  
+    :::html
+    <script src="agility.js" type="text/javascript" charset="utf-8"></script>
+
+Typically the `<body>` of your HTML will be empty, and will be populated programmatically by adding Agility objects to the [global object](#globals-document) `$$.document`.
+
+Here's the full source of a "hello world" example:
+
+    :::html
+    <!DOCTYPE html>
+    <html>
+
+    <head>
+      <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+      <title>Agility Hello World</title>
+
+      <script src="jquery.min.js" type="text/javascript" charset="utf-8"></script>
+      <script src="agility.js" type="text/javascript" charset="utf-8"></script>
+    </head>
+
+    <body>
+      <script type="text/javascript">
+        var message = $$({txt:'Hello World'}, '<div data-bind="txt"/>');
+        $$.document.add(message);        
+      </script>
+    </body>
+
+    </html>
+
+
+## [Creating objects](#creating-objects)
+
+Agility is framed around the notion of all-in-one MVC objects, or simply "Agility objects". Such objects are created through the [factory function](#factory) `$$()`, either from scratch (by specifying model, view, and/or controller arguments) or from a prototype object (by specifying an existing Agility object):
+
+    :::javascript
+    // Create object from scratch:
+    var proto = $$({}, '<p data-bind="name" style="color:red"/>');
+    // Create object from prototype object:
+    var obj = $$(proto, {name:'Joe Doe'});
+    $$.document.add(obj);
+<div class="demo"></div>
+
+Refer to the examples in the [home page](index.html) and elsewhere in this document for several different uses of the factory function, and the [factory function reference](#factory) for syntax details.
+    
+## [Bindings](#bindings)
+
+Agility offers painless two-way bindings to keep Models and Views in sync. Binding a given DOM element to a model property is as simple as specifying a `data-bind` attribute for the desired element:
+
+    :::javascript
+    var obj = $$({name:'Joe Doe'}, '<p><input type="text" data-bind="name"/> You typed: <span data-bind="name"/></p>');
+    $$.document.add(obj);
+<div class="demo"></div>
+
+More complex bindings are also supported for other input elements:
+
+    :::javascript
+    // Two-way binding (radio)
+    var obj = $$(
+      {opt:'opt-a'},
+      "<div> \
+          <input type='radio' name='test' value='opt-a' data-bind='opt'>a</input> \
+          <input type='radio' name='test' value='opt-b' data-bind='opt'>b</input> \
+          You selected: <span data-bind='opt'/> \
+       </div>"
+    );
+    $$.document.add(obj);
+<div class="demo"></div>
+
+    :::javascript
+    // Two-way binding (checkbox)
+    var obj = $$(
+      {a:false, b:true},
+      "<div> \
+          <input type='checkbox' name='test' data-bind='a'/> checked: <span data-bind='a'/><br/> \
+          <input type='checkbox' name='test' data-bind='b'/> checked: <span data-bind='b'/><br/> \
+       </div>"
+    );
+    $$.document.add(obj);
+<div class="demo"></div>
+
+    :::javascript
+    // Two-way binding (select)
+    var obj = $$(
+      {opt:'opt-a'},
+      "<div> \
+        <select data-bind='opt'> \
+          <option value='opt-a'>Option A</option>\
+          <option value='opt-b'>Option B</option>\
+        </select> \
+        You selected: <span data-bind='opt'/> \
+       </div>"
+    );
+    $$.document.add(obj);
+<div class="demo"></div>
+
+## [Format and style](#view-format)
+
+Agility's View requires the specification of `format` (HTML), and encourages the use of `style` (CSS) in-object. This leads to better object reusability and maintainability: there is no need to fish out HTML/CSS parts from different files to reuse an existing object in a new project, and no need to maintain ids/classes throughout separate files. Content, style, and behavior are all contained in one object.
+
+Formats are specified through an HTML string, containing one (and only one) root element that wraps all other elements, so the first two examples below are **not** valid:
+
+    :::javascript
+    // INVALID CODE!! (missing root view element)
+    var obj = $$({}, 'hey there');
+    $$.document.add(obj);
+
+    // INVALID CODE!! (more than one root elements)
+    var obj = $$({}, '<div>hey there</div> <button>OK</button>');
+    $$.document.add(obj);
+
+    // Valid code
+    var obj = $$({}, '<p>hey there</p>');
+    $$.document.add(obj);
+
+Formats should always be specified upon object creation. Refer to the [factory function](#factory) for examples on how to initialize the format.
+
+Specifying styles (CSS) in-object is optional, but again, it leads to better code reusability and maintainability. In-object CSS is implemented dynamically, so the object's style sheet is not introduced until the object is created. 
+
+To ensure CSS selectors apply only to the intended object, *make sure all selectors are preceded by the root selector* `&`. (In future versions this might not be necessary anymore).
+
+    :::javascript
+    // ANTI-PATTERN!! (applies CSS style globally)
+    var obj = $$({}, '<p><div>Hello World</div></p>', 'div { color:red; }');
+    $$.document.add(obj);
+
+    // Correct: applies style locally
+    var obj = $$({}, '<p><div>Hello World</div></p>', '& div { color:red; }');
+    $$.document.add(obj);
+<div class="demo"></div>
+
+More complex formats and styles can be organized in multiple lines:
+
+    :::javascript
+    var obj = $$({
+      view: {
+        format:'<div>\
+                  <div id="hello">Hello</div>\
+                  <div id="world">World</div>\
+                </div>',
+        style:'& { border:5px solid green; color:white; }\
+               & div { padding:10px 20px; }\
+               & #hello { background:blue; }\
+               & #world { background:red; }'
+      }
+    });
+    $$.document.add(obj);
+<div class="demo"></div>
+
+
+## [Events](#events)
+
+There are two types of events in Agility: DOM events, and Agility events. 
+
+### [DOM events](#events-dom)
+
+Usual DOM events such as `click`, `dblclick`, `mouseenter`, etc are supported through jQuery's event API. Please consult jQuery's API for a [list of events](http://api.jquery.com/bind/) supported. 
+
+When binding to controller functions, DOM events are distinguished from Agility events by the presence of a [jQuery selector](http://api.jquery.com/category/selectors/) using the syntax:
+
+    :::javascript
+    // DOM event syntax for controller functions
+    'event selector': function(){}
+
+In addition to jQuery's selectors, the root selector `&` is also supported to pick the root element of the view:
+
+    :::javascript
+    var button = $$({msg:'Click me'}, '<button data-bind="msg"/>', {
+      'click &': function() {
+        this.model.set({msg:"I've been clicked!"});
+      }
+    });
+    $$.document.add(button);
+<div class="demo"></div>
+
+### [Agility events](#events-agility)
+
+Agility events are fired by the object core, as well as Models and plugins. When binding to a controller function, they are never followed by a space:
+
+    :::javascript
+    // Agility event syntax for controller functions
+    'event': function(){}
+    'event:event_parameter': function(){}
+
+The example below defines both a DOM and a Model event handler:
+
+    :::javascript
+    var catcher = $$({msg:'Hover over me'}, '<p><span data-bind="msg"/></p>', {
+      'mouseenter span': function() {
+        this.model.set({msg:'Hovered!'});
+      },
+      'change:msg': function() {
+        this.view.$().append('<p>Model changed!</p>');
+      }
+    });
+    $$.document.add(catcher);
+<div class="demo"></div>
+
+Presently, the following Agility events are fired:
+
++ `create`: Fired upon object creation.
++ `destroy`: Fired before object is destroyed.
++ `add`: Fired when a new Agility object is added to the object's container.
++ `remove`: Fired with an Agility object is removed from the object's container.
++ `change`: Fired when the model has changed.
++ `change:prop`: Fired when the property `prop` in the model has changed.
+
+## [Persistence](#persistence)
+
+Although Model persistence (e.g. server-side and local HTML5 storage) is not part of Agility's MVC core object, it is bundled with the library as the built-in plugin [persist](#persist).
+
+# [Reference](#reference)
+
+## [Factory $$()](#factory)
+
+_Creates a new MVC object from the given model, view, and controller arguments, and optionally a prototype object._
+
+**Compact syntax:** 
+
+    :::javascript
+    $$([model [,view [,controller]]])
+    $$(prototype [,model [,view [,controller]]])
+
+**Verbose syntax:** 
+
+    :::javascript
+    $$([prototype,] {
+      model: {...},
+      view: {...},
+      controller: {...},
+      user_defined_property: {...}
+    })
+
+where:
+
++ `model`: Standard Javascript object;
++ `view`: String specifying [format](#view-format); or two strings, one for [format](#view-format) one for [style](#view-style); or object containing `format` and/or `style` properties. A format should always contain a root element;
++ `controller`: Javascript object containing named functions that match [event types](#events);
++ `prototype`: Agility object to serve as the prototype for new object.
+
+**Examples:** 
+
+Different view initialization methods:
+
+    :::javascript
+    // One string: format
+    var person1 = $$({name:'Foo Bar'}, '<div data-bind="name"/>');
+    // Two strings: format, style
+    var person2 = $$({name:'Foo Bar'}, '<div data-bind="name"/>', '& { color:red; font-weight:bold; }');
+    // Object: format, style
+    var person3 = $$(
+      { name:'Foo Bar' }, 
+      { format: '<div data-bind="name"/>', style: '& { color:blue; }' }
+    );
+    // Verbose
+    var person4 = $$({
+      model: {
+        name: 'Foo Bar'
+      },
+      view: {
+        format: '<div data-bind="name"/>',
+        style: '& { color:green; font-style:italic; }'
+      }
+    });
+    $$.document.add(person1);
+    $$.document.add(person2);
+    $$.document.add(person3);
+    $$.document.add(person4);
+<div class="demo"></div>
+
+Specifying controller functions - compact:
+
+    :::javascript
+    var button = $$({}, '<p><button>Click me</button></p>', {
+      'click button': function(){
+        alert('You clicked me!');
+      }
+    });
+    $$.document.add(button);
+<div class="demo"></div>
+
+and verbose:
+
+    :::javascript
+    var dataHolder = $$({
+      model: {
+        first:'Joe', 
+        last:'Doe'
+      }, 
+      view: {
+        format: '<p>Wait...</p>'
+      }, 
+      controller: {
+        'change:first': function(){
+          alert('First name changed!');
+        }
+      }
+    });
+    $$.document.add(dataHolder);
+
+    setTimeout(function(){
+      dataHolder.model.set({first:'Mary'});
+    }, 2000);
+<div class="demo"></div>
+
+## [Core methods](#methods-core)
+
+### [.add()](#core-add)
+
+_Adds an Agility object to the object's container._
+
+**Syntax:** 
+
+    :::javascript
+    .add(object [,selector])
+
++ `object`: The Agility object to be added;
++ `selector`: A jQuery selector specifying where the object's root element should be appended in the object's view.
+
+**Returns:**
+
+Owner Agility object (for chainable calls).
+
+### [.remove()](#core-remove)
+
+_Removes an Agility object from the object's container. [This function should rarely be invoked by the user; call instead `.destroy()` within the object to be removed]._
+
+**Syntax:** 
+
+    :::javascript
+    .remove(id)
+
++ `id`: id of the object to be removed (accessed via `._id` property).
+
+**Returns:**
+
+Owner Agility object (for chainable calls).
+
+### [.size()](#core-size)
+
+_Returns number of objects within the object's container._
+
+**Syntax:** 
+
+    :::javascript
+    .size()
+
+**Returns:**
+
+Number of Agility objects in the object's container.
+
+### [.bind()](#core-bind)
+
+_Binds function to event._
+
+**Syntax:** 
+
+    :::javascript
+    .bind(event, fn)
+
++ `event`: String specifying event type. See [events](#events) section for event syntax.
++ `fn`: function to be called upon event triggering.
+
+**Returns:**
+
+Owner Agility object (for chainable calls).
+
+### [.trigger()](#core-trigger)
+
+_Triggers event, optionally passing parameters to listeners._
+
+**Syntax:** 
+
+    :::javascript
+    .trigger(event [,params])
+
++ `event`: String specifying event type. See [events](#events) section for event syntax.
++ `params`: parameters to be passed to listeners as function arguments.
+
+**Returns:**
+
+Owner Agility object (for chainable calls).
+
+### [.destroy()](#core-destroy)
+
+_Erases view, removes object from parent container._
+
+**Syntax:** 
+
+    :::javascript
+    .destroy()
+
+**Returns:**
+
+Nothing.
+
+## [Model methods](#methods-model)
+
+### [.model.set()](#model-set)
+
+_Sets the model data. If model already exists, it's extended._
+
+**Syntax:** 
+
+    :::javascript
+    .model.set(object [,params])
+
++ `object`: The Javascript object containing the data, e.g. `{name:'Joe Doe', birthday:'08/11/71'}`.
++ `params`: Use `{silent:true}` to avoid firing a `change` event; use `{reset:true}` to overwrite model data (and not extend it).
+
+**Returns:**
+
+Owner Agility object (for chainable calls).
+
+### [.model.get()](#model-get)
+
+_Gets model data._
+
+**Syntax:** 
+
+    :::javascript
+    .model.get([property])
+
++ `property`: Desired property, e.g. `'name'`.
+
+**Returns:**
+
+Desired property content if `property` is specified, or a Javascript object containing the entire model data if it's omitted.
+
+### [.model.each()](#model-each)
+
+_Iterates over each model property._
+
+**Syntax:** 
+
+    :::javascript
+    .model.each(fn)
+
++ `fn`: Function to be called with each model property, with arguments `fn(key, value)` where `key` is the property name, and `value` is its content.
+
+**Returns:**
+
+Owner Agility object (for chainable calls).
+
+### [.model.size()](#model-size)
+
+_Gets number of model properties._
+
+**Syntax:** 
+
+    :::javascript
+    .model.size()
+
+**Returns:**
+
+Number of model properties.
+
+## [View methods](#methods-view)
+
+### [.view.$()](#view-jquery)
+
+_Shortcut to jQuery object corresponding to root element or to given selector in the current view._
+
+**Syntax:** 
+
+    :::javascript
+    .view.$([selector])
+
++ `selector`: jQuery selector for the desired DOM element in the object's view.
+
+**Returns:**
+
+jQuery object of root element if no selector, jQuery object at given `selector` otherwise, restricted to the current view's DOM.
+
+### [.view.render()](#view-render)
+
+_Updates View's main jQuery object according to `format`. Automatically called upon creation._
+
+**Syntax:** 
+
+    :::javascript
+    .view.render()
+
+**Returns:**
+
+Owner Agility object (for chainable calls).
+
+### [.view.stylize()](#view-stylize)
+
+_Applies CSS dynamically according to `style` property. Automatically called upon creation._
+
+**Syntax:** 
+
+    :::javascript
+    .view.stylize()
+
+**Returns:**
+
+Owner Agility object (for chainable calls).
+
+### [.view.sync()](#view-sync)
+
+_Synchronizes all view elements with model contents, according to established bindings. Automatically called upon creation._
+
+**Syntax:** 
+
+    :::javascript
+    .view.sync()
+
+**Returns:**
+
+Owner Agility object (for chainable calls).
+
+
+## [Controller methods](#methods-controller)
+
+Built-in controllers are primarily for internal use and typically shouldn't be called by the user.
+
+## [Globals](#globals)
+
+### [$$.document](#globals-document)
+
+_Main Agility object representing the document's body._
+
+Typically you just `.add()` a new Agility object to it.
+
+# [Built-in plugins](#plugins)
+
+## [persist](#persist)
+
+### [Events](#persist-events)
+
+

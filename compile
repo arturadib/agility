@@ -1,0 +1,10 @@
+#!/bin/bash
+
+markdown -x codehilite _index.md > index-content.html
+sed '/__INSERT_POINT__/ r index-content.html' _index.html > index.html
+rm index-content.html
+
+markdown -x codehilite _docs.md > docs-content.html
+sed '/__INSERT_POINT__/ r docs-content.html' _docs.html > docs.html
+rm docs-content.html
+
