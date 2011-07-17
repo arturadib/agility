@@ -17,7 +17,7 @@ The example below initializes an MVC object with empty model, a simple view, and
     $$.document.add(message);
 <div class="demo"></div>
 
-A slightly more verbose initialization syntax is also supported:
+A more explicit initialization syntax is also supported to enhance clarity:
 
     :::javascript
     // Hello World
