@@ -1,5 +1,5 @@
 # Agility.js
-http://agility.js
+http://agilityjs.org
 
 Agility.js is Javascript MVC for the *write less, do more* programmer.
 
