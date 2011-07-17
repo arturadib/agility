@@ -89,6 +89,7 @@ Here's the full source of a "hello world" example:
 
     </html>
 
+The above template has been used for all examples throughout this documentation.
 
 ## [Creating objects](#creating-objects)
 

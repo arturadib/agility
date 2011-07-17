@@ -69,10 +69,11 @@
     <div id='box-wrapper'>
 
 <!-- __INSERT_POINT__ -->
-<p>Agility.js is an <a href="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC</a> library for Javascript that lets you write maintainable and reusable browser code without the verbosity overhead found in <a href="http://documentcloud.github.com/backbone/">similar</a> <a href="http://www.sproutcore.com/">libraries</a>. The goal is to enable developers to write web apps at least as quickly as with jQuery, while ensuring long-term maintainability through an MVC scaffold.</p>
+<p>Agility.js is an <a href="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC</a> library for Javascript that lets you write maintainable and reusable browser code without the verbosity overhead found in <a href="http://documentcloud.github.com/backbone/">related</a> <a href="http://www.sproutcore.com/">libraries</a>. The goal is to enable developers to write web apps at least as quickly as with jQuery, while ensuring long-term maintainability through an MVC scaffold.</p>
 <p>The library itself is a small Javascript file (goal is to remain under 10K), and its only dependency is a recent version of jQuery (Zepto support coming soon). The project is licensed under the liberal <a href="https://github.com/arturadib/agility/blob/master/LICENSE">MIT license</a>.</p>
 <h2>Quick tour</h2>
 <p>Agility works with a single object type that contains an entire model-view-controller stack. These MVC objects are built by passing initializers to the <a href="docs.html#factory">factory function</a> <code>$$()</code>, which takes care of setting up several built-in goodies: default controllers for model-view bindings, model setters/getters, view renderers and stylizers, etc.</p>
+<p>All examples in this tour are self-contained. See <a href="docs.html#getting-started">Getting started</a> in the docs for the HTML template adopted.</p>
 <h3>Object initialization</h3>
 <p>The example below initializes an MVC object with empty model, a simple view, and default controllers:</p>
 <div class="codehilite"><pre><span class="c1">// Hello World</span>
@@ -83,7 +84,7 @@
 
 
 <p><div class="demo"></div></p>
-<p>A slightly more verbose initialization syntax is also supported:</p>
+<p>A more explicit initialization syntax is also supported to enhance clarity:</p>
 <div class="codehilite"><pre><span class="c1">// Hello World</span>
 <span class="c1">// Verbose syntax:</span>
 <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span>
