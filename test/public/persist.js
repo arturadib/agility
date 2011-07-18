@@ -9,20 +9,55 @@
     });
   });
 
-  // asyncTest("Pure model", function(){
-  //   var obj = $$({name:'Joe Doe'}).persist({collection:'people'});
-  // });  
+  asyncTest("Model - create", function(){
+    var obj = $$({name:'Joe Doe'}, {}, {
+      'persist:save:success': function(){
+        equals(this.model.get('id'), 123, "model created");          
+        start();
+      }
+    }).persist($$.adapter.restful, {collection:'people'});
+    obj.save();
+  });
 
-  asyncTest("Pure container", function(){
+  asyncTest("Model - update", function(){
+    var obj = $$({id:123, name:'Joe Doe'}, {}, {
+      'persist:save:success': function(){
+        equals(true, true, "model updated");
+        start();
+      }
+    }).persist($$.adapter.restful, {collection:'people'});
+    obj.save();
+  });
+
+  asyncTest("Model - load", function(){
+    var obj = $$({id:123}, {}, {
+      'persist:load:success': function(){
+        equals(this.model.get('name'), 'Joe Doe', "model loaded");          
+        start();
+      }
+    }).persist($$.adapter.restful, {collection:'people'});
+    obj.load();
+  });
+
+  asyncTest("Model - erase", function(){
+    var obj = $$({id:123, name:'Joe Doe'}, {}, {
+      'persist:erase:success': function(){
+        equals(true, true, "model erased");          
+        start();
+      }
+    }).persist($$.adapter.restful, {collection:'people'});
+    obj.erase();
+  });
+
+  asyncTest("Container - gather", function(){
     var proto = $$({}, '<li data-bind="name"></li>').persist($$.adapter.restful, {collection:'people'});
     var obj = $$({}, '<ul></ul>', {
-      'persist:success': function(event, res){
+      'persist:gather:success': function(event, res){
         equals(this.size(), res.data.length, "container size matches data size");
         equals(this.view.$('li').size(), res.data.length, "view size matches data size");
         start();
       }
-    });
-    obj.gather(proto);    
+    }).persist().gather(proto); // gather
   });
 
 })(jQuery, agility);

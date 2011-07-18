@@ -734,59 +734,144 @@
   
   // Main initializer
   agility.fn.persist = function(adapter, params){
-    if (!adapter || !params) throw "agility.js plugin persist: missing argument";
-    this._data.persist = $.extend({adapter:adapter}, params);    
+    this._data.persist = $.extend({adapter:adapter}, params);
+    this._data.persist.openRequests = 0;  
+
+    // Creates persist methods
+    
+    // .save()
+    // Creates new model or update existing one, depending on whether model has an 'id'
+    this.save = function(){
+      var self = this;
+      self.trigger('persist:start');
+      self._data.persist.openRequests++;
+      this._data.persist.adapter.call(this, {
+        type: self.model.get('id') ? 'PUT' : 'POST', // update vs. create
+        id: self.model.get('id'),
+        data: self.model.get(),
+        complete: function(){
+          self._data.persist.openRequests--;
+          if (self._data.persist.openRequests === 0) {
+            self.trigger('persist:end');
+          }
+        },
+        success: function(data, textStatus, jqXHR){
+          if (data.id) {
+            // id in body
+            self.model.set({id:data.id}, {silent:true});
+          }
+          else if (jqXHR.getResponseHeader('Location')) {
+            // parse id from Location
+            self.model.set({ id: jqXHR.getResponseHeader('Location').match(/\/([0-9]+)$/)[1] }, {silent:true});
+          }
+          self.trigger('persist:save:success');
+        },      
+        error: function(){
+          self.trigger('persist:save:error');
+        }
+      });
+    };
+  
+    // .load()
+    // Loads model with given id
+    this.load = function(){
+      if (this.model.get('id') === undefined) throw 'agility.js: load() needs model id';
+    
+      var self = this;
+      self.trigger('persist:start');
+      self._data.persist.openRequests++;
+      this._data.persist.adapter.call(this, {
+        type: 'GET',
+        id: this.model.get('id'),
+        complete: function(){
+          self._data.persist.openRequests--;
+          if (self._data.persist.openRequests === 0) {
+            self.trigger('persist:end');
+          }
+        },
+        success: function(data, textStatus, jqXHR){
+          self.model.set(data);
+          self.trigger('persist:load:success');
+        },      
+        error: function(){
+          self.trigger('persist:load:error');
+        }
+      });      
+    };
+
+    // .erase()
+    // Erases model with given id
+    this.erase = function(){
+      if (this.model.get('id') === undefined) throw 'agility.js: erase() needs model id';
+    
+      var self = this;
+      self.trigger('persist:start');
+      self._data.persist.openRequests++;
+      this._data.persist.adapter.call(this, {
+        type: 'DELETE',
+        id: this.model.get('id'),
+        complete: function(){
+          self._data.persist.openRequests--;
+          if (self._data.persist.openRequests === 0) {
+            self.trigger('persist:end');
+          }
+        },
+        success: function(data, textStatus, jqXHR){
+          self.destroy();
+          self.trigger('persist:erase:success');
+        },      
+        error: function(){
+          self.trigger('persist:erase:error');
+        }
+      });            
+    };
+
+    // .gather()
+    // Loads collection and appends at selector. All persistence data including adapter comes from proto, not self
+    this.gather = function(proto, selector, params){
+      if (!proto) throw "agility.js plugin persist: gather() needs object prototype";
+      if (!proto._data.persist) throw "agility.js plugin persist: prototype doesn't seem to contain persist() data";
+      var self = this, result;
+
+      self.trigger('persist:start');
+      self._data.persist.openRequests++;
+      result = proto._data.persist.adapter.call(proto, {
+        type: 'GET',
+        complete: function(){
+          self._data.persist.openRequests--;
+          if (self._data.persist.openRequests === 0) {
+            self.trigger('persist:end');
+          }
+        },
+        success: function(data){
+          $.each(data, function(index, entry){
+            var obj = $$(proto, entry);
+            self.add(obj, selector);
+          });
+          self.trigger('persist:gather:success', {data:data});
+        },
+        error: function(){
+          self.trigger('persist:error');
+          self.trigger('persist:gather:error');
+        }
+      });
+    
+      return result;
+    };
+
     return this; // for chainable calls
   };
   
-  agility.fn.save = function(){};
-  
-  agility.fn.load = function(){};
-
-  agility.fn.erase = function(){};
-
-  // Loads collection and appends at selector
-  // All persistence data including adapter comes from proto, not self
-  agility.fn.gather = function(proto, selector, params){
-    if (!proto) throw "agility.js plugin persist: gather() needs object prototype";
-    if (!proto._data.persist) throw "agility.js plugin persist: prototype doesn't seem to contain persist() data";
-    var self = this, result;
-
-    self.trigger('persist:start');
-    self.trigger('persist:gather:start');
-    result = proto._data.persist.adapter.call(proto, {
-      type: 'GET',
-      complete: function(){
-        self.trigger('persist:end');
-        self.trigger('persist:gather:end');
-      },
-      success: function(data){
-        $.each(data, function(index, entry){
-          var obj = $$(proto, entry);
-          self.add(obj, selector);
-        })
-        self.trigger('persist:success', {data:data});
-        self.trigger('persist:gather:success', {data:data});
-      },
-      error: function(){
-        self.trigger('persist:error');
-        self.trigger('persist:gather:error');
-      }
-    });
-    
-    return result;
-  };
-
   // Persistence adapters
   // These are functions. Required parameters:
-  //    {type: 'GET' || 'POST' || 'UPDATE' || 'DELETE'}
+  //    {type: 'GET' || 'POST' || 'PUT' || 'DELETE'}
   agility.adapter = {};
 
   // RESTful JSON adapter using jQuery's ajax()
   agility.adapter.restful = function(_params){
     var self = this; // agility object called from
     var params = $.extend({
-      url: (self._data.persist.baseUrl || '/api/') + self._data.persist.collection,
+      url: (self._data.persist.baseUrl || '/api/') + self._data.persist.collection + (_params.id ? '/'+_params.id : ''),
     }, _params);
     return $.ajax(params);
   };

@@ -149,16 +149,3 @@
 // );
 // $$.document.add(list);
 
-
-var search = $$({query:'Enter search terms'}, '<input type="search" data-bind="query"/>', {
-  'change': function(event){
-    console.log('model is now: ', this.model.get('query'));
-  }
-});
-$$.document.add(search);
-
-    // var obj = $$({name:'Mary'}, "<input type='search' data-bind='name' />");
-    // $$.document.add(obj);
-    // // obj.model.set({name:'Joe Doe'});
-    // obj.view.$().val('Joe Doee').keypress();
-    // console.log(obj.model.get('name'));
