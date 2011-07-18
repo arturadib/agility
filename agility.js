@@ -734,16 +734,18 @@
   
   // Main initializer
   agility.fn.persist = function(adapter, params){
-    this._data.persist = $.extend({adapter:adapter}, params);
-    this._data.persist.openRequests = 0;  
+    var self = this;
+    self._data.persist = $.extend({adapter:adapter}, params);
+    self._data.persist.openRequests = 0;  
 
     // Creates persist methods
     
     // .save()
     // Creates new model or update existing one, depending on whether model has an 'id'
     this.save = function(){
-      var self = this;
-      self.trigger('persist:start');
+      if (self._data.persist.openRequests === 0) {
+        self.trigger('persist:start');
+      }
       self._data.persist.openRequests++;
       this._data.persist.adapter.call(this, {
         type: self.model.get('id') ? 'PUT' : 'POST', // update vs. create
@@ -779,8 +781,9 @@
     this.load = function(){
       if (this.model.get('id') === undefined) throw 'agility.js: load() needs model id';
     
-      var self = this;
-      self.trigger('persist:start');
+      if (self._data.persist.openRequests === 0) {
+        self.trigger('persist:start');
+      }
       self._data.persist.openRequests++;
       this._data.persist.adapter.call(this, {
         type: 'GET',
@@ -808,8 +811,9 @@
     this.erase = function(){
       if (this.model.get('id') === undefined) throw 'agility.js: erase() needs model id';
     
-      var self = this;
-      self.trigger('persist:start');
+      if (self._data.persist.openRequests === 0) {
+        self.trigger('persist:start');
+      }
       self._data.persist.openRequests++;
       this._data.persist.adapter.call(this, {
         type: 'DELETE',
@@ -837,9 +841,11 @@
     this.gather = function(proto, selector, params){
       if (!proto) throw "agility.js plugin persist: gather() needs object prototype";
       if (!proto._data.persist) throw "agility.js plugin persist: prototype doesn't seem to contain persist() data";
-      var self = this, result;
+      var result;
 
-      self.trigger('persist:start');
+      if (self._data.persist.openRequests === 0) {
+        self.trigger('persist:start');
+      }
       self._data.persist.openRequests++;
       result = proto._data.persist.adapter.call(proto, {
         type: 'GET',
