@@ -770,7 +770,9 @@
           self.trigger('persist:save:error');
         }
       });
-    };
+      
+      return this; // for chainable calls
+    }; // save()
   
     // .load()
     // Loads model with given id
@@ -797,7 +799,9 @@
           self.trigger('persist:load:error');
         }
       });      
-    };
+
+      return this; // for chainable calls
+    }; // load()
 
     // .erase()
     // Erases model with given id
@@ -824,7 +828,9 @@
           self.trigger('persist:erase:error');
         }
       });            
-    };
+
+      return this; // for chainable calls
+    }; // erase()
 
     // .gather()
     // Loads collection and appends at selector. All persistence data including adapter comes from proto, not self
@@ -856,7 +862,7 @@
         }
       });
     
-      return result;
+      return this; // for chainable calls
     };
 
     return this; // for chainable calls
@@ -871,7 +877,7 @@
   agility.adapter.restful = function(_params){
     var self = this; // agility object called from
     var params = $.extend({
-      url: (self._data.persist.baseUrl || '/api/') + self._data.persist.collection + (_params.id ? '/'+_params.id : ''),
+      url: (self._data.persist.baseUrl || 'api/') + self._data.persist.collection + (_params.id ? '/'+_params.id : ''),
     }, _params);
     return $.ajax(params);
   };
