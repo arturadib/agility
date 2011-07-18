@@ -10,7 +10,7 @@ The overall goal is to improve code maintainability without sacrificing producti
 
 Agility's programming model is framed around the concept of self-contained MVC objects, where each object can be the prototype of, as well as the container of other MVC objects. This level of abstraction should encompass most applications.
 
-See the [home page](index.html) for a quick overview of its syntax and usage.
+See the [home page](/) for a quick overview of its syntax and usage.
 
 ## [Why MVC?](#intro-mvc)
 
@@ -43,11 +43,11 @@ Here are some of the features that Agility.js has aggregated into a single frame
 + Painless [two-way model-view bindings](#bindings);
 + Implicit [controller-event bindings](#events);
 + [Controller auto-proxying](#auto-proxy) for quick and consistent access to owner object;
-+ [Format and style in-object](#format-style) for "copy-and-paste" reusability.
++ [Format and style in-object](#format-style) for "copy-and-paste" reusability;
 + Small (<10K) single-library include;
 + Compact and efficient [syntax](#factory), inspired by jQuery;
 + Pure [prototypal inheritance](#inheritance);
-+ [Strict MVC](#intro-architecture): core has no additional concepts other than M, V, and C;
++ [Strict MVC](#intro-architecture): core has no additional concepts other than M, V, and C.
 
 ## [Architecture](#intro-architecture)
 
@@ -107,7 +107,7 @@ Agility is framed around the notion of all-in-one MVC objects, or simply "Agilit
     $$.document.add(obj);
 <div class="demo"></div>
 
-Refer to the examples in the [home page](index.html) and elsewhere in this document for several different uses of the factory function, and the [factory function reference](#factory) for syntax details.
+Refer to the examples in the [home page](/) and elsewhere in this document for several different uses of the factory function, and the [factory function reference](#factory) for syntax details.
     
 ## [Bindings](#bindings)
 

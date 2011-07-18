@@ -73,13 +73,13 @@
   <div id="decor"></div>
   
   <div id="menu-wrapper">   
-    <a href="index.html" class="nav">&laquo; Back to Home</a>
+    <a href="/" class="nav">&laquo; Back to Home</a>
     <p></p>
     <div id="menu"></div>
   </div>
   
   <div id="top" class='center'>
-    <div><a href="index.html" style="text-decoration:none; border:none;"><img src="logo.png" style="border:none;"/></a></div>
+    <div><a href="/" style="text-decoration:none; border:none;"><img src="logo.png" style="border:none;"/></a></div>
     <div><em>Documentation</em></div>
   </div>
   
@@ -96,7 +96,7 @@
 </ul>
 <p>The overall goal is to improve code maintainability without sacrificing productivity. It is inspired by the principles behind <a href="http://en.wikipedia.org/wiki/Ruby_on_Rails">Ruby on Rails</a> and <a href="http://www.jquery.com">jQuery</a>.</p>
 <p>Agility's programming model is framed around the concept of self-contained MVC objects, where each object can be the prototype of, as well as the container of other MVC objects. This level of abstraction should encompass most applications.</p>
-<p>See the <a href="index.html">home page</a> for a quick overview of its syntax and usage.</p>
+<p>See the <a href="/">home page</a> for a quick overview of its syntax and usage.</p>
 <h2><a href="#intro-mvc">Why MVC?</a></h2>
 <p>One might wonder, since DOM-querying/Ajax libraries like jQuery make it so easy to whip up a dynamic web app, why bother with an additional layer of complexity?</p>
 <h3><a href="#intro-mvc-quick">Short answer</a></h3>
@@ -115,11 +115,11 @@
 <li>Painless <a href="#bindings">two-way model-view bindings</a>;</li>
 <li>Implicit <a href="#events">controller-event bindings</a>;</li>
 <li><a href="#auto-proxy">Controller auto-proxying</a> for quick and consistent access to owner object;</li>
-<li><a href="#format-style">Format and style in-object</a> for "copy-and-paste" reusability.</li>
+<li><a href="#format-style">Format and style in-object</a> for "copy-and-paste" reusability;</li>
 <li>Small (&lt;10K) single-library include;</li>
 <li>Compact and efficient <a href="#factory">syntax</a>, inspired by jQuery;</li>
 <li>Pure <a href="#inheritance">prototypal inheritance</a>;</li>
-<li><a href="#intro-architecture">Strict MVC</a>: core has no additional concepts other than M, V, and C;</li>
+<li><a href="#intro-architecture">Strict MVC</a>: core has no additional concepts other than M, V, and C.</li>
 </ul>
 <h2><a href="#intro-architecture">Architecture</a></h2>
 <p>Agility's architecture follows one of the simplest MVC patterns: users define Controller functions, which make direct calls to, and handle events from Models and Views. The diagram below illustrates this.</p>
@@ -169,7 +169,7 @@
 
 
 <p><div class="demo"></div></p>
-<p>Refer to the examples in the <a href="index.html">home page</a> and elsewhere in this document for several different uses of the factory function, and the <a href="#factory">factory function reference</a> for syntax details.</p>
+<p>Refer to the examples in the <a href="/">home page</a> and elsewhere in this document for several different uses of the factory function, and the <a href="#factory">factory function reference</a> for syntax details.</p>
 <h2><a href="#bindings">Bindings</a></h2>
 <p>Agility offers painless two-way bindings to keep Models and Views in sync. Binding a given DOM element to a model property is as simple as specifying a <code>data-bind</code> attribute for the desired element:</p>
 <div class="codehilite"><pre><span class="c1">// Two-way input binding (text)</span>
