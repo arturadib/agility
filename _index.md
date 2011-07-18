@@ -1,16 +1,17 @@
+
 Agility.js is an [MVC](http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) library for Javascript that lets you write maintainable and reusable browser code without the verbosity overhead found in [related](http://documentcloud.github.com/backbone/) [libraries](http://www.sproutcore.com/). The goal is to enable developers to write web apps at least as quickly as with jQuery, while ensuring long-term maintainability through an MVC scaffold.
+
+See documentation for a [list of features](docs.html#intro-features).
 
 The library itself is a small Javascript file (goal is to remain under 10K), and its only dependency is a recent version of jQuery (Zepto support coming soon). The project is licensed under the liberal [MIT license](https://github.com/arturadib/agility/blob/master/LICENSE).
 
 ## Quick tour
 
-Agility works with a single object type that contains an entire model-view-controller stack. These MVC objects are built by passing initializers to the [factory function](docs.html#factory) `$$()`, which takes care of setting up several built-in goodies: default controllers for model-view bindings, model setters/getters, view renderers and stylizers, etc.
-
 All examples in this tour are self-contained. See [Getting started](docs.html#getting-started) in the docs for the HTML template adopted.
 
 ### Object initialization
 
-The example below initializes an MVC object with empty model, a simple view, and default controllers:
+Agility works with a single object type that contains an entire model-view-controller stack. These MVC objects are built by passing initializers to the [factory function](docs.html#factory) `$$()`, which takes care of setting up default bindings, auto-proxying, etc. The example below initializes an MVC object with empty model, a simple view, and default controllers:
 
     :::javascript
     // Hello World

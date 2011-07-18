@@ -34,7 +34,11 @@ MVC libraries like Agility typically offer built-in model, view, and controller 
 
 In response to the difficulties above, in the last few years [several](http://www.sproutcore.com/) [superb](http://documentcloud.github.com/backbone/) [libraries](http://knockoutjs.com/) have been introduced to bring MVC (or a variant thereof) to the browser. Although they do a good job of refactoring apps in terms of content, format, and behavior - and hence lead to more maintainable code - they do so at the expense of development speed: Most are fairly verbose, require a considerable amount of repetition, and/or require large library includes.
 
-Agility borrows some useful concepts from these frameworks, and makes rapid development a core part of its design principles. It's ["write less, do more"](http://www.jquery.com) with maintainability. Here are some of the features that Agility.js has aggregated into one framework:
+Agility borrows some useful concepts from the above frameworks, and makes rapid development a core part of its design principles. It's ["write less, do more"](http://www.jquery.com) with maintainability.
+
+### [Features](#intro-features)
+
+Here are some of the features that Agility.js has aggregated into a single framework:
 
 + Painless [two-way model-view bindings](#bindings);
 + Implicit [controller-event bindings](#events);
