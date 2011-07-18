@@ -877,7 +877,8 @@
   agility.adapter.restful = function(_params){
     var self = this; // agility object called from
     var params = $.extend({
-      url: (self._data.persist.baseUrl || 'api/') + self._data.persist.collection + (_params.id ? '/'+_params.id : ''),
+      dataType: 'json',
+      url: (self._data.persist.baseUrl || 'api/') + self._data.persist.collection + (_params.id ? '/'+_params.id : '')
     }, _params);
     return $.ajax(params);
   };

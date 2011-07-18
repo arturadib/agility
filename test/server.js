@@ -38,6 +38,7 @@ app.get('/api/people/:id', function(req, res){
       return;
     }
   });
+  res.header('Content-Type', 'text/html'); // tries to fool library to see if it's robust against wrong content-type
   res.send(_data);
 });
 
