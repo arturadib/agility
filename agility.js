@@ -754,7 +754,7 @@
         complete: function(){
           self._data.persist.openRequests--;
           if (self._data.persist.openRequests === 0) {
-            self.trigger('persist:end');
+            self.trigger('persist:stop');
           }
         },
         success: function(data, textStatus, jqXHR){
@@ -791,7 +791,7 @@
         complete: function(){
           self._data.persist.openRequests--;
           if (self._data.persist.openRequests === 0) {
-            self.trigger('persist:end');
+            self.trigger('persist:stop');
           }
         },
         success: function(data, textStatus, jqXHR){
@@ -821,7 +821,7 @@
         complete: function(){
           self._data.persist.openRequests--;
           if (self._data.persist.openRequests === 0) {
-            self.trigger('persist:end');
+            self.trigger('persist:stop');
           }
         },
         success: function(data, textStatus, jqXHR){
@@ -838,7 +838,7 @@
 
     // .gather()
     // Loads collection and appends at selector. All persistence data including adapter comes from proto, not self
-    this.gather = function(proto, selector, params){
+    this.gather = function(proto, selector){
       if (!proto) throw "agility.js plugin persist: gather() needs object prototype";
       if (!proto._data.persist) throw "agility.js plugin persist: prototype doesn't seem to contain persist() data";
       var result;
@@ -852,7 +852,7 @@
         complete: function(){
           self._data.persist.openRequests--;
           if (self._data.persist.openRequests === 0) {
-            self.trigger('persist:end');
+            self.trigger('persist:stop');
           }
         },
         success: function(data){
