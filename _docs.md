@@ -336,7 +336,7 @@ Since derived objects reuse as much of their ancestors as possible, you can crea
 
 ## [Persistence](#persistence)
 
-Model persistence, such as server-side and local HTML5 storage, is bundled with the library as the plugin [persist](#persist). This is not included in the object factory so as to keep it true to the pure MVC principle.
+Model persistence, such as server-side and local HTML5 storage, is bundled with the library as the plugin [persist](#persist). This is not included in the core so as to keep it as simple as possible.
 
 # [Reference](#reference)
 
@@ -831,10 +831,10 @@ Owner Agility object (for chainable calls), with container filled with new `prot
 
 _RESTful adapter._
 
-This adapter sends `GET`, `POST`, etc requests as per [RESTful specs](http://en.wikipedia.org/wiki/Representational_State_Transfer), and expects JSON response.
+This adapter sends `GET`, `POST`, etc requests as per [RESTful specs](http://en.wikipedia.org/wiki/Representational_State_Transfer), and expects JSON responses.
 
-Default base URL is `api/`, but it can be overridden at initialization time with the parameter `{baseUrl:'your_url/'}` passed to `persist()`. The collection name and/or resource `id` will be appended to form URLs like
+The default base URL is `api/`, but it can be overridden at initialization time with the parameter `{baseUrl:'your_url/'}` passed to `persist()`. The collection name and/or resource `id` will be appended to form URLs like
 
     :::text
-    api/people
-    api/people/123
+    api/resource
+    api/resource/123

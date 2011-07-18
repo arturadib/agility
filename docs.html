@@ -386,7 +386,7 @@
 
 <p><div class="demo"></div></p>
 <h2><a href="#persistence">Persistence</a></h2>
-<p>Model persistence, such as server-side and local HTML5 storage, is bundled with the library as the plugin <a href="#persist">persist</a>. This is not included in the object factory so as to keep it true to the pure MVC principle.</p>
+<p>Model persistence, such as server-side and local HTML5 storage, is bundled with the library as the plugin <a href="#persist">persist</a>. This is not included in the core so as to keep it as simple as possible.</p>
 <h1><a href="#reference">Reference</a></h1>
 <h2><a href="#factory">Factory $$()</a></h2>
 <p><em>Creates a new MVC object from the given model, view, and controller arguments, and optionally a prototype object.</em></p>
@@ -790,10 +790,10 @@
 <p>Owner Agility object (for chainable calls), with container filled with new <code>proto</code> descendants.</p>
 <h3><a href="#persist-restful">$$.adapter.restful</a></h3>
 <p><em>RESTful adapter.</em></p>
-<p>This adapter sends <code>GET</code>, <code>POST</code>, etc requests as per <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">RESTful specs</a>, and expects JSON response.</p>
-<p>Default base URL is <code>api/</code>, but it can be overridden at initialization time with the parameter <code>{baseUrl:'your_url/'}</code> passed to <code>persist()</code>. The collection name and/or resource <code>id</code> will be appended to form URLs like</p>
-<div class="codehilite"><pre>api/people
-api/people/123
+<p>This adapter sends <code>GET</code>, <code>POST</code>, etc requests as per <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">RESTful specs</a>, and expects JSON responses.</p>
+<p>The default base URL is <code>api/</code>, but it can be overridden at initialization time with the parameter <code>{baseUrl:'your_url/'}</code> passed to <code>persist()</code>. The collection name and/or resource <code>id</code> will be appended to form URLs like</p>
+<div class="codehilite"><pre>api/resource
+api/resource/123
 </pre></div>
 
     </div>
