@@ -32,18 +32,18 @@ MVC libraries like Agility typically offer built-in model, view, and controller 
 
 ## [Why Agility?](#intro-agility)
 
-In response to the difficulties above, in the last few years [several](http://www.sproutcore.com/) [superb](http://documentcloud.github.com/backbone/) [libraries](http://knockoutjs.com/) have been introduced to bring MVC (or a variant thereof) to the browser. Although they do a good job of refactoring apps in terms of content, format, and behavior - and hence lead to more maintainable code - they do so at the expense of, well, agility: most are fairly verbose, and require a considerable amount of overhead and repetition.
+In response to the difficulties above, in the last few years [several](http://www.sproutcore.com/) [superb](http://documentcloud.github.com/backbone/) [libraries](http://knockoutjs.com/) have been introduced to bring MVC (or a variant thereof) to the browser. Although they do a good job of refactoring apps in terms of content, format, and behavior - and hence lead to more maintainable code - they do so at the expense of development speed: Most are fairly verbose, require a considerable amount of repetition, and/or require large library includes.
 
-Agility borrows some concepts from these frameworks, but makes development speed a core part of its design principles. It's ["write less, do more"](http://www.jquery.com) with maintainability. Here are some of the features that Agility.js has aggregated into one framework:
+Agility borrows some useful concepts from these frameworks, and makes rapid development a core part of its design principles. It's ["write less, do more"](http://www.jquery.com) with maintainability. Here are some of the features that Agility.js has aggregated into one framework:
 
-+ Small (<10K) single-library include;
-+ Compact and efficient [syntax](#factory), inspired by jQuery;
-+ Pure [prototypal inheritance](#inheritance);
-+ [Strict MVC](#intro-architecture): core has no additional concepts other than M, V, and C;
 + Painless [two-way model-view bindings](#bindings);
 + Implicit [controller-event bindings](#events);
 + [Controller auto-proxying](#auto-proxy) for quick and consistent access to owner object;
 + [Format and style in-object](#format-style) for "copy-and-paste" reusability.
++ Small (<10K) single-library include;
++ Compact and efficient [syntax](#factory), inspired by jQuery;
++ Pure [prototypal inheritance](#inheritance);
++ [Strict MVC](#intro-architecture): core has no additional concepts other than M, V, and C;
 
 ## [Architecture](#intro-architecture)
 

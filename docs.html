@@ -107,17 +107,17 @@
 <p>One established answer to these problems is the <a href="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">Model-View-Controller</a> approach, where your app is organized in "large" objects each having different parts responsible for managing content (Model), format/style (View), and behavior (Controller). For example, a series of DOM input elements such as Name, Address, Phone, etc, related to the abstract concept of "person" become part of an object "person", whose model contains the raw data, view contains the HTML/CSS presentation, and controller contains the actions that will be called in response to events in the former two.</p>
 <p>MVC libraries like Agility typically offer built-in model, view, and controller methods that encompass most use case scenarios, so you don't have to reinvent the wheel or repeat yourself. That way all functions, formatting, and data related to an abstract concept (e.g. "person") are all in one place, the DOM is always in sync with the data, and the data is always ready to be sent to/retrieved from the server in one call.</p>
 <h2><a href="#intro-agility">Why Agility?</a></h2>
-<p>In response to the difficulties above, in the last few years <a href="http://www.sproutcore.com/">several</a> <a href="http://documentcloud.github.com/backbone/">superb</a> <a href="http://knockoutjs.com/">libraries</a> have been introduced to bring MVC (or a variant thereof) to the browser. Although they do a good job of refactoring apps in terms of content, format, and behavior - and hence lead to more maintainable code - they do so at the expense of, well, agility: most are fairly verbose, and require a considerable amount of overhead and repetition.</p>
-<p>Agility borrows some concepts from these frameworks, but makes development speed a core part of its design principles. It's <a href="http://www.jquery.com">"write less, do more"</a> with maintainability. Here are some of the features that Agility.js has aggregated into one framework:</p>
+<p>In response to the difficulties above, in the last few years <a href="http://www.sproutcore.com/">several</a> <a href="http://documentcloud.github.com/backbone/">superb</a> <a href="http://knockoutjs.com/">libraries</a> have been introduced to bring MVC (or a variant thereof) to the browser. Although they do a good job of refactoring apps in terms of content, format, and behavior - and hence lead to more maintainable code - they do so at the expense of development speed: Most are fairly verbose, require a considerable amount of repetition, and/or require large library includes.</p>
+<p>Agility borrows some useful concepts from these frameworks, and makes rapid development a core part of its design principles. It's <a href="http://www.jquery.com">"write less, do more"</a> with maintainability. Here are some of the features that Agility.js has aggregated into one framework:</p>
 <ul>
-<li>Small (&lt;10K) single-library include;</li>
-<li>Compact and efficient <a href="#factory">syntax</a>, inspired by jQuery;</li>
-<li>Pure <a href="#inheritance">prototypal inheritance</a>;</li>
-<li><a href="#intro-architecture">Strict MVC</a>: core has no additional concepts other than M, V, and C;</li>
 <li>Painless <a href="#bindings">two-way model-view bindings</a>;</li>
 <li>Implicit <a href="#events">controller-event bindings</a>;</li>
 <li><a href="#auto-proxy">Controller auto-proxying</a> for quick and consistent access to owner object;</li>
 <li><a href="#format-style">Format and style in-object</a> for "copy-and-paste" reusability.</li>
+<li>Small (&lt;10K) single-library include;</li>
+<li>Compact and efficient <a href="#factory">syntax</a>, inspired by jQuery;</li>
+<li>Pure <a href="#inheritance">prototypal inheritance</a>;</li>
+<li><a href="#intro-architecture">Strict MVC</a>: core has no additional concepts other than M, V, and C;</li>
 </ul>
 <h2><a href="#intro-architecture">Architecture</a></h2>
 <p>Agility's architecture follows one of the simplest MVC patterns: users define Controller functions, which make direct calls to, and handle events from Models and Views. The diagram below illustrates this.</p>
