@@ -650,9 +650,151 @@
 <p>Typically you just <code>.add()</code> a new Agility object to it.</p>
 <h1><a href="#plugins">Built-in plugins</a></h1>
 <h2><a href="#persist">persist</a></h2>
-<p>The plugin <code>persist</code> lets you store and retrieve models using a given adapter. </p>
+<p>The plugin <code>persist</code> lets you save and retrieve models to/from a storage server using a given adapter. Persistence is always manual, i.e. needs to be explicitly called by user.</p>
+<p>All methods fire the generic events:</p>
+<ul>
+<li><code>persist:start</code>: fired when starting a new request and no other requests are pending.</li>
+<li><code>persist:stop</code>: fired after all pending requests have stopped.</li>
+<li><code>persist:error</code>: fired when a persistence error has occurred.</li>
+</ul>
+<p>as well as the method-specific events:</p>
+<ul>
+<li><code>persist:METHOD:success</code>: fired after <code>METHOD</code> has successfully completed request.</li>
+<li><code>persist:METHOD:error</code>: fired if <code>METHOD</code> gave rise to an error.</li>
+</ul>
+<h3><a href="#persist-persist">.persist()</a></h3>
+<p><em>Initializes persistence plugin, creates persistence methods for owner object.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">persist</span><span class="p">([</span><span class="nx">adapter</span><span class="p">,</span> <span class="nx">params</span><span class="p">])</span>
+</pre></div>
+
+
+<p>where:</p>
+<ul>
+<li><code>adapter</code>: Function containing the implementation of the persistence algorithms.</li>
+<li><code>params</code>: Parameters to be passed to adapter. Requires at least <code>{collection:'collection_name'}</code>.</li>
+</ul>
+<p>If the adapter-params pair is not given, the only method that can be invoked is <a href="#persist-gather">gather</a>.</p>
+<p><strong>Returns:</strong></p>
+<p>Owner Agility object (for chainable calls).</p>
+<h3><a href="#persist-load">.load()</a></h3>
+<p><em>Refreshes model with given <code>id</code> from server.</em></p>
+<p>Fires the following events in addition to generic <code>persist</code> events:</p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">load</span><span class="p">()</span>
+</pre></div>
+
+
+<p><strong>Examples:</strong> </p>
+<p>Loads model from server:</p>
+<div class="codehilite"><pre><span class="kd">var</span> <span class="nx">person</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">id</span><span class="o">:</span><span class="mi">123</span><span class="p">},</span> <span class="s1">&#39;&lt;p&gt;Name: &lt;span data-bind=&quot;name&quot;/&gt;&lt;/p&gt;&#39;</span><span class="p">).</span><span class="nx">persist</span><span class="p">(</span><span class="nx">$$</span><span class="p">.</span><span class="nx">adapter</span><span class="p">.</span><span class="nx">restful</span><span class="p">,</span> <span class="p">{</span><span class="nx">collection</span><span class="o">:</span><span class="s1">&#39;people&#39;</span><span class="p">});</span>
+
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
+<span class="nx">person</span><span class="p">.</span><span class="nx">load</span><span class="p">();</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<p><strong>Returns</strong></p>
+<p>Owner Agility object (for chainable calls), with updated model.</p>
+<h3><a href="#persist-save">.save()</a></h3>
+<p><em>Updates model on the server if <code>id</code> present, creates a new resource otherwise.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">save</span><span class="p">()</span>
+</pre></div>
+
+
+<p><strong>Examples:</strong> </p>
+<p>Creates new model on server:</p>
+<div class="codehilite"><pre><span class="kd">var</span> <span class="nx">person</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span><span class="s1">&#39;Joe Doe&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;p&gt;Name: &lt;span data-bind=&quot;name&quot;/&gt;&lt;/p&gt;&#39;</span><span class="p">).</span><span class="nx">persist</span><span class="p">(</span><span class="nx">$$</span><span class="p">.</span><span class="nx">adapter</span><span class="p">.</span><span class="nx">restful</span><span class="p">,</span> <span class="p">{</span><span class="nx">collection</span><span class="o">:</span><span class="s1">&#39;people&#39;</span><span class="p">});</span>
+
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
+<span class="nx">person</span><span class="p">.</span><span class="nx">save</span><span class="p">();</span>
+</pre></div>
+
+
+<p>Updates model on server:</p>
+<div class="codehilite"><pre><span class="kd">var</span> <span class="nx">person</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">id</span><span class="o">:</span><span class="mi">123</span><span class="p">,</span> <span class="nx">name</span><span class="o">:</span><span class="s1">&#39;Joe Doe&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;p&gt;Name: &lt;span data-bind=&quot;name&quot;/&gt;&lt;/p&gt;&#39;</span><span class="p">).</span><span class="nx">persist</span><span class="p">(</span><span class="nx">$$</span><span class="p">.</span><span class="nx">adapter</span><span class="p">.</span><span class="nx">restful</span><span class="p">,</span> <span class="p">{</span><span class="nx">collection</span><span class="o">:</span><span class="s1">&#39;people&#39;</span><span class="p">});</span>
+
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
+<span class="nx">person</span><span class="p">.</span><span class="nx">save</span><span class="p">();</span> <span class="c1">// will update, since &#39;id&#39; exists</span>
+</pre></div>
+
+
+<p><strong>Returns</strong></p>
+<p>Owner Agility object (for chainable calls), with new model <code>id</code> (if created new resource).</p>
+<h3><a href="#persist-gather">.gather()</a></h3>
+<p><em>Loads a collection of models into container, using given prototype.</em></p>
+<p>Each gathered MVC object will be <code>.add()</code>ed to the container, and will be a direct descendant of given prototype object. All persistence information, including collection name, should be initialized in the prototype object.</p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">gather</span><span class="p">(</span><span class="nx">proto</span> <span class="p">[,</span><span class="nx">selector</span><span class="p">])</span>
+</pre></div>
+
+
+<p>where:</p>
+<ul>
+<li><code>proto</code>: Prototype object with <code>persist</code> already initialized.</li>
+<li><code>selector</code>: jQuery selector indicating where the view of <code>proto</code> should be appended. Will append to root element if omitted.</li>
+</ul>
+<p><strong>Examples:</strong> </p>
+<p>Loads a collection of persons from server:</p>
+<div class="codehilite"><pre><span class="c1">// Prototype</span>
+<span class="kd">var</span> <span class="nx">person</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;li data-bind=&quot;name&quot;/&gt;&#39;</span><span class="p">).</span><span class="nx">persist</span><span class="p">(</span><span class="nx">$$</span><span class="p">.</span><span class="nx">adapter</span><span class="p">.</span><span class="nx">restful</span><span class="p">,</span> <span class="p">{</span><span class="nx">collection</span><span class="o">:</span><span class="s1">&#39;people&#39;</span><span class="p">});</span>
+
+<span class="c1">// Container</span>
+<span class="kd">var</span> <span class="nx">people</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;div&gt;People: &lt;ul/&gt;&lt;/div&gt;&#39;</span><span class="p">).</span><span class="nx">persist</span><span class="p">();</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">people</span><span class="p">);</span>
+
+<span class="nx">people</span><span class="p">.</span><span class="nx">gather</span><span class="p">(</span><span class="nx">person</span><span class="p">,</span> <span class="s1">&#39;ul&#39;</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<p>Same as above, with load button and "Loading..." Ajax message:</p>
+<div class="codehilite"><pre><span class="c1">// Prototype</span>
+<span class="kd">var</span> <span class="nx">person</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;li data-bind=&quot;name&quot;/&gt;&#39;</span><span class="p">).</span><span class="nx">persist</span><span class="p">(</span><span class="nx">$$</span><span class="p">.</span><span class="nx">adapter</span><span class="p">.</span><span class="nx">restful</span><span class="p">,</span> <span class="p">{</span><span class="nx">collection</span><span class="o">:</span><span class="s1">&#39;people&#39;</span><span class="p">});</span>
+
+<span class="c1">// Container</span>
+<span class="kd">var</span> <span class="nx">people</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span>
+  <span class="nx">model</span><span class="o">:</span> <span class="p">{},</span>
+  <span class="nx">view</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">format</span><span class="o">:</span> 
+      <span class="s1">&#39;&lt;div&gt;\</span>
+<span class="s1">        &lt;span&gt;Loading ...&lt;/span&gt;\</span>
+<span class="s1">        &lt;button&gt;Load people&lt;/button&gt;&lt;br/&gt;&lt;br/&gt;\</span>
+<span class="s1">        People: &lt;ul/&gt;\</span>
+<span class="s1">      &lt;/div&gt;&#39;</span><span class="p">,</span>
+    <span class="nx">style</span><span class="o">:</span>
+      <span class="s1">&#39;&amp; {position:relative}\</span>
+<span class="s1">       &amp; span {position:absolute; top:0; right:0; padding:3px 6px; background:red; color:white; display:none; }&#39;</span>
+  <span class="p">},</span> 
+  <span class="nx">controller</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s1">&#39;click button&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;ul&#39;</span><span class="p">).</span><span class="nx">empty</span><span class="p">();</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">gather</span><span class="p">(</span><span class="nx">person</span><span class="p">,</span> <span class="s1">&#39;ul&#39;</span><span class="p">);</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;persist:start&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;span&#39;</span><span class="p">).</span><span class="nx">show</span><span class="p">();</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;persist:stop&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;span&#39;</span><span class="p">).</span><span class="nx">hide</span><span class="p">();</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}).</span><span class="nx">persist</span><span class="p">();</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">people</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<p><strong>Returns</strong></p>
+<p>Owner Agility object (for chainable calls), with container filled with new <code>proto</code> descendants.</p>
 <h3><a href="#persist-restful">$$.adapter.restful</a></h3>
-<h3><a href="#persist-events">Events</a></h3>
+<p><em>RESTful adapter.</em></p>
+<p>This adapter sends <code>GET</code>, <code>POST</code>, etc requests as per <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">RESTful specs</a>, and expects JSON response.</p>
+<p>Default base URL is <code>api/</code>, but it can be overridden at initialization time with the parameter <code>{baseUrl:'your_url/'}</code> passed to <code>persist()</code>. The collection name and/or resource <code>id</code> will be appended to form URLs like</p>
+<div class="codehilite"><pre>api/people
+api/people/123
+</pre></div>
 
     </div>
   </div>

@@ -666,12 +666,175 @@ Typically you just `.add()` a new Agility object to it.
 
 ## [persist](#persist)
 
-The plugin `persist` lets you store and retrieve models using a given adapter. 
+The plugin `persist` lets you save and retrieve models to/from a storage server using a given adapter. Persistence is always manual, i.e. needs to be explicitly called by user.
+
+All methods fire the generic events:
+
++ `persist:start`: fired when starting a new request and no other requests are pending.
++ `persist:stop`: fired after all pending requests have stopped.
++ `persist:error`: fired when a persistence error has occurred.
+
+as well as the method-specific events:
+
++ `persist:METHOD:success`: fired after `METHOD` has successfully completed request.
++ `persist:METHOD:error`: fired if `METHOD` gave rise to an error.
+
+### [.persist()](#persist-persist)
+
+_Initializes persistence plugin, creates persistence methods for owner object._
+
+**Syntax:** 
+
+    :::javascript
+    .persist([adapter, params])
+
+where:
+
++ `adapter`: Function containing the implementation of the persistence algorithms.
++ `params`: Parameters to be passed to adapter. Requires at least `{collection:'collection_name'}`.
+
+If the adapter-params pair is not given, the only method that can be invoked is [gather](#persist-gather).
+
+**Returns:**
+
+Owner Agility object (for chainable calls).
+
+### [.load()](#persist-load)
+
+_Refreshes model with given `id` from server._
+
+Fires the following events in addition to generic `persist` events:
+
+**Syntax:** 
+
+    :::javascript
+    .load()
+
+**Examples:** 
+
+Loads model from server:
+
+    :::javascript
+    var person = $$({id:123}, '<p>Name: <span data-bind="name"/></p>').persist($$.adapter.restful, {collection:'people'});
+    
+    $$.document.add(person);
+    person.load();
+<div class="demo"></div>
+
+**Returns**
+
+Owner Agility object (for chainable calls), with updated model.
+
+### [.save()](#persist-save)
+
+_Updates model on the server if `id` present, creates a new resource otherwise._
+
+**Syntax:** 
+
+    :::javascript
+    .save()
+
+**Examples:** 
+
+Creates new model on server:
+
+    :::javascript
+    var person = $$({name:'Joe Doe'}, '<p>Name: <span data-bind="name"/></p>').persist($$.adapter.restful, {collection:'people'});
+    
+    $$.document.add(person);
+    person.save();
+
+Updates model on server:
+
+    :::javascript
+    var person = $$({id:123, name:'Joe Doe'}, '<p>Name: <span data-bind="name"/></p>').persist($$.adapter.restful, {collection:'people'});
+    
+    $$.document.add(person);
+    person.save(); // will update, since 'id' exists
+
+**Returns**
+
+Owner Agility object (for chainable calls), with new model `id` (if created new resource).
+
+### [.gather()](#persist-gather)
+
+_Loads a collection of models into container, using given prototype._
+
+Each gathered MVC object will be `.add()`ed to the container, and will be a direct descendant of given prototype object. All persistence information, including collection name, should be initialized in the prototype object.
+
+**Syntax:** 
+
+    :::javascript
+    .gather(proto [,selector])
+
+where:
+
++ `proto`: Prototype object with `persist` already initialized.
++ `selector`: jQuery selector indicating where the view of `proto` should be appended. Will append to root element if omitted.
+
+**Examples:** 
+
+Loads a collection of persons from server:
+
+    :::javascript
+    // Prototype
+    var person = $$({}, '<li data-bind="name"/>').persist($$.adapter.restful, {collection:'people'});
+    
+    // Container
+    var people = $$({}, '<div>People: <ul/></div>').persist();
+    $$.document.add(people);
+
+    people.gather(person, 'ul');
+<div class="demo"></div>
+
+Same as above, with load button and "Loading..." Ajax message:
+
+    :::javascript
+    // Prototype
+    var person = $$({}, '<li data-bind="name"/>').persist($$.adapter.restful, {collection:'people'});
+    
+    // Container
+    var people = $$({
+      model: {},
+      view: {
+        format: 
+          '<div>\
+            <span>Loading ...</span>\
+            <button>Load people</button><br/><br/>\
+            People: <ul/>\
+          </div>',
+        style:
+          '& {position:relative}\
+           & span {position:absolute; top:0; right:0; padding:3px 6px; background:red; color:white; display:none; }'
+      }, 
+      controller: {
+        'click button': function(){
+          this.view.$('ul').empty();
+          this.gather(person, 'ul');
+        },
+        'persist:start': function(){
+          this.view.$('span').show();
+        },
+        'persist:stop': function(){
+          this.view.$('span').hide();
+        }
+      }
+    }).persist();
+    $$.document.add(people);
+<div class="demo"></div>
+
+**Returns**
+
+Owner Agility object (for chainable calls), with container filled with new `proto` descendants.
 
 ### [$$.adapter.restful](#persist-restful)
 
+_RESTful adapter._
 
+This adapter sends `GET`, `POST`, etc requests as per [RESTful specs](http://en.wikipedia.org/wiki/Representational_State_Transfer), and expects JSON response.
 
-### [Events](#persist-events)
+Default base URL is `api/`, but it can be overridden at initialization time with the parameter `{baseUrl:'your_url/'}` passed to `persist()`. The collection name and/or resource `id` will be appended to form URLs like
 
-
+    :::text
+    api/people
+    api/people/123
