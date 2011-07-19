@@ -141,6 +141,66 @@ Views don't require styles (CSS) to be declared in-object, but doing so leads to
     $$.document.add(clock);
 <div class="demo"></div>
 
+### Persistence
+
+Server- and client-side persistence can be implemented through the built-in plugin [persist](docs.html#persist). You can setup and `load` a model from a RESTful service in one line (the view is automatically updated via model-view binding):
+
+    :::javascript
+    var person = $$({id:123}, '<p>Name: <span data-bind="name"/></p>', '& span {background:blue; color:white; padding:3px 6px;}');    
+
+    // Initialize RESTful adapter, load model with above id:
+    person.persist($$.adapter.restful, {collection:'people'}).load();
+    
+    $$.document.add(person);
+<div class="demo"></div>
+
+(View JSON server response used in the request above: [GET api/people/123](api/people/123)).
+
+You can also `gather` an entire collection of models and insert them as MVC objects (derived from a prototype) into an object's container, as illustrated below. This example also shows how Ajax "loading" icons/messages are implemented through two simple controllers:
+
+    :::javascript
+    //
+    // person: prototype (will be 'gathered' below)
+    //
+    var person = $$({}, '<li data-bind="name"/>').persist($$.adapter.restful, {collection:'people'});
+
+    //
+    // people: persons container
+    //
+    var people = $$({
+      model: {},
+      view: {
+        format: 
+          '<div>\
+            <span>Loading ...</span>\
+            <button>Load people</button><br/><br/>\
+            People: <ul/>\
+          </div>',
+        style:
+          '& {position:relative}\
+           & span {position:absolute; top:0; right:0; padding:3px 6px; background:red; color:white; display:none; }'
+      }, 
+      controller: {
+        'click button': function(){
+          this.view.$('ul').empty();
+          this.gather(person, 'ul');
+        },
+        // Ajax loading message - start
+        'persist:start': function(){
+          this.view.$('span').show();
+        },
+        // Ajax loading message - stop
+        'persist:stop': function(){
+          this.view.$('span').hide();
+        }
+      }
+    }).persist(); // this makes .gather() available
+    $$.document.add(people);
+<div class="demo"></div>
+
+(View JSON server response used in the request above: [GET api/people/](api/people/)).
+
+
 ### Short examples
 
 Last but not least, no modern MVC library is complete without a simple To-Do list example. The fully functional example below has 17 lines of code:

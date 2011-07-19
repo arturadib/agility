@@ -201,6 +201,62 @@
 
 
 <p><div class="demo"></div></p>
+<h3>Persistence</h3>
+<p>Server- and client-side persistence can be implemented through the built-in plugin <a href="docs.html#persist">persist</a>. You can setup and <code>load</code> a model from a RESTful service in one line (the view is automatically updated via model-view binding):</p>
+<div class="codehilite"><pre><span class="kd">var</span> <span class="nx">person</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">id</span><span class="o">:</span><span class="mi">123</span><span class="p">},</span> <span class="s1">&#39;&lt;p&gt;Name: &lt;span data-bind=&quot;name&quot;/&gt;&lt;/p&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&amp; span {background:blue; color:white; padding:3px 6px;}&#39;</span><span class="p">);</span>
+
+<span class="c1">// Initialize RESTful adapter, load model with above id:</span>
+<span class="nx">person</span><span class="p">.</span><span class="nx">persist</span><span class="p">(</span><span class="nx">$$</span><span class="p">.</span><span class="nx">adapter</span><span class="p">.</span><span class="nx">restful</span><span class="p">,</span> <span class="p">{</span><span class="nx">collection</span><span class="o">:</span><span class="s1">&#39;people&#39;</span><span class="p">}).</span><span class="nx">load</span><span class="p">();</span>
+
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<p>(View JSON server response used in the request above: <a href="api/people/123">GET api/people/123</a>).</p>
+<p>You can also <code>gather</code> an entire collection of models and insert them as MVC objects (derived from a prototype) into an object's container, as illustrated below. This example also shows how Ajax "loading" icons/messages are implemented through two simple controllers:</p>
+<div class="codehilite"><pre><span class="c1">//</span>
+<span class="c1">// person: prototype (will be &#39;gathered&#39; below)</span>
+<span class="c1">//</span>
+<span class="kd">var</span> <span class="nx">person</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;li data-bind=&quot;name&quot;/&gt;&#39;</span><span class="p">).</span><span class="nx">persist</span><span class="p">(</span><span class="nx">$$</span><span class="p">.</span><span class="nx">adapter</span><span class="p">.</span><span class="nx">restful</span><span class="p">,</span> <span class="p">{</span><span class="nx">collection</span><span class="o">:</span><span class="s1">&#39;people&#39;</span><span class="p">});</span>
+
+<span class="c1">//</span>
+<span class="c1">// people: persons container</span>
+<span class="c1">//</span>
+<span class="kd">var</span> <span class="nx">people</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span>
+  <span class="nx">model</span><span class="o">:</span> <span class="p">{},</span>
+  <span class="nx">view</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">format</span><span class="o">:</span> 
+      <span class="s1">&#39;&lt;div&gt;\</span>
+<span class="s1">        &lt;span&gt;Loading ...&lt;/span&gt;\</span>
+<span class="s1">        &lt;button&gt;Load people&lt;/button&gt;&lt;br/&gt;&lt;br/&gt;\</span>
+<span class="s1">        People: &lt;ul/&gt;\</span>
+<span class="s1">      &lt;/div&gt;&#39;</span><span class="p">,</span>
+    <span class="nx">style</span><span class="o">:</span>
+      <span class="s1">&#39;&amp; {position:relative}\</span>
+<span class="s1">       &amp; span {position:absolute; top:0; right:0; padding:3px 6px; background:red; color:white; display:none; }&#39;</span>
+  <span class="p">},</span> 
+  <span class="nx">controller</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s1">&#39;click button&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;ul&#39;</span><span class="p">).</span><span class="nx">empty</span><span class="p">();</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">gather</span><span class="p">(</span><span class="nx">person</span><span class="p">,</span> <span class="s1">&#39;ul&#39;</span><span class="p">);</span>
+    <span class="p">},</span>
+    <span class="c1">// Ajax loading message - start</span>
+    <span class="s1">&#39;persist:start&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;span&#39;</span><span class="p">).</span><span class="nx">show</span><span class="p">();</span>
+    <span class="p">},</span>
+    <span class="c1">// Ajax loading message - stop</span>
+    <span class="s1">&#39;persist:stop&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;span&#39;</span><span class="p">).</span><span class="nx">hide</span><span class="p">();</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}).</span><span class="nx">persist</span><span class="p">();</span> <span class="c1">// this makes .gather() available</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">people</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<p>(View JSON server response used in the request above: <a href="api/people/">GET api/people/</a>).</p>
 <h3>Short examples</h3>
 <p>Last but not least, no modern MVC library is complete without a simple To-Do list example. The fully functional example below has 17 lines of code:</p>
 <div class="codehilite"><pre><span class="c1">//</span>
