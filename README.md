@@ -1,6 +1,6 @@
 # Agility.js
  
-http://agilityjs.org
+http://agilityjs.com
 
 Agility is an MVC library that lets you write **maintainable** browser code without compromising on **development speed**. Features include:
 
@@ -15,4 +15,4 @@ Agility is an MVC library that lets you write **maintainable** browser code with
 
 Curious to learn more? 
 
-Visit http://agilityjs.org or fork the project and commit away - contributors are always welcome!
+Visit http://agilityjs.com or fork the project and commit away - contributors are always welcome!

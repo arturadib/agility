@@ -1,7 +1,6 @@
 /*
 
   Agility.js  
-  v0.1.0rc1
   
   Licensed under the MIT license
   Copyright (c) Artur B. Adib, 2011
