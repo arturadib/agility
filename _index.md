@@ -1,5 +1,5 @@
 
-Agility.js is an [MVC](http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) library for Javascript that lets you write maintainable and reusable browser code without the verbose or infrastructural overhead found in [related](http://documentcloud.github.com/backbone/) [libraries](http://www.sproutcore.com/). The goal is to enable developers to write web apps at least as quickly as with jQuery, while ensuring long-term maintainability through MVC objects.
+Agility.js is an [MVC](http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) library for Javascript that lets you write maintainable and reusable browser code without the verbose or infrastructural overhead found in [some](http://documentcloud.github.com/backbone/) [other](http://knockoutjs.com/) [libraries](http://www.sproutcore.com/) that have inspired the project. The goal is to enable developers to write web apps at least as quickly as with jQuery, while ensuring long-term maintainability through MVC objects.
 
 The library itself is a small Javascript file (goal is to remain under 10K), and its only dependency is a recent version of jQuery (Zepto support coming soon). The project is licensed under the liberal [MIT license](https://github.com/arturadib/agility/blob/master/LICENSE).
 
