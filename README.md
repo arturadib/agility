@@ -2,31 +2,16 @@
  
 http://agilityjs.org
 
-Agility lets you write **maintainable** browser code without compromising on **productivity**. Write fully functional apps in fewer lines, like this minimal To-Do app (17 lines of code):
+Agility is an MVC library that lets you write **maintainable** browser code without compromising on **productivity**. Features include:
 
-    //
-    // Item prototype
-    //
-    var item = $$({}, '<li><span data-bind="content"/> <button>x</button></li>', '& span { cursor:pointer; }', {
-      'click span': function(){
-        var input = prompt('Edit to-do item:', this.model.get('content'));
-        if (!input) return;
-        this.model.set({content:input});
-      },
-      'click button': function(){
-        this.destroy();
-      }
-    });
-    //
-    // List of items
-    //
-    var list = $$({}, '<div> <button id="new">New item</button> <ul></ul> </div>', {
-      'click #new': function(){
-        var newItem = $$(item, {content:'Click to edit'});
-        this.add(newItem, 'ul'); // add to container, appending at <ul>
-      }
-    });
-    $$.document.add(list);
++ Painless two-way model-view bindings;
++ Implicit controller-event bindings;
++ Controller auto-proxying for quick and consistent access to owner object;
++ Format and style in-object for "copy-and-paste" reusability;
++ Small (<10K) single-library include;
++ Compact and efficient syntax, inspired by jQuery;
++ Pure prototypal inheritance;
++ Strict MVC: core has no additional concepts other than M, V, and C.
 
 Curious to learn more? 
 
