@@ -1,9 +1,9 @@
 
-Agility.js is an [MVC](http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) library for Javascript that lets you write maintainable and reusable browser code without the verbosity overhead found in [related](http://documentcloud.github.com/backbone/) [libraries](http://www.sproutcore.com/). The goal is to enable developers to write web apps at least as quickly as with jQuery, while ensuring long-term maintainability through an MVC scaffold.
-
-See documentation for a [list of features](docs.html#intro-features).
+Agility.js is an [MVC](http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) library for Javascript that lets you write maintainable and reusable browser code without the verbose or infrastructural overhead found in [related](http://documentcloud.github.com/backbone/) [libraries](http://www.sproutcore.com/). The goal is to enable developers to write web apps at least as quickly as with jQuery, while ensuring long-term maintainability through MVC objects.
 
 The library itself is a small Javascript file (goal is to remain under 10K), and its only dependency is a recent version of jQuery (Zepto support coming soon). The project is licensed under the liberal [MIT license](https://github.com/arturadib/agility/blob/master/LICENSE).
+
+See the documentation for a more complete [list of features](docs.html#intro-features).
 
 ## Quick tour
 
@@ -15,16 +15,6 @@ Agility works with a single object type that contains an entire model-view-contr
 
     :::javascript
     // Hello World
-    // Compact syntax: initializers are passed in the order M, V, C:
-    var message = $$({}, '<div>Hello World</div>');
-    $$.document.add(message);
-<div class="demo"></div>
-
-A more explicit initialization syntax is also supported to enhance clarity:
-
-    :::javascript
-    // Hello World
-    // Verbose syntax:
     var message = $$({
       model: {}, 
       view: {
@@ -35,22 +25,31 @@ A more explicit initialization syntax is also supported to enhance clarity:
     $$.document.add(message);
 <div class="demo"></div>
 
+A more compact initialization syntax is also supported for smaller objects:
+
+    :::javascript
+    // Hello World
+    // Compact syntax: initializers are passed in the order M, V, C:
+    var message = $$({}, '<div>Hello World</div>');
+    $$.document.add(message);
+<div class="demo"></div>
+
 ### Model-view bindings
 
 The framework comes with a powerful model-view binder, so that views are always in sync with models and vice-versa. Establishing bindings is as simple as introducing a `data-bind` attribute in the desired DOM element; the factory function takes care of creating the necessary controllers:
 
     :::javascript
     // Bind model to element's HTML content
-    var message = $$({txt:'Hello World'}, '<div data-bind="txt"/>');
+    var message = $$({txt:"I'm text from a model"}, '<div data-bind="txt"/>');
     $$.document.add(message);
 
     // Bind model to element's attribute
     var url = 'http://google.com/favicon.ico';
-    var icon = $$({path:url}, '<img data-bind="src path"/>');
+    var icon = $$({path:url}, '<p>Image src from model: <img data-bind="src path"/></p>');
     $$.document.add(icon);
 <div class="demo"></div>
 
-Bindings are always two-way, and work with most input types:
+Bindings are always two-way (instant updates in both directions), and work with most input types:
 
     :::javascript
     // Two-way binding (checkbox)

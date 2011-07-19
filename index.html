@@ -53,7 +53,7 @@
 
   <div id="top" class='center'>
     <div><img src="logo.png"/></div>
-    <div>The minimalist and mighty Javascript MVC library</div>
+    <div>Write web apps in fewer lines. Make maintaining code a breeze.</div>
   </div>
 
   <div id="menu" class='center'>
@@ -69,24 +69,14 @@
     <div id='box-wrapper'>
 
 <!-- __INSERT_POINT__ -->
-<p>Agility.js is an <a href="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC</a> library for Javascript that lets you write maintainable and reusable browser code without the verbosity overhead found in <a href="http://documentcloud.github.com/backbone/">related</a> <a href="http://www.sproutcore.com/">libraries</a>. The goal is to enable developers to write web apps at least as quickly as with jQuery, while ensuring long-term maintainability through an MVC scaffold.</p>
-<p>See documentation for a <a href="docs.html#intro-features">list of features</a>.</p>
+<p>Agility.js is an <a href="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC</a> library for Javascript that lets you write maintainable and reusable browser code without the verbose or infrastructural overhead found in <a href="http://documentcloud.github.com/backbone/">related</a> <a href="http://www.sproutcore.com/">libraries</a>. The goal is to enable developers to write web apps at least as quickly as with jQuery, while ensuring long-term maintainability through MVC objects.</p>
 <p>The library itself is a small Javascript file (goal is to remain under 10K), and its only dependency is a recent version of jQuery (Zepto support coming soon). The project is licensed under the liberal <a href="https://github.com/arturadib/agility/blob/master/LICENSE">MIT license</a>.</p>
+<p>See the documentation for a more complete <a href="docs.html#intro-features">list of features</a>.</p>
 <h2>Quick tour</h2>
 <p>All examples in this tour are self-contained. See <a href="docs.html#getting-started">Getting started</a> in the docs for the HTML template adopted.</p>
 <h3>Object initialization</h3>
 <p>Agility works with a single object type that contains an entire model-view-controller stack. These MVC objects are built by passing initializers to the <a href="docs.html#factory">factory function</a> <code>$$()</code>, which takes care of setting up default bindings, auto-proxying, etc. The example below initializes an MVC object with empty model, a simple view, and default controllers:</p>
 <div class="codehilite"><pre><span class="c1">// Hello World</span>
-<span class="c1">// Compact syntax: initializers are passed in the order M, V, C:</span>
-<span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;div&gt;Hello World&lt;/div&gt;&#39;</span><span class="p">);</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
-</pre></div>
-
-
-<p><div class="demo"></div></p>
-<p>A more explicit initialization syntax is also supported to enhance clarity:</p>
-<div class="codehilite"><pre><span class="c1">// Hello World</span>
-<span class="c1">// Verbose syntax:</span>
 <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span>
   <span class="nx">model</span><span class="o">:</span> <span class="p">{},</span> 
   <span class="nx">view</span><span class="o">:</span> <span class="p">{</span>
@@ -99,21 +89,30 @@
 
 
 <p><div class="demo"></div></p>
+<p>A more compact initialization syntax is also supported for smaller objects:</p>
+<div class="codehilite"><pre><span class="c1">// Hello World</span>
+<span class="c1">// Compact syntax: initializers are passed in the order M, V, C:</span>
+<span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;div&gt;Hello World&lt;/div&gt;&#39;</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
 <h3>Model-view bindings</h3>
 <p>The framework comes with a powerful model-view binder, so that views are always in sync with models and vice-versa. Establishing bindings is as simple as introducing a <code>data-bind</code> attribute in the desired DOM element; the factory function takes care of creating the necessary controllers:</p>
 <div class="codehilite"><pre><span class="c1">// Bind model to element&#39;s HTML content</span>
-<span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">txt</span><span class="o">:</span><span class="s1">&#39;Hello World&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;div data-bind=&quot;txt&quot;/&gt;&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">txt</span><span class="o">:</span><span class="s2">&quot;I&#39;m text from a model&quot;</span><span class="p">},</span> <span class="s1">&#39;&lt;div data-bind=&quot;txt&quot;/&gt;&#39;</span><span class="p">);</span>
 <span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
 
 <span class="c1">// Bind model to element&#39;s attribute</span>
 <span class="kd">var</span> <span class="nx">url</span> <span class="o">=</span> <span class="s1">&#39;http://google.com/favicon.ico&#39;</span><span class="p">;</span>
-<span class="kd">var</span> <span class="nx">icon</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">path</span><span class="o">:</span><span class="nx">url</span><span class="p">},</span> <span class="s1">&#39;&lt;img data-bind=&quot;src path&quot;/&gt;&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">icon</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">path</span><span class="o">:</span><span class="nx">url</span><span class="p">},</span> <span class="s1">&#39;&lt;p&gt;Image src from model: &lt;img data-bind=&quot;src path&quot;/&gt;&lt;/p&gt;&#39;</span><span class="p">);</span>
 <span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">icon</span><span class="p">);</span>
 </pre></div>
 
 
 <p><div class="demo"></div></p>
-<p>Bindings are always two-way, and work with most input types:</p>
+<p>Bindings are always two-way (instant updates in both directions), and work with most input types:</p>
 <div class="codehilite"><pre><span class="c1">// Two-way binding (checkbox)</span>
 <span class="kd">var</span> <span class="nx">check</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span>
   <span class="p">{</span><span class="nx">a</span><span class="o">:</span><span class="kc">false</span><span class="p">,</span> <span class="nx">b</span><span class="o">:</span><span class="kc">true</span><span class="p">},</span>
