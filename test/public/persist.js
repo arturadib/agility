@@ -57,7 +57,8 @@
         equals(this.view.$('li').size(), res.data.length, "view size matches data size");
         start();
       }
-    }).persist().gather(proto); // gather
+    }).persist();
+    obj.gather(proto); // gather
   });
 
 })(jQuery, agility);

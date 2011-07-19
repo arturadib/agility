@@ -1,4 +1,14 @@
-// Sandboxed, so kids don't get hurt. Inspired by jQuery's code.
+/*
+
+  Agility.js  
+  v0.1.0rc1
+  
+  Licensed under the MIT license
+  Copyright (c) Artur B. Adib, 2011
+
+*/
+
+// Sandboxed, so kids don't get hurt. Inspired by jQuery's code:
 //   Creates local ref to window for performance reasons (as JS looks up local vars first)
 //   Redefines undefined as it could have been tampered with
 (function(window, undefined){
@@ -563,7 +573,7 @@
     trigger: function(){
       this._events.trigger.apply(this, arguments);
       return this; // for chainable calls
-    },
+    }
       
   }; // prototype
   
@@ -841,13 +851,12 @@
     this.gather = function(proto, selector){
       if (!proto) throw "agility.js plugin persist: gather() needs object prototype";
       if (!proto._data.persist) throw "agility.js plugin persist: prototype doesn't seem to contain persist() data";
-      var result;
 
       if (self._data.persist.openRequests === 0) {
         self.trigger('persist:start');
       }
       self._data.persist.openRequests++;
-      result = proto._data.persist.adapter.call(proto, {
+      proto._data.persist.adapter.call(proto, {
         type: 'GET',
         complete: function(){
           self._data.persist.openRequests--;
@@ -881,13 +890,17 @@
 
   // RESTful JSON adapter using jQuery's ajax()
   agility.adapter.restful = function(_params){
-    var self = this; // agility object called from
     var params = $.extend({
       dataType: 'json',
-      url: (self._data.persist.baseUrl || 'api/') + self._data.persist.collection + (_params.id ? '/'+_params.id : '')
+      url: (this._data.persist.baseUrl || 'api/') + this._data.persist.collection + (_params.id ? '/'+_params.id : '')
     }, _params);
-    return $.ajax(params);
+    $.ajax(params);
   };
 
+  // // Local storage (HTML5)
+  // agility.adapter.localStorage = function(params){
+  //   if (params.type === 'GET') {
+  //   localStorage.getItem("bar", foo);
+  // }
   
 })(window);

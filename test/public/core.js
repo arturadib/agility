@@ -1,5 +1,20 @@
 (function($, $$){
 
+
+  // --------------------------------
+  //
+  //  JSHint
+  //
+  // --------------------------------
+
+  module("JSHint");
+
+  test("JSHint", function(){
+    var result = JSHINT(window.agilitySource, {proto:true});
+    var errors = result ? '' : JSHINT.errors;
+    equals(errors, '', "JSHint test");
+  });
+
   // --------------------------------
   //
   //  Builder
