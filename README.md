@@ -2,7 +2,7 @@
  
 http://agilityjs.org
 
-Agility is an MVC library that lets you write **maintainable** browser code without compromising on **productivity**. Features include:
+Agility is an MVC library that lets you write **maintainable** browser code without compromising on **development speed**. Features include:
 
 + Painless two-way model-view bindings;
 + Implicit controller-event bindings;
