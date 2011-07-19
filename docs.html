@@ -251,11 +251,11 @@
 <p>Specifying styles (CSS) in-object is optional, but again, it leads to better code reusability and maintainability. In-object CSS is implemented dynamically, so the object's style sheet is not introduced until the object is created. </p>
 <p>To ensure CSS selectors apply only to the intended object, <em>make sure all selectors are preceded by the root selector</em> <code>&amp;</code>. (In future versions this might not be necessary anymore).</p>
 <div class="codehilite"><pre><span class="c1">// ANTI-PATTERN!! (applies CSS style globally)</span>
-<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;p&gt;&lt;div&gt;Hello World&lt;/div&gt;&lt;/p&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;div { color:red; }&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s2">&quot;&lt;p&gt;&lt;div&gt;Please don&#39;t do this&lt;/div&gt;&lt;/p&gt;&quot;</span><span class="p">,</span> <span class="s1">&#39;div { color:red; }&#39;</span><span class="p">);</span>
 <span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
 
 <span class="c1">// Correct: applies style locally</span>
-<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;p&gt;&lt;div&gt;Hello World&lt;/div&gt;&lt;/p&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&amp; div { color:red; }&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;p&gt;&lt;div&gt;Do this&lt;/div&gt;&lt;/p&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&amp; div { color:red; }&#39;</span><span class="p">);</span>
 <span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
 </pre></div>
 
@@ -334,7 +334,7 @@
 <p><div class="demo"></div></p>
 <h2><a href="#auto-proxy">Auto-proxying</a></h2>
 <p>All user-defined controllers initialized by the factory function <code>$$()</code> have their <code>this</code> auto-proxied to the owner MVC object, for quick access and consistent behavior no matter what context:</p>
-<div class="codehilite"><pre><span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">msg</span><span class="o">:</span><span class="s1">&#39;Hello World&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;div/&gt;&#39;</span><span class="p">,</span> <span class="p">{</span>
+<div class="codehilite"><pre><span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">msg</span><span class="o">:</span><span class="s1">&#39;I only exist because of auto-proxying&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;div/&gt;&#39;</span><span class="p">,</span> <span class="p">{</span>
   <span class="s1">&#39;myHandler&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">$</span><span class="p">().</span><span class="nx">html</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;msg&#39;</span><span class="p">)</span> <span class="p">);</span>
   <span class="p">}</span>

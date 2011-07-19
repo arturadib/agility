@@ -194,11 +194,11 @@ To ensure CSS selectors apply only to the intended object, *make sure all select
 
     :::javascript
     // ANTI-PATTERN!! (applies CSS style globally)
-    var obj = $$({}, '<p><div>Hello World</div></p>', 'div { color:red; }');
+    var obj = $$({}, "<p><div>Please don't do this</div></p>", 'div { color:red; }');
     $$.document.add(obj);
 
     // Correct: applies style locally
-    var obj = $$({}, '<p><div>Hello World</div></p>', '& div { color:red; }');
+    var obj = $$({}, '<p><div>Do this</div></p>', '& div { color:red; }');
     $$.document.add(obj);
 <div class="demo"></div>
 
@@ -284,7 +284,7 @@ The example below defines both a DOM and a Model event handler:
 All user-defined controllers initialized by the factory function `$$()` have their `this` auto-proxied to the owner MVC object, for quick access and consistent behavior no matter what context:
 
     :::javascript
-    var obj = $$({msg:'Hello World'}, '<div/>', {
+    var obj = $$({msg:'I only exist because of auto-proxying'}, '<div/>', {
       'myHandler': function(){
         this.view.$().html( this.model.get('msg') );
       }
