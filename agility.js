@@ -241,7 +241,7 @@
       // Setter
       set: function(arg, params) {
         var self = this;
-        var modified = [];
+        var modified = []; // list of modified model attributes
         if (typeof arg === 'string') {
           this.model._data.text = arg; // default model attribute
           modified.push('text');
@@ -273,7 +273,7 @@
       // Getter
       get: function(arg){
         // Full model getter
-        if (typeof arg === 'undefined') {
+        if (arg === undefined) {
           return this.model._data;
         }
         // Attribute getter
@@ -685,7 +685,7 @@
         args.splice(2, 1); // so that controller code below works
       }
       
-      // Controller from object (..., ..., {method():function(){}})
+      // Controller from object (..., ..., {method:function(){}})
       if (typeof args[2] === 'object') {
         $.extend(object.controller, args[2]);
       }
@@ -756,7 +756,7 @@
     // Creates persist methods
     
     // .save()
-    // Creates new model or update existing one, depending on whether model has an 'id'
+    // Creates new model or update existing one, depending on whether model has 'id' property
     this.save = function(){
       if (self._data.persist.openRequests === 0) {
         self.trigger('persist:start');
