@@ -1,15 +1,13 @@
 /*
 
   Agility.js  
-  v0.1.0rc1
   
   Licensed under the MIT license
   Copyright (c) Artur B. Adib, 2011
 
 */
 
-
-// Sandboxed, so kids don't get hurt. Inspired by jQuery's code.
+// Sandboxed, so kids don't get hurt. Inspired by jQuery's code:
 //   Creates local ref to window for performance reasons (as JS looks up local vars first)
 //   Redefines undefined as it could have been tampered with
 (function(window, undefined){
@@ -158,6 +156,20 @@
         this.trigger('remove', id);
         return this;
       },
+
+      // Iterates over all child objects in container
+      each: function(fn){
+        $.each(this._container.children, fn);
+        return this; // for chainable calls
+      },
+      
+      // Removes all objects in container
+      empty: function(){
+        this.each(function(){
+          this.destroy();
+        });
+        return this;
+      },
       
       // Number of children
       size: function() {
@@ -243,7 +255,7 @@
       // Setter
       set: function(arg, params) {
         var self = this;
-        var modified = [];
+        var modified = []; // list of modified model attributes
         if (typeof arg === 'string') {
           this.model._data.text = arg; // default model attribute
           modified.push('text');
@@ -275,7 +287,7 @@
       // Getter
       get: function(arg){
         // Full model getter
-        if (typeof arg === 'undefined') {
+        if (arg === undefined) {
           return this.model._data;
         }
         // Attribute getter
@@ -283,6 +295,12 @@
           return this.model._data[arg];
         }
         throw 'agility.js: unknown argument for getter';
+      },
+      
+      // Resetter (to initial model upon object initialization)
+      reset: function(){
+        this.model.set(this.model._initData, {reset:true});
+        return this; // for chainable calls
       },
       
       // Number of model properties
@@ -563,6 +581,12 @@
     size: function(){
       return this._container.size.apply(this, arguments);
     },
+    each: function(){
+      return this._container.each.apply(this, arguments);
+    },
+    empty: function(){
+      return this._container.empty.apply(this, arguments);
+    },
 
     //
     // _Events shortcuts
@@ -574,7 +598,7 @@
     trigger: function(){
       this._events.trigger.apply(this, arguments);
       return this; // for chainable calls
-    },
+    }
       
   }; // prototype
   
@@ -638,14 +662,20 @@
   
     // Prototype differential from single {model,view,controller} object
     else if (args.length === 1 && typeof args[0] === 'object' && (args[0].model || args[0].view || args[0].controller) ) {
-      if (args[0].model) {
-        $.extend(object.model._data, args[0].model);
-      }
-      if (args[0].view) {
-        $.extend(object.view, args[0].view);
-      }
-      if (args[0].controller) {
-        $.extend(object.controller, args[0].controller);
+      for (var prop in args[0]) {
+        if (prop === 'model') {
+          $.extend(object.model._data, args[0][prop]);
+        }
+        else if (prop === 'view') {
+          $.extend(object.view, args[0][prop]);
+        }
+        else if (prop === 'controller') {
+          $.extend(object.controller, args[0][prop]);
+        }
+        // User-defined methods
+        else {
+          object[prop] = args[0][prop];
+        }
       }
     } // {model, view, controller} arg
     
@@ -681,7 +711,7 @@
         args.splice(2, 1); // so that controller code below works
       }
       
-      // Controller from object (..., ..., {method():function(){}})
+      // Controller from object (..., ..., {method:function(){}})
       if (typeof args[2] === 'object') {
         $.extend(object.controller, args[2]);
       }
@@ -697,6 +727,9 @@
     //
     // ----------------------------------------------
   
+    // Save model's initial state (so it can be .reset() later)
+    object.model._initData = $.extend({}, object.model._data);
+
     // object.* will have their 'this' === object. This should come before call to object.* below.
     util.proxyAll(object, object);
 
@@ -752,7 +785,7 @@
     // Creates persist methods
     
     // .save()
-    // Creates new model or update existing one, depending on whether model has an 'id'
+    // Creates new model or update existing one, depending on whether model has 'id' property
     this.save = function(){
       if (self._data.persist.openRequests === 0) {
         self.trigger('persist:start');
@@ -852,13 +885,12 @@
     this.gather = function(proto, selector){
       if (!proto) throw "agility.js plugin persist: gather() needs object prototype";
       if (!proto._data.persist) throw "agility.js plugin persist: prototype doesn't seem to contain persist() data";
-      var result;
 
       if (self._data.persist.openRequests === 0) {
         self.trigger('persist:start');
       }
       self._data.persist.openRequests++;
-      result = proto._data.persist.adapter.call(proto, {
+      proto._data.persist.adapter.call(proto, {
         type: 'GET',
         complete: function(){
           self._data.persist.openRequests--;
@@ -892,13 +924,17 @@
 
   // RESTful JSON adapter using jQuery's ajax()
   agility.adapter.restful = function(_params){
-    var self = this; // agility object called from
     var params = $.extend({
       dataType: 'json',
-      url: (self._data.persist.baseUrl || 'api/') + self._data.persist.collection + (_params.id ? '/'+_params.id : '')
+      url: (this._data.persist.baseUrl || 'api/') + this._data.persist.collection + (_params.id ? '/'+_params.id : '')
     }, _params);
-    return $.ajax(params);
+    $.ajax(params);
   };
 
+  // // Local storage (HTML5)
+  // agility.adapter.localStorage = function(params){
+  //   if (params.type === 'GET') {
+  //   localStorage.getItem("bar", foo);
+  // }
   
 })(window);

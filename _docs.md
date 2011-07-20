@@ -476,6 +476,36 @@ _Removes an Agility object from the object's container. [This function should ra
 
 Owner Agility object (for chainable calls).
 
+### [.each()](#core-each)
+
+_Iterates over each Agility object in the object's container._
+
+**Syntax:** 
+
+    :::javascript
+    .each(fn)
+
+where:
+
++ `fn`: Function to be called within the context of each contained object. Access the object via `this`.
+
+**Returns:**
+
+Owner Agility object (for chainable calls).
+
+### [.empty()](#core-empty)
+
+_Removes all Agility objects from object's container by issuing a `.destroy()` for each contained object._
+
+**Syntax:** 
+
+    :::javascript
+    .empty()
+
+**Returns:**
+
+Owner Agility object (for chainable calls).
+
 ### [.size()](#core-size)
 
 _Returns number of objects within the object's container._

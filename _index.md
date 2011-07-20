@@ -181,7 +181,7 @@ You can also `gather` an entire collection of models and insert them as MVC obje
       }, 
       controller: {
         'click button': function(){
-          this.view.$('ul').empty();
+          this.empty();
           this.gather(person, 'ul');
         },
         // Ajax loading message - start
