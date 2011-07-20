@@ -7,7 +7,7 @@ See the documentation for a more complete [list of features](docs.html#intro-fea
 
 ## Quick tour
 
-All examples in this tour are self-contained. See [Getting started](docs.html#getting-started) in the docs for the HTML template adopted.
+Agility encourages (but does not require) writing your entire app in Javascript, that is, content (HTML), style (CSS), and behavior (JS) should all be contained within Javascript objects. Therefore, all examples in this tour consist of snippets of pure Javascript, and are all self-contained. See [Getting started](docs.html#getting-started) in the docs for the HTML template adopted.
 
 ### Object initialization
 
