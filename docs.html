@@ -700,7 +700,7 @@
 <p><strong>Returns</strong></p>
 <p>Owner Agility object (for chainable calls), with updated model.</p>
 <h3><a href="#persist-save">.save()</a></h3>
-<p><em>Updates model on the server if <code>id</code> present, creates a new resource otherwise.</em></p>
+<p><em>Updates model on the server if <code>id</code> is present and not a null string, creates a new resource otherwise.</em></p>
 <p><strong>Syntax:</strong> </p>
 <div class="codehilite"><pre><span class="p">.</span><span class="nx">save</span><span class="p">()</span>
 </pre></div>
@@ -719,7 +719,7 @@
 <div class="codehilite"><pre><span class="kd">var</span> <span class="nx">person</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">id</span><span class="o">:</span><span class="mi">123</span><span class="p">,</span> <span class="nx">name</span><span class="o">:</span><span class="s1">&#39;Joe Doe&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;p&gt;Name: &lt;span data-bind=&quot;name&quot;/&gt;&lt;/p&gt;&#39;</span><span class="p">).</span><span class="nx">persist</span><span class="p">(</span><span class="nx">$$</span><span class="p">.</span><span class="nx">adapter</span><span class="p">.</span><span class="nx">restful</span><span class="p">,</span> <span class="p">{</span><span class="nx">collection</span><span class="o">:</span><span class="s1">&#39;people&#39;</span><span class="p">});</span>
 
 <span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
-<span class="nx">person</span><span class="p">.</span><span class="nx">save</span><span class="p">();</span> <span class="c1">// will update, since &#39;id&#39; exists</span>
+<span class="nx">person</span><span class="p">.</span><span class="nx">save</span><span class="p">();</span> <span class="c1">// will update, since &#39;id&#39; exists and it&#39;s not a null string</span>
 </pre></div>
 
 
