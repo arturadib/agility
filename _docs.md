@@ -744,7 +744,7 @@ Owner Agility object (for chainable calls), with updated model.
 
 ### [.save()](#persist-save)
 
-_Updates model on the server if `id` is present and not a null string, creates a new resource otherwise._
+_Updates model on the server if `id` is present, creates a new resource otherwise._
 
 **Syntax:** 
 
@@ -767,7 +767,7 @@ Updates model on server:
     var person = $$({id:123, name:'Joe Doe'}, '<p>Name: <span data-bind="name"/></p>').persist($$.adapter.restful, {collection:'people'});
     
     $$.document.add(person);
-    person.save(); // will update, since 'id' exists and it's not a null string
+    person.save(); // will update, since 'id' exists
 
 **Returns**
 
