@@ -567,6 +567,19 @@ _Gets model data._
 
 Desired property content if `property` is specified, or a Javascript object containing the entire model data if it's omitted.
 
+### [.model.reset()](#model-reset)
+
+_Resets model to its original value (at object creation time)._
+
+**Syntax:** 
+
+    :::javascript
+    .model.reset()
+
+**Returns:**
+
+Owner Agility object (for chainable calls).
+
 ### [.model.each()](#model-each)
 
 _Iterates over each model property._
