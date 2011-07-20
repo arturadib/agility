@@ -156,6 +156,20 @@
         this.trigger('remove', id);
         return this;
       },
+
+      // Iterates over all child objects in container
+      each: function(fn){
+        $.each(this._container.children, fn);
+        return this; // for chainable calls
+      },
+      
+      // Removes all objects in container
+      empty: function(){
+        this.each(function(){
+          this.destroy();
+        });
+        return this;
+      },
       
       // Number of children
       size: function() {
@@ -566,6 +580,12 @@
     },
     size: function(){
       return this._container.size.apply(this, arguments);
+    },
+    each: function(){
+      return this._container.each.apply(this, arguments);
+    },
+    empty: function(){
+      return this._container.empty.apply(this, arguments);
     },
 
     //

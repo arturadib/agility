@@ -225,6 +225,18 @@
     }
     equals(obj1.size(), 10, 'correct container size()');
     equals(obj1.view.$('.test').size(), 10, 'correct DOM size');
+
+    var flag = false;
+    var count = 0;
+    obj1.each(function(){
+      if (this.model.get('text') !== 'hello') flag = true;
+      count++;
+    });
+    equals(flag, false, 'each() works');
+    equals(count, 10, 'each() works');
+    
+    obj1.empty();
+    equals(obj1.size(), 0, 'empty() works');
   });
 
   test("Model calls", function(){
