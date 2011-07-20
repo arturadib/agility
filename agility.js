@@ -262,7 +262,7 @@
         }
         else if (typeof arg === 'object') {
           if (params && params.reset) {
-            this.model._data = arg; // erases previous model attributes
+            this.model._data = $.extend({}, arg); // erases previous model attributes without pointing to object
           }
           else {
             $.extend(this.model._data, arg); // default is extend
