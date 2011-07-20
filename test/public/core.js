@@ -121,7 +121,7 @@
     equals( obj.view.$().css('color'), 'rgb(255, 0, 0)', 'style as expected');
   });
   
-  test("One full object argument ({model || view || controller})", function(){
+  test("One full object argument ({model, view, controller, user_func})", function(){
     var obj = $$({
       model: {
         first: 'Joe',
@@ -131,9 +131,11 @@
         format: '<div><span data-bind="first"/> <span data-bind="last"/></div>',
         style: '& { color:rgb(255, 0, 0); }'
       },
-      controller: {}
+      controller: {},
+      myFunction: function(){}
     }); // obj
     validateObject( obj );
+    equals( typeof obj.myFunction, 'function', 'user-defined function as expected');
     equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
     equals( obj.view.$().css('color'), 'rgb(255, 0, 0)', 'style as expected');
   });

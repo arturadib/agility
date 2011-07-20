@@ -636,14 +636,20 @@
   
     // Prototype differential from single {model,view,controller} object
     else if (args.length === 1 && typeof args[0] === 'object' && (args[0].model || args[0].view || args[0].controller) ) {
-      if (args[0].model) {
-        $.extend(object.model._data, args[0].model);
-      }
-      if (args[0].view) {
-        $.extend(object.view, args[0].view);
-      }
-      if (args[0].controller) {
-        $.extend(object.controller, args[0].controller);
+      for (var prop in args[0]) {
+        if (prop === 'model') {
+          $.extend(object.model._data, args[0][prop]);
+        }
+        else if (prop === 'view') {
+          $.extend(object.view, args[0][prop]);
+        }
+        else if (prop === 'controller') {
+          $.extend(object.controller, args[0][prop]);
+        }
+        // User-defined methods
+        else {
+          object[prop] = args[0][prop];
+        }
       }
     } // {model, view, controller} arg
     
