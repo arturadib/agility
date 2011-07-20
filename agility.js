@@ -763,7 +763,7 @@
       }
       self._data.persist.openRequests++;
       this._data.persist.adapter.call(this, {
-        type: self.model.get('id') ? 'PUT' : 'POST', // update vs. create
+        type: self.model.get('id') && self.model.get('id')!=='' ? 'PUT' : 'POST', // update vs. create
         id: self.model.get('id'),
         data: self.model.get(),
         complete: function(){
