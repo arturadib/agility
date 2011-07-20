@@ -283,6 +283,12 @@
         throw 'agility.js: unknown argument for getter';
       },
       
+      // Resetter (to initial model upon object initialization)
+      reset: function(){
+        this.model.set(this.model._initData, {reset:true});
+        return this; // for chainable calls
+      },
+      
       // Number of model properties
       size: function(){
         return util.size(this.model._data);
@@ -701,6 +707,9 @@
     //
     // ----------------------------------------------
   
+    // Save model's initial state (so it can be .reset() later)
+    object.model._initData = $.extend({}, object.model._data);
+
     // object.* will have their 'this' === object. This should come before call to object.* below.
     util.proxyAll(object, object);
 

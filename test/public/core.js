@@ -239,7 +239,11 @@
     equals(obj1.view.$().text(), 'Joe Doe', 'obj.model.set() fires view change');
     equals(t, true, 'obj.model.set() fires change:var');
     obj1.model.set({text:'New Text'}, {reset:true});
-    equals(obj1.model.get('a'), undefined, 'obj.model.set() resets OK');    
+    equals(obj1.model.get('a'), undefined, 'obj.model.set() resets OK');
+    
+    obj1.model.reset();
+    equals(obj1.model.get('a'), 1, 'obj.model.reset() brings back original attribute');
+    equals(obj1.model.get('text'), undefined, 'obj.model.reset() erases non-original attributes');
   });
 
   test("Chainable calls", function(){
