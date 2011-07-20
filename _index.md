@@ -7,11 +7,11 @@ See the documentation for a more complete [list of features](docs.html#intro-fea
 
 ## Quick tour
 
-Agility encourages (but does not require) writing your entire app in Javascript, that is, content (HTML), style (CSS), and behavior (JS) can all be contained within Javascript objects. The examples in this tour consist of snippets of pure Javascript, and are all self-contained. See [Getting started](docs.html#getting-started) in the docs for the HTML template adopted.
+Agility encourages (but does not require) writing your entire code in Javascript, that is, content (HTML), style (CSS), and behavior (JS) can all be contained within Javascript objects. The examples in this tour consist of such code. See [Getting started](docs.html#getting-started) in the docs for the HTML template adopted.
 
 ### Object initialization
 
-Agility works with a single object type that contains an entire model-view-controller stack. These MVC objects are built by passing initializers to the [factory function](docs.html#factory) `$$()`, which takes care of setting up default bindings, auto-proxying, etc. The example below initializes an MVC object with empty model, a simple view, and default controllers:
+Agility works with a single object type that contains a full model-view-controller stack. These MVC objects are built by passing initializers to the [factory function](docs.html#factory) `$$()`, which takes care of setting up default bindings, auto-proxying, etc. The example below initializes an MVC object with empty model, a simple view, and default controllers:
 
     :::javascript
     // Hello World
@@ -25,7 +25,7 @@ Agility works with a single object type that contains an entire model-view-contr
     $$.document.add(message);
 <div class="demo"></div>
 
-A more compact initialization syntax is also supported for smaller objects:
+A more compact syntax is also supported, and is handy when dealing with simple objects:
 
     :::javascript
     // Hello World
