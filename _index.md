@@ -7,7 +7,7 @@ See the documentation for a more complete [list of features](docs.html#intro-fea
 
 ## Quick tour
 
-Agility encourages (but does not require) writing your entire app in Javascript, that is, content (HTML), style (CSS), and behavior (JS) should all be contained within Javascript objects. All examples in this tour consist of snippets of pure Javascript, and are all self-contained. See [Getting started](docs.html#getting-started) in the docs for the HTML template adopted.
+Agility encourages (but does not require) writing your entire app in Javascript, that is, content (HTML), style (CSS), and behavior (JS) can all be contained within Javascript objects. The examples in this tour consist of snippets of pure Javascript, and are all self-contained. See [Getting started](docs.html#getting-started) in the docs for the HTML template adopted.
 
 ### Object initialization
 
@@ -86,7 +86,7 @@ User-defined controllers are bound to events by automatically matching function 
     $$.document.add(person);
 <div class="demo"></div>
 
-### Inheritance and hierarchy
+### Inheritance and containers
 
 Agility adopts a simple object hierarchy model. Objects can serve as the prototype of other objects ([differential inheritance](http://en.wikipedia.org/wiki/Differential_inheritance)):
 
