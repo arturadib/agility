@@ -856,7 +856,7 @@ Same as above, with load button and "Loading..." Ajax message:
       }, 
       controller: {
         'click button': function(){
-          this.view.$('ul').empty();
+          this.empty();
           this.gather(person, 'ul');
         },
         'persist:start': function(){
