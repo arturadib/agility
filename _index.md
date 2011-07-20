@@ -1,5 +1,5 @@
 
-Agility.js is an [MVC](http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) library for Javascript that lets you write maintainable and reusable browser code without the verbose or infrastructural overhead found in [other](http://documentcloud.github.com/backbone/) [MVC](http://www.sproutcore.com/) [libraries](http://knockoutjs.com/) that have inspired the project. The goal is to enable developers to write web apps at least as quickly as with jQuery, while ensuring long-term maintainability through MVC objects.
+Agility.js is an [MVC](http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) library for Javascript that lets you write maintainable and reusable browser code without the verbose or infrastructural overhead found in [other](http://documentcloud.github.com/backbone/) [MVC](http://www.sproutcore.com/) [libraries](http://knockoutjs.com/). The goal is to enable developers to write web apps at least as quickly as with jQuery, while ensuring long-term maintainability through MVC objects.
 
 The library itself is a small Javascript file (goal is to remain under 10K), and its only dependency is a recent version of jQuery (Zepto support coming soon). The project is licensed under the liberal [MIT license](https://github.com/arturadib/agility/blob/master/LICENSE).
 
@@ -147,7 +147,7 @@ Server- and client-side persistence can be implemented through the built-in plug
     :::javascript
     var person = $$({id:123}, '<p>Name: <span data-bind="name"/></p>', '& span {background:blue; color:white; padding:3px 6px;}');    
 
-    // Initialize RESTful adapter, load model with above id:
+    // Initialize plugin with RESTful adapter, load model with above id:
     person.persist($$.adapter.restful, {collection:'people'}).load();
     
     $$.document.add(person);

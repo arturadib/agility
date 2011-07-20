@@ -69,7 +69,7 @@
     <div id='box-wrapper'>
 
 <!-- __INSERT_POINT__ -->
-<p>Agility.js is an <a href="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC</a> library for Javascript that lets you write maintainable and reusable browser code without the verbose or infrastructural overhead found in <a href="http://documentcloud.github.com/backbone/">other</a> <a href="http://www.sproutcore.com/">MVC</a> <a href="http://knockoutjs.com/">libraries</a> that have inspired the project. The goal is to enable developers to write web apps at least as quickly as with jQuery, while ensuring long-term maintainability through MVC objects.</p>
+<p>Agility.js is an <a href="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC</a> library for Javascript that lets you write maintainable and reusable browser code without the verbose or infrastructural overhead found in <a href="http://documentcloud.github.com/backbone/">other</a> <a href="http://www.sproutcore.com/">MVC</a> <a href="http://knockoutjs.com/">libraries</a>. The goal is to enable developers to write web apps at least as quickly as with jQuery, while ensuring long-term maintainability through MVC objects.</p>
 <p>The library itself is a small Javascript file (goal is to remain under 10K), and its only dependency is a recent version of jQuery (Zepto support coming soon). The project is licensed under the liberal <a href="https://github.com/arturadib/agility/blob/master/LICENSE">MIT license</a>.</p>
 <p>See the documentation for a more complete <a href="docs.html#intro-features">list of features</a>.</p>
 <h2>Quick tour</h2>
@@ -204,7 +204,7 @@
 <p>Server- and client-side persistence can be implemented through the built-in plugin <a href="docs.html#persist">persist</a>. You can setup and <code>load</code> a model from a RESTful service in one line (the view is automatically updated via model-view binding):</p>
 <div class="codehilite"><pre><span class="kd">var</span> <span class="nx">person</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">id</span><span class="o">:</span><span class="mi">123</span><span class="p">},</span> <span class="s1">&#39;&lt;p&gt;Name: &lt;span data-bind=&quot;name&quot;/&gt;&lt;/p&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&amp; span {background:blue; color:white; padding:3px 6px;}&#39;</span><span class="p">);</span>
 
-<span class="c1">// Initialize RESTful adapter, load model with above id:</span>
+<span class="c1">// Initialize plugin with RESTful adapter, load model with above id:</span>
 <span class="nx">person</span><span class="p">.</span><span class="nx">persist</span><span class="p">(</span><span class="nx">$$</span><span class="p">.</span><span class="nx">adapter</span><span class="p">.</span><span class="nx">restful</span><span class="p">,</span> <span class="p">{</span><span class="nx">collection</span><span class="o">:</span><span class="s1">&#39;people&#39;</span><span class="p">}).</span><span class="nx">load</span><span class="p">();</span>
 
 <span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
