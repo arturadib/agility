@@ -869,8 +869,8 @@ Each gathered MVC object will be added to the container, appended/prepended to t
 
 where:
 
-+ `proto`: Prototype object with `persist` already initialized.
-+ `method`: Name of owner object method to be invoked with each new Agility object to be added. Typically `append` or `prepend`.
++ `proto`: Prototypal Agility object with `persist` already initialized.
++ `method`: String containing name of method to be invoked with each new Agility object to be added. Typically `'append'` or `'prepend'`.
 + `selector`: jQuery selector indicating where the view of `proto` should be appended. Will append to root element if omitted.
 + `query`: Javascript object containing parameters to be passed to the adapter for e.g. HTTP queries, like `{orderBy:'name'}`.
 
