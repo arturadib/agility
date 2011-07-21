@@ -49,6 +49,26 @@
     obj.erase();
   });
 
+  asyncTest("Model - induce error", function(){
+    var obj = $$({id:123, name:'Joe Doe'}, {}, {
+      'persist:error': function(){
+        equals(true, true, "persist:error raised");          
+        start();
+      }
+    }).persist($$.adapter.restful, {collection:'NONSENSE'});
+    obj.load();
+  });
+
+  asyncTest("Model - induce specific error", function(){
+    var obj = $$({id:123, name:'Joe Doe'}, {}, {
+      'persist:load:error': function(){
+        equals(true, true, "persist:METHOD:error raised");          
+        start();
+      }
+    }).persist($$.adapter.restful, {collection:'NONSENSE'});
+    obj.load();
+  });
+
   asyncTest("Container - gather, first syntax", function(){
     var proto = $$({}, '<li data-bind="name"></li>').persist($$.adapter.restful, {collection:'people'});
     var obj = $$({}, '<ul></ul>', {

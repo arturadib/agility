@@ -837,6 +837,7 @@
           self.trigger('persist:save:success');
         },      
         error: function(){
+          self.trigger('persist:error');
           self.trigger('persist:save:error');
         }
       });
@@ -867,6 +868,7 @@
           self.trigger('persist:load:success');
         },      
         error: function(){
+          self.trigger('persist:error');
           self.trigger('persist:load:error');
         }
       });      
@@ -897,6 +899,7 @@
           self.trigger('persist:erase:success');
         },      
         error: function(){
+          self.trigger('persist:error');
           self.trigger('persist:erase:error');
         }
       });            
