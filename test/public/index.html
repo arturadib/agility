@@ -17,20 +17,19 @@
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
 
-  <script>
-    // Gets script dynamically so we can access its source
-    $.getScript('agility.js', function(data, status){
-      window.agilitySource = data;
-    });
-  </script>
-
   <link rel="stylesheet" href="qunit.css" />
   <script src="qunit.js" type="text/javascript" charset="utf-8"></script>
-
   <script src="jshint.js" type="text/javascript" charset="utf-8"></script>
 
-  <script src="core.js" type="text/javascript" charset="utf-8"></script>
-  <script src="persist.js" type="text/javascript" charset="utf-8"></script>
+  <script>
+    // Gets agility.js dynamically so we can access its source
+    $.getScript('agility.js', function(data, status){
+      window.agilitySource = data;
+      
+      $.getScript('core.js');
+      $.getScript('persist.js');
+    });
+  </script>
 </body>
 
 </html>
