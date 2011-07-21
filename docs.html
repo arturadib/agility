@@ -711,7 +711,7 @@
 <p><strong>Returns:</strong></p>
 <p>Owner Agility object (for chainable calls).</p>
 <h3><a href="#persist-load">.load()</a></h3>
-<p><em>Refreshes model with given <code>id</code> from server.</em></p>
+<p><em>Refreshes model from server, using the id in the model property <code>id</code>.</em></p>
 <p>Fires the following events in addition to generic <code>persist</code> events:</p>
 <p><strong>Syntax:</strong> </p>
 <div class="codehilite"><pre><span class="p">.</span><span class="nx">load</span><span class="p">()</span>
@@ -732,6 +732,17 @@
 <p>Owner Agility object (for chainable calls), with updated model.</p>
 <h3><a href="#persist-save">.save()</a></h3>
 <p><em>Updates model on the server if <code>id</code> is present, creates a new resource otherwise.</em></p>
+<p>If the resource is to be created (i.e. model has no <code>id</code>), the server is expected to send back the new <code>id</code> either in the body, e.g.</p>
+<div class="codehilite"><pre>{&quot;id&quot;:123}
+</pre></div>
+
+
+<p>or in the <code>Location</code> header as the new resource URL, e.g.:</p>
+<div class="codehilite"><pre>Location: http://your-site.com/api/people/123
+</pre></div>
+
+
+<p>Agility will parse either to extract the new <code>id</code>, and set the model accordingly. That way, further calls to <code>.save()</code> will update the model on the server.</p>
 <p><strong>Syntax:</strong> </p>
 <div class="codehilite"><pre><span class="p">.</span><span class="nx">save</span><span class="p">()</span>
 </pre></div>
@@ -760,7 +771,7 @@
 <p><em>Loads a collection of models into container, using given prototype.</em></p>
 <p>Each gathered MVC object will be <code>.add()</code>ed to the container, and will be a direct descendant of given prototype object. All persistence information, including collection name, should be initialized in the prototype object.</p>
 <p><strong>Syntax:</strong> </p>
-<div class="codehilite"><pre><span class="p">.</span><span class="nx">gather</span><span class="p">(</span><span class="nx">proto</span> <span class="p">[,</span><span class="nx">selector</span><span class="p">])</span>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">gather</span><span class="p">(</span><span class="nx">proto</span> <span class="p">[,</span><span class="nx">selector</span><span class="p">]</span> <span class="p">[,</span><span class="nx">query</span><span class="p">])</span>
 </pre></div>
 
 
@@ -768,6 +779,7 @@
 <ul>
 <li><code>proto</code>: Prototype object with <code>persist</code> already initialized.</li>
 <li><code>selector</code>: jQuery selector indicating where the view of <code>proto</code> should be appended. Will append to root element if omitted.</li>
+<li><code>query</code>: Javascript object containing parameters to be passed to the adapter for e.g. HTTP queries, like <code>{orderBy:'name'}</code>.</li>
 </ul>
 <p><strong>Examples:</strong> </p>
 <p>Loads a collection of persons from server:</p>

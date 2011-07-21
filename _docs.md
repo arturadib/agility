@@ -748,7 +748,7 @@ Owner Agility object (for chainable calls).
 
 ### [.load()](#persist-load)
 
-_Refreshes model with given `id` from server._
+_Refreshes model from server, using the id in the model property `id`._
 
 Fires the following events in addition to generic `persist` events:
 
@@ -775,6 +775,18 @@ Owner Agility object (for chainable calls), with updated model.
 ### [.save()](#persist-save)
 
 _Updates model on the server if `id` is present, creates a new resource otherwise._
+
+If the resource is to be created (i.e. model has no `id`), the server is expected to send back the new `id` either in the body, e.g.
+
+    :::text
+    {"id":123}
+
+or in the `Location` header as the new resource URL, e.g.:
+
+    :::text
+    Location: http://your-site.com/api/people/123
+
+Agility will parse either to extract the new `id`, and set the model accordingly. That way, further calls to `.save()` will update the model on the server.
 
 **Syntax:** 
 
@@ -812,12 +824,13 @@ Each gathered MVC object will be `.add()`ed to the container, and will be a dire
 **Syntax:** 
 
     :::javascript
-    .gather(proto [,selector])
+    .gather(proto [,selector] [,query])
 
 where:
 
 + `proto`: Prototype object with `persist` already initialized.
 + `selector`: jQuery selector indicating where the view of `proto` should be appended. Will append to root element if omitted.
++ `query`: Javascript object containing parameters to be passed to the adapter for e.g. HTTP queries, like `{orderBy:'name'}`.
 
 **Examples:** 
 
