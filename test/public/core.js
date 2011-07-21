@@ -44,7 +44,7 @@
   test("One argument (model string)", function(){
     var obj = $$('Joe Doe');
     validateObject( obj );
-    equals( obj.view.$().html(), 'Joe Doe', 'format as expected');
+    equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
   });
 
   test("One argument (model object)", function(){
@@ -66,9 +66,9 @@
     var obj = $$({
       first: 'Joe',
       last: 'Doe'
-    }, '<div><span data-bind="first"/> <span data-bind="last"/></div>');
+    }, '<div><span data-bind="first"/><span data-bind="last"/></div>');
     validateObject( obj );
-    equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
+    equals( obj.view.$().text(), 'JoeDoe', 'format as expected');
   });
 
   test("Three arguments (model string, view string, controller object)", function(){
@@ -82,43 +82,31 @@
   });
 
   test("Three arguments (model object, view string, controller object)", function(){
-    var obj = $$({first:'Joe', last:'Doe'}, '<div><span data-bind="first"/> <span data-bind="last"/></div>', {
-      init: function(){
-        this.view.render();
-      }
-    });
+    var obj = $$({first:'Joe', last:'Doe'}, '<div><span data-bind="first"/><span data-bind="last"/></div>', {});
     validateObject( obj );
-    equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
+    equals( obj.view.$().text(), 'JoeDoe', 'format as expected');
   });
 
   test("Three arguments (model string, view object, controller object)", function(){
     var obj = $$('Joe Doe', 
       {
         format:'<div data-bind="text"></div>', 
-        style:'& { color:rgb(255, 0, 0); }' 
-      }, 
-      {
-        init: function(){
-          this.view.render();
-          this.view.stylize();
-        }
-      }
+        style:'& { float:right; display:none; }' 
+      },
+      {}
     );
+    $$.document.append(obj); // necessary for IE
     validateObject( obj );
     equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
-    equals( obj.view.$().css('color'), 'rgb(255, 0, 0)', 'style as expected');
+    equals( obj.view.$().css('float'), 'right', 'style as expected');
   });
 
   test("Three arguments (model object, view object, controller object)", function(){
-    var obj = $$({first:'Joe', last:'Doe'}, {format:'<div><span data-bind="first"/> <span data-bind="last"/></div>', style:'& { color:rgb(255, 0, 0); }'}, {
-      init: function(){
-        this.view.render();
-        this.view.stylize();
-      }
-    });
+    var obj = $$({first:'Joe', last:'Doe'}, {format:'<div><span data-bind="first"/><span data-bind="last"/></div>', style:'& {float:right; display:none;}'}, {});
+    $$.document.append(obj); // necessary for IE
     validateObject( obj );
-    equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
-    equals( obj.view.$().css('color'), 'rgb(255, 0, 0)', 'style as expected');
+    equals( obj.view.$().text(), 'JoeDoe', 'format as expected');
+    equals( obj.view.$().css('float'), 'right', 'style as expected');
   });
   
   test("One full object argument ({model, view, controller, user_func})", function(){
@@ -128,16 +116,17 @@
         last: 'Doe'        
       },
       view: {
-        format: '<div><span data-bind="first"/> <span data-bind="last"/></div>',
-        style: '& { color:rgb(255, 0, 0); }'
+        format: '<div><span data-bind="first"/><span data-bind="last"/></div>',
+        style: '& {float:right; display:none;}'
       },
       controller: {},
       myFunction: function(){}
     }); // obj
+    $$.document.append(obj); // necessary for IE
     validateObject( obj );
     equals( typeof obj.myFunction, 'function', 'user-defined function as expected');
-    equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
-    equals( obj.view.$().css('color'), 'rgb(255, 0, 0)', 'style as expected');
+    equals( obj.view.$().text(), 'JoeDoe', 'format as expected');
+    equals( obj.view.$().css('float'), 'right', 'style as expected');
   });
   
   test("Auto-proxying", function(){
@@ -172,17 +161,18 @@
   });
   
   test("Object inheritance", function(){
-    var objBase = $$({}, {format:'<div><span data-bind="first"/> <span data-bind="last"/></div>', style:'& { color:rgb(255, 0, 0); }'});
+    var objBase = $$({}, {format:'<div><span data-bind="first"/>.<span data-bind="last"/></div>', style:'& {float:right; display:none;}'});
     var objNewModel = {first:'Joe', last:'Doe'};
     var objNew = $$(objBase, objNewModel);
-
+    $$.document.append(objNew);
+    
     ok($.isEmptyObject(objBase.model.get()), "parent model untouched ("+JSON.stringify(objBase.model.get())+")");
-    equals(objBase.view.$().text(), ' ', "parent html untouched");
+    equals(objBase.view.$().text(), '.', "parent html untouched");
     equals(objNew.model.get('first'), objNewModel.first, "child model OK");
-    equals(objNew.view.$().text(), 'Joe Doe', "child html OK");
+    equals(objNew.view.$().text(), 'Joe.Doe', "child html OK");
     ok(objNew.view.$().hasClass('agility_'+objBase._id), "child CSS class inherited OK");
-    equals(objNew.view.$().css('color'), 'rgb(255, 0, 0)', "child style OK");
-
+    equals(objNew.view.$().css('float'), 'right', "child style OK");
+    
     // this should trigger a 404 error if format is parsed to the DOM
     objBase = $$({}, "<div class='test'> <img data-bind='src path'/> </div>");
     equals(objBase.model.size(), 0, 'model is empty');

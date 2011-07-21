@@ -44,17 +44,19 @@
   //
   // --------------------------      
 
-  // Douglas Crockford's Object.create()
-  if (typeof Object.create !== 'function') {
+  // Modified from Douglas Crockford's Object.create()
+  // The condition below ensures we override other manual implementations (most are not adequate)
+  if (!Object.create || Object.create.toString().search(/native code/i)<0) {
     Object.create = function(obj){
       var Aux = function(){};
-      Aux.prototype = obj;
+      $.extend(Aux.prototype, obj); // simply setting Aux.prototype = obj somehow messes with constructor, so getPrototypeOf wouldn't work
       return new Aux();
     };
   }
   
-  // John Resig's Object.getPrototypeOf()
-  if ( typeof Object.getPrototypeOf !== "function" ) {
+  // Modified from John Resig's Object.getPrototypeOf()
+  // The condition below ensures we override other manual implementations (most are not adequate)
+  if (!Object.getPrototypeOf || Object.getPrototypeOf.toString().search(/native code/i)<0) {
     if ( typeof "test".__proto__ === "object" ) {
       Object.getPrototypeOf = function(object){
         return object.__proto__;
@@ -66,6 +68,7 @@
       };
     }
   }  
+
 
   // --------------------------
   //
@@ -523,7 +526,7 @@
             }
             return undefined;
           }; // ancestorWithStyle
-          
+
           var ancestorId = ancestorWithStyle(this);
           objClass = 'agility_' + ancestorId;
           this.view.$root.addClass(objClass);
@@ -835,7 +838,7 @@
             self.model.set({ id: jqXHR.getResponseHeader('Location').match(/\/([0-9]+)$/)[1] }, {silent:true});
           }
           self.trigger('persist:save:success');
-        },      
+        },
         error: function(){
           self.trigger('persist:error');
           self.trigger('persist:save:error');

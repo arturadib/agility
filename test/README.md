@@ -1,6 +1,6 @@
 # Agility.js - Unit tests
 
-To test core components _without_ persistence simply point your browser to:
+To test core components _without_ persistence point your browser to:
   
     http://localhost/agility/test/core_only.html
 
