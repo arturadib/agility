@@ -487,6 +487,43 @@
 
 <p><div class="demo"></div></p>
 <h2><a href="#methods-core">Core methods</a></h2>
+<h3><a href="#core-bind">.bind()</a></h3>
+<p><em>Binds function to event.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">fn</span><span class="p">)</span>
+</pre></div>
+
+
+<ul>
+<li><code>event</code>: String specifying event type. See <a href="#events">events</a> section for event syntax.</li>
+<li><code>fn</code>: function to be called upon event triggering.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Owner Agility object (for chainable calls).</p>
+<h3><a href="#core-trigger">.trigger()</a></h3>
+<p><em>Triggers event, optionally passing parameters to listeners.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="nx">event</span> <span class="p">[,</span><span class="nx">params</span><span class="p">])</span>
+</pre></div>
+
+
+<ul>
+<li><code>event</code>: String specifying event type. See <a href="#events">events</a> section for event syntax.</li>
+<li><code>params</code>: parameters to be passed to listeners as function arguments.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Owner Agility object (for chainable calls).</p>
+<h3><a href="#core-destroy">.destroy()</a></h3>
+<p><em>Erases self view, removes self from parent container.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">destroy</span><span class="p">()</span>
+</pre></div>
+
+
+<p><strong>Returns:</strong></p>
+<p>Nothing.</p>
+<h3><a href="#container">&mdash;</a></h3>
+<p>The methods below are specific to the object container.</p>
 <h3><a href="#core-add">.add()</a></h3>
 <p><em>Adds an Agility object to the object's container.</em></p>
 <p><strong>Syntax:</strong> </p>
@@ -543,41 +580,6 @@
 
 <p><strong>Returns:</strong></p>
 <p>Number of Agility objects in the object's container.</p>
-<h3><a href="#core-bind">.bind()</a></h3>
-<p><em>Binds function to event.</em></p>
-<p><strong>Syntax:</strong> </p>
-<div class="codehilite"><pre><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">fn</span><span class="p">)</span>
-</pre></div>
-
-
-<ul>
-<li><code>event</code>: String specifying event type. See <a href="#events">events</a> section for event syntax.</li>
-<li><code>fn</code>: function to be called upon event triggering.</li>
-</ul>
-<p><strong>Returns:</strong></p>
-<p>Owner Agility object (for chainable calls).</p>
-<h3><a href="#core-trigger">.trigger()</a></h3>
-<p><em>Triggers event, optionally passing parameters to listeners.</em></p>
-<p><strong>Syntax:</strong> </p>
-<div class="codehilite"><pre><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="nx">event</span> <span class="p">[,</span><span class="nx">params</span><span class="p">])</span>
-</pre></div>
-
-
-<ul>
-<li><code>event</code>: String specifying event type. See <a href="#events">events</a> section for event syntax.</li>
-<li><code>params</code>: parameters to be passed to listeners as function arguments.</li>
-</ul>
-<p><strong>Returns:</strong></p>
-<p>Owner Agility object (for chainable calls).</p>
-<h3><a href="#core-destroy">.destroy()</a></h3>
-<p><em>Erases self view, removes self from parent container.</em></p>
-<p><strong>Syntax:</strong> </p>
-<div class="codehilite"><pre><span class="p">.</span><span class="nx">destroy</span><span class="p">()</span>
-</pre></div>
-
-
-<p><strong>Returns:</strong></p>
-<p>Nothing.</p>
 <h2><a href="#methods-model">Model methods</a></h2>
 <h3><a href="#model-set">.model.set()</a></h3>
 <p><em>Sets the model data. If model already exists, it's extended.</em></p>

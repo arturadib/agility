@@ -443,7 +443,71 @@ and verbose:
     }, 2000);
 <div class="demo"></div>
 
+
+
+
+
+
+
+
+
+
 ## [Core methods](#methods-core)
+
+### [.bind()](#core-bind)
+
+_Binds function to event._
+
+**Syntax:** 
+
+    :::javascript
+    .bind(event, fn)
+
++ `event`: String specifying event type. See [events](#events) section for event syntax.
++ `fn`: function to be called upon event triggering.
+
+**Returns:**
+
+Owner Agility object (for chainable calls).
+
+### [.trigger()](#core-trigger)
+
+_Triggers event, optionally passing parameters to listeners._
+
+**Syntax:** 
+
+    :::javascript
+    .trigger(event [,params])
+
++ `event`: String specifying event type. See [events](#events) section for event syntax.
++ `params`: parameters to be passed to listeners as function arguments.
+
+**Returns:**
+
+Owner Agility object (for chainable calls).
+
+### [.destroy()](#core-destroy)
+
+_Erases self view, removes self from parent container._
+
+**Syntax:** 
+
+    :::javascript
+    .destroy()
+
+**Returns:**
+
+Nothing.
+
+
+
+
+### [&mdash;](#container)
+
+The methods below are specific to the object container.
+
+
+
 
 ### [.add()](#core-add)
 
@@ -519,50 +583,10 @@ _Returns number of objects within the object's container._
 
 Number of Agility objects in the object's container.
 
-### [.bind()](#core-bind)
 
-_Binds function to event._
 
-**Syntax:** 
 
-    :::javascript
-    .bind(event, fn)
 
-+ `event`: String specifying event type. See [events](#events) section for event syntax.
-+ `fn`: function to be called upon event triggering.
-
-**Returns:**
-
-Owner Agility object (for chainable calls).
-
-### [.trigger()](#core-trigger)
-
-_Triggers event, optionally passing parameters to listeners._
-
-**Syntax:** 
-
-    :::javascript
-    .trigger(event [,params])
-
-+ `event`: String specifying event type. See [events](#events) section for event syntax.
-+ `params`: parameters to be passed to listeners as function arguments.
-
-**Returns:**
-
-Owner Agility object (for chainable calls).
-
-### [.destroy()](#core-destroy)
-
-_Erases self view, removes self from parent container._
-
-**Syntax:** 
-
-    :::javascript
-    .destroy()
-
-**Returns:**
-
-Nothing.
 
 ## [Model methods](#methods-model)
 
