@@ -108,7 +108,7 @@ as well as containers for other Agility objects:
     var list = $$({}, '<div> <button>Click me</button> <ul></ul> </div>', {
       'click button': function(){
         var newItem = $$(item, {id:counter});
-        this.append(newItem, 'ul'); // add object to container, append view at <ul>
+        this.prepend(newItem, 'ul'); // add object to container, prepend view at <ul>
         counter++;
       }
     })    

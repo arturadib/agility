@@ -149,6 +149,21 @@
         });
         return this;
       },
+
+      // Adds child object to container, prepends view, listens for child removal
+      prepend: function(obj, selector){
+        var self = this;
+        if (!util.isAgility(obj)) {
+          throw "agility.js: prepend argument is not an agility object";
+        }
+        this._container.children[obj._id] = obj; // children is *not* an array; this is for simpler lookups by global object id
+        this.trigger('prepend', [obj, selector]);
+        // ensures object is removed from container when destroyed:
+        obj.bind('destroy', function(event, id){ 
+          self._container.remove(id);
+        });
+        return this;
+      },
       
       // Removes child object from container
       remove: function(id){
@@ -580,7 +595,7 @@
       return this; // for chainable calls
     },
     prepend: function(){
-      this._container.append.apply(this, arguments);
+      this._container.prepend.apply(this, arguments);
       return this; // for chainable calls
     },
     remove: function(){
@@ -822,6 +837,7 @@
           self.trigger('persist:save:success');
         },      
         error: function(){
+          self.trigger('persist:error');
           self.trigger('persist:save:error');
         }
       });
@@ -852,6 +868,7 @@
           self.trigger('persist:load:success');
         },      
         error: function(){
+          self.trigger('persist:error');
           self.trigger('persist:load:error');
         }
       });      
@@ -882,6 +899,7 @@
           self.trigger('persist:erase:success');
         },      
         error: function(){
+          self.trigger('persist:error');
           self.trigger('persist:erase:error');
         }
       });            
@@ -890,8 +908,8 @@
     }; // erase()
 
     // .gather()
-    // Loads collection and appends at selector. All persistence data including adapter comes from proto, not self
-    this.gather = function(proto, selectorOrQuery, query){
+    // Loads collection and appends/prepends (depending on method) at selector. All persistence data including adapter comes from proto, not self
+    this.gather = function(proto, method, selectorOrQuery, query){
       var selector;
       if (!proto) throw "agility.js plugin persist: gather() needs object prototype";
       if (!proto._data.persist) throw "agility.js plugin persist: prototype doesn't seem to contain persist() data";
@@ -926,7 +944,9 @@
         success: function(data){
           $.each(data, function(index, entry){
             var obj = $$(proto, entry);
-            self.append(obj, selector);
+            if (typeof method === 'string') {
+              self[method](obj, selector);
+            }
           });
           self.trigger('persist:gather:success', {data:data});
         },

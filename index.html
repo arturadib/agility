@@ -37,12 +37,19 @@
     #simplemodal-overlay { background-color:#000; }
     #simplemodal-container { background-color:white; border:8px solid #555; padding:12px; }
   </style>
-  
-  <script>
+
+  <script type="text/javascript">
     if (window.location.href.search(/\?x/) < 0) {
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-924459-9']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
     }
   </script>
-
 </head>
 
 <body>
@@ -167,7 +174,7 @@
 <span class="kd">var</span> <span class="nx">list</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;div&gt; &lt;button&gt;Click me&lt;/button&gt; &lt;ul&gt;&lt;/ul&gt; &lt;/div&gt;&#39;</span><span class="p">,</span> <span class="p">{</span>
   <span class="s1">&#39;click button&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
     <span class="kd">var</span> <span class="nx">newItem</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span> <span class="p">{</span><span class="nx">id</span><span class="o">:</span><span class="nx">counter</span><span class="p">});</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">newItem</span><span class="p">,</span> <span class="s1">&#39;ul&#39;</span><span class="p">);</span> <span class="c1">// add object to container, append view at &lt;ul&gt;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">prepend</span><span class="p">(</span><span class="nx">newItem</span><span class="p">,</span> <span class="s1">&#39;ul&#39;</span><span class="p">);</span> <span class="c1">// add object to container, prepend view at &lt;ul&gt;</span>
     <span class="nx">counter</span><span class="o">++</span><span class="p">;</span>
   <span class="p">}</span>
 <span class="p">})</span>    
