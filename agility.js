@@ -49,7 +49,7 @@
   if (!Object.create || Object.create.toString().search(/native code/i)<0) {
     Object.create = function(obj){
       var Aux = function(){};
-      $.extend(Aux.prototype, obj); // simply setting Aux.prototype = obj somehow messes with constructor, so getPrototypeOf wouldn't work
+      $.extend(Aux.prototype, obj); // simply setting Aux.prototype = obj somehow messes with constructor, so getPrototypeOf wouldn't work in IE
       return new Aux();
     };
   }
