@@ -1,7 +1,10 @@
 
 Agility.js is an [MVC](http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) library for Javascript that lets you write maintainable and reusable browser code without the verbose or infrastructural overhead found in [other](http://documentcloud.github.com/backbone/) [MVC](http://www.sproutcore.com/) [libraries](http://knockoutjs.com/). The goal is to enable developers to write web apps at least as quickly as with jQuery, while simplifying long-term maintainability through MVC objects.
 
-<p class='download'><b>Latest version: 0.1.0</b>. <a href="agility.min.js">Download minified js</a> (3.2K packed + gzipped).</p>
+<div class='download'>
+  <div><b>Latest version: 0.1.0</b> | Compatible with IE7-8, Firefox, Chrome, Safari</div>
+  <div><a href="agility.min.js">Download minified js</a> (3.2K packed + gzipped)</div>
+</div>
 
 The library itself is a small Javascript file (goal is to remain under 10K), and its only dependency is a recent version of jQuery (Zepto support coming soon). The project is licensed under the liberal [MIT license](https://github.com/arturadib/agility/blob/master/LICENSE).
 
@@ -202,7 +205,7 @@ You can also `gather` an entire collection of models and insert them as MVC obje
 (View JSON server response used in the request above: [GET api/people/](api/people/)).
 
 
-### Short examples
+### The infamous To-Do example
 
 Last but not least, no modern MVC library is complete without a simple To-Do list example. The fully functional example below has 17 lines of code:
 
