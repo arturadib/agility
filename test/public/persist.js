@@ -49,7 +49,7 @@
     obj.erase();
   });
 
-  asyncTest("Container - gather", function(){
+  asyncTest("Container - gather, first syntax", function(){
     var proto = $$({}, '<li data-bind="name"></li>').persist($$.adapter.restful, {collection:'people'});
     var obj = $$({}, '<ul></ul>', {
       'persist:gather:success': function(event, res){
@@ -59,6 +59,30 @@
       }
     }).persist();
     obj.gather(proto); // gather
+  });
+
+  asyncTest("Container - gather, second syntax", function(){
+    var proto = $$({}, '<li data-bind="name"></li>').persist($$.adapter.restful, {collection:'people'});
+    var obj = $$({}, '<div><ul></ul></div>', {
+      'persist:gather:success': function(event, res){
+        equals(this.size(), res.data.length, "container size matches data size");
+        equals(this.view.$('ul li').size(), res.data.length, "view size matches data size");
+        start();
+      }
+    }).persist();
+    obj.gather(proto, 'ul'); // gather
+  });
+
+  asyncTest("Container - gather, third syntax", function(){
+    var proto = $$({}, '<li data-bind="name"></li>').persist($$.adapter.restful, {collection:'people'});
+    var obj = $$({}, '<ul></ul>', {
+      'persist:gather:success': function(event, res){
+        equals(this.size(), res.data.length, "container size matches data size");
+        equals(this.view.$('li').size(), res.data.length, "view size matches data size");
+        start();
+      }
+    }).persist();
+    obj.gather(proto, {some:'parameter'}); // gather
   });
 
 })(jQuery, agility);

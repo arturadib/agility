@@ -882,9 +882,24 @@
 
     // .gather()
     // Loads collection and appends at selector. All persistence data including adapter comes from proto, not self
-    this.gather = function(proto, selector){
+    this.gather = function(proto, selectorOrQuery, query){
+      var selector;
       if (!proto) throw "agility.js plugin persist: gather() needs object prototype";
       if (!proto._data.persist) throw "agility.js plugin persist: prototype doesn't seem to contain persist() data";
+
+      // Determines arguments
+      if (query) {
+        selector = selectorOrQuery;        
+      }
+      else {
+        if (typeof selectorOrQuery === 'string') {
+          selector = selectorOrQuery;
+        }
+        else {
+          selector = undefined;
+          query = selectorOrQuery;
+        }
+      }
 
       if (self._data.persist.openRequests === 0) {
         self.trigger('persist:start');
@@ -892,6 +907,7 @@
       self._data.persist.openRequests++;
       proto._data.persist.adapter.call(proto, {
         type: 'GET',
+        data: query,
         complete: function(){
           self._data.persist.openRequests--;
           if (self._data.persist.openRequests === 0) {
@@ -930,11 +946,5 @@
     }, _params);
     $.ajax(params);
   };
-
-  // // Local storage (HTML5)
-  // agility.adapter.localStorage = function(params){
-  //   if (params.type === 'GET') {
-  //   localStorage.getItem("bar", foo);
-  // }
   
 })(window);
