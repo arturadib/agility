@@ -141,7 +141,7 @@
         if (!util.isAgility(obj)) {
           throw "agility.js: add argument is not an agility object";
         }
-        this._container.children[obj._id] = obj;
+        this._container.children[obj._id] = obj; // children is *not* an array; this is for simpler lookups by global object id
         this.trigger('add', [obj, selector]);
         // ensures object is removed from container when destroyed:
         obj.bind('destroy', function(event, id){ 
