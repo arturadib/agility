@@ -1,9 +1,9 @@
 /*
 
-  Agility.js  
-  
+  Agility.js    
   Licensed under the MIT license
   Copyright (c) Artur B. Adib, 2011
+  http://agilityjs.com
 
 */
 
