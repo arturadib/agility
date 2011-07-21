@@ -2,7 +2,7 @@
  
 http://agilityjs.com
 
-Agility is an MVC library for browser-side Javascript that lets you write **maintainable** code without compromising on **development speed**. It's [write less, do more](http://www.jquery.com) with maintainability, if you will. 
+Agility is an MVC library for browser-side Javascript that lets you write **maintainable** code without compromising on **development speed**. It's [write less, do more](http://www.jquery.com) with maintainability. 
 
 Features include:
 
