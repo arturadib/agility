@@ -135,14 +135,29 @@
     
     _container: {
 
-      // Adds child object to container, listens for child removal
-      add: function(obj, selector){
+      // Adds child object to container, appends view, listens for child removal
+      append: function(obj, selector){
         var self = this;
         if (!util.isAgility(obj)) {
-          throw "agility.js: add argument is not an agility object";
+          throw "agility.js: append argument is not an agility object";
         }
         this._container.children[obj._id] = obj; // children is *not* an array; this is for simpler lookups by global object id
-        this.trigger('add', [obj, selector]);
+        this.trigger('append', [obj, selector]);
+        // ensures object is removed from container when destroyed:
+        obj.bind('destroy', function(event, id){ 
+          self._container.remove(id);
+        });
+        return this;
+      },
+
+      // Adds child object to container, prepends view, listens for child removal
+      prepend: function(obj, selector){
+        var self = this;
+        if (!util.isAgility(obj)) {
+          throw "agility.js: prepend argument is not an agility object";
+        }
+        this._container.children[obj._id] = obj; // children is *not* an array; this is for simpler lookups by global object id
+        this.trigger('prepend', [obj, selector]);
         // ensures object is removed from container when destroyed:
         obj.bind('destroy', function(event, id){ 
           self._container.remove(id);
@@ -538,9 +553,14 @@
         this.view.$().remove();
       },
 
-      // Triggered after child obj is added to container
-      _add: function(event, obj, selector){
+      // Triggered after child obj is appended to container
+      _append: function(event, obj, selector){
         this.view.$(selector).append(obj.view.$root);
+      },
+
+      // Triggered after child obj is prepended to container
+      _prepend: function(event, obj, selector){
+        this.view.$(selector).prepend(obj.view.$root);
       },
                   
       // Triggered after a child obj is removed from container (or self-removed)
@@ -570,8 +590,12 @@
     //
     // _Container shortcuts
     //
-    add: function(){      
-      this._container.add.apply(this, arguments);
+    append: function(){
+      this._container.append.apply(this, arguments);
+      return this; // for chainable calls
+    },
+    prepend: function(){
+      this._container.prepend.apply(this, arguments);
       return this; // for chainable calls
     },
     remove: function(){
@@ -917,7 +941,7 @@
         success: function(data){
           $.each(data, function(index, entry){
             var obj = $$(proto, entry);
-            self.add(obj, selector);
+            self.append(obj, selector);
           });
           self.trigger('persist:gather:success', {data:data});
         },

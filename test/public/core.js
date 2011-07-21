@@ -210,18 +210,28 @@
   test("Container calls", function(){
     var obj1 = $$({}, '<div><span class="here"></span></div>');
     var obj2 = $$('hello');
-    obj1.add(obj2, '.here');
-    equals(obj1.view.$('.here div').html(), 'hello', 'add() appends at given selector');
+    obj1.append(obj2, '.here');
+    equals(obj1.view.$('.here div').html(), 'hello', 'append() appends at given selector');
 
     obj1 = $$({}, '<div><span></span></div>');
     obj2 = $$('hello'); // default format should have a <div> root
-    obj1.add(obj2);
-    equals(obj1.view.$('span').next().html(), 'hello', 'add() appends at root element');        
+    obj1.append(obj2);
+    equals(obj1.view.$('span').next().html(), 'hello', 'append() appends at root element');        
+
+    obj1 = $$({}, '<div><ul/></div>');
+    obj2 = $$('hello'); // default format should have a <div> root
+    obj1.prepend(obj2);
+    equals(obj1.view.$('ul').prev().html(), 'hello', 'prepend() prepends at root element');        
+
+    obj1 = $$({}, '<div><ul><span/></ul></div>');
+    obj2 = $$('hello'); // default format should have a <div> root
+    obj1.prepend(obj2, 'ul');
+    equals(obj1.view.$('ul span').prev().html(), 'hello', 'prepend() prepends at given selector');        
 
     obj1 = $$({}, '<div><span></span></div>');
     for (var i=0;i<10;i++) {
       obj2 = $$('hello', '<div class="test"></div>'); // default format should have a <div> root
-      obj1.add(obj2, 'span');
+      obj1.append(obj2, 'span');
     }
     equals(obj1.size(), 10, 'correct container size()');
     equals(obj1.view.$('.test').size(), 10, 'correct DOM size');
@@ -316,14 +326,14 @@
     var obj1 = $$();
     var obj2 = $$({
       controller: {
-        add: function(ev, $$o, selector){
+        append: function(ev, $$o, selector){
           o = $$o;
           s = selector;
         }
       }
     });  
-    obj2.add(obj1, 'sel');
-    ok(o===obj1 && s==='sel', "add() called");
+    obj2.append(obj1, 'sel');
+    ok(o===obj1 && s==='sel', "append() called");
   });
 
   test("Model events", function(){
