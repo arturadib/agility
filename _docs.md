@@ -1,3 +1,6 @@
+
+<p class='download'><b>Version: 0.1.0</b></p>
+
 # [Introduction](#intro) 
 
 Agility is a [Model-View-Controller](http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) (MVC) library for client-side Javascript with some specific design principles:
