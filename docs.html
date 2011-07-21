@@ -149,7 +149,7 @@
 <span class="nt">&lt;body&gt;</span>
   <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;</span>
     <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">txt</span><span class="o">:</span><span class="s1">&#39;Hello World&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;div data-bind=&quot;txt&quot;/&gt;&#39;</span><span class="p">);</span>
-    <span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>        
+    <span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>        
   <span class="nt">&lt;/script&gt;</span>
 <span class="nt">&lt;/body&gt;</span>
 
@@ -164,7 +164,7 @@
 <span class="kd">var</span> <span class="nx">proto</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;p data-bind=&quot;name&quot; style=&quot;color:red&quot;/&gt;&#39;</span><span class="p">);</span>
 <span class="c1">// Create object from prototype object:</span>
 <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span><span class="nx">proto</span><span class="p">,</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span><span class="s1">&#39;Joe Doe&#39;</span><span class="p">});</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
 </pre></div>
 
 
@@ -174,14 +174,14 @@
 <p>Agility offers painless two-way bindings to keep Models and Views in sync. Binding a given DOM element to a model property is as simple as specifying a <code>data-bind</code> attribute for the desired element:</p>
 <div class="codehilite"><pre><span class="c1">// Two-way input binding (text)</span>
 <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span><span class="s1">&#39;Joe Doe&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;p&gt;&lt;input type=&quot;text&quot; data-bind=&quot;name&quot;/&gt; You typed: &lt;span data-bind=&quot;name&quot;/&gt;&lt;/p&gt;&#39;</span><span class="p">);</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
 </pre></div>
 
 
 <p><div class="demo"></div></p>
 <div class="codehilite"><pre><span class="c1">// Two-way input binding (search)</span>
 <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">query</span><span class="o">:</span><span class="s1">&#39;Type of query&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;p&gt;&lt;input type=&quot;search&quot; data-bind=&quot;name&quot;/&gt; Instant model change: &lt;span data-bind=&quot;name&quot;/&gt;&lt;/p&gt;&#39;</span><span class="p">);</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
 </pre></div>
 
 
@@ -196,7 +196,7 @@
 <span class="s2">      You selected: &lt;span data-bind=&#39;opt&#39;/&gt; \</span>
 <span class="s2">   &lt;/div&gt;&quot;</span>
 <span class="p">);</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
 </pre></div>
 
 
@@ -209,7 +209,7 @@
 <span class="s2">      &lt;input type=&#39;checkbox&#39; name=&#39;test&#39; data-bind=&#39;b&#39;/&gt; checked: &lt;span data-bind=&#39;b&#39;/&gt;&lt;br/&gt; \</span>
 <span class="s2">   &lt;/div&gt;&quot;</span>
 <span class="p">);</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
 </pre></div>
 
 
@@ -225,7 +225,7 @@
 <span class="s2">    You selected: &lt;span data-bind=&#39;opt&#39;/&gt; \</span>
 <span class="s2">   &lt;/div&gt;&quot;</span>
 <span class="p">);</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
 </pre></div>
 
 
@@ -235,15 +235,15 @@
 <p>Formats are specified through an HTML string, containing one (and only one) root element that wraps all other elements, so the first two examples below are <strong>not</strong> valid:</p>
 <div class="codehilite"><pre><span class="c1">// INVALID CODE!! (missing root view element)</span>
 <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;hey there&#39;</span><span class="p">);</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
 
 <span class="c1">// INVALID CODE!! (more than one root elements)</span>
 <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;div&gt;hey there&lt;/div&gt; &lt;button&gt;OK&lt;/button&gt;&#39;</span><span class="p">);</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
 
 <span class="c1">// Valid code</span>
 <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;p&gt;hey there&lt;/p&gt;&#39;</span><span class="p">);</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
 </pre></div>
 
 
@@ -252,11 +252,11 @@
 <p>To ensure CSS selectors apply only to the intended object, <em>make sure all selectors are preceded by the root selector</em> <code>&amp;</code>. (In future versions this might not be necessary anymore).</p>
 <div class="codehilite"><pre><span class="c1">// ANTI-PATTERN!! (applies CSS style globally)</span>
 <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s2">&quot;&lt;p&gt;&lt;div&gt;Please don&#39;t do this&lt;/div&gt;&lt;/p&gt;&quot;</span><span class="p">,</span> <span class="s1">&#39;div { color:red; }&#39;</span><span class="p">);</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
 
 <span class="c1">// Correct: applies style locally</span>
 <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;p&gt;&lt;div&gt;Do this&lt;/div&gt;&lt;/p&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&amp; div { color:red; }&#39;</span><span class="p">);</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
 </pre></div>
 
 
@@ -274,7 +274,7 @@
 <span class="s1">           &amp; #world { background:red; }&#39;</span>
   <span class="p">}</span>
 <span class="p">});</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
 </pre></div>
 
 
@@ -296,7 +296,7 @@
     <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span><span class="nx">msg</span><span class="o">:</span><span class="s2">&quot;I&#39;ve been clicked!&quot;</span><span class="p">});</span>
   <span class="p">}</span>
 <span class="p">});</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">button</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">button</span><span class="p">);</span>
 </pre></div>
 
 
@@ -327,7 +327,7 @@
     <span class="k">this</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">$</span><span class="p">().</span><span class="nx">append</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Model changed!&lt;/p&gt;&#39;</span><span class="p">);</span>
   <span class="p">}</span>
 <span class="p">});</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">catcher</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">catcher</span><span class="p">);</span>
 </pre></div>
 
 
@@ -339,7 +339,7 @@
     <span class="k">this</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">$</span><span class="p">().</span><span class="nx">html</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;msg&#39;</span><span class="p">)</span> <span class="p">);</span>
   <span class="p">}</span>
 <span class="p">});</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
 
 <span class="c1">// Without auto-proxying the &#39;this&#39; in myHandler would be &#39;window&#39;</span>
 <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">controller</span><span class="p">.</span><span class="nx">myHandler</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span>
@@ -352,7 +352,7 @@
 <p>Agility adopts prototype-based (<a href="http://en.wikipedia.org/wiki/Differential_inheritance">differential</a>) inheritance. To create a new Agility object from an existing one, pass the latter as the prototype argument to the <a href="#factory">factory function</a>; additional model, view, controller initializers are passed as usual:</p>
 <div class="codehilite"><pre><span class="kd">var</span> <span class="nx">proto</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;p data-bind=&quot;msg&quot;/&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&amp; {color:red}&#39;</span><span class="p">);</span>
 <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span><span class="nx">proto</span><span class="p">,</span> <span class="p">{</span><span class="nx">msg</span><span class="o">:</span><span class="s1">&#39;Hey there!&#39;</span><span class="p">});</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
 </pre></div>
 
 
@@ -378,11 +378,11 @@
     <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nx">i</span><span class="o">&lt;</span><span class="mi">500</span><span class="p">;</span><span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
       <span class="c1">// Inherits from cell</span>
       <span class="kd">var</span> <span class="nx">newCell</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span><span class="nx">cell</span><span class="p">,</span> <span class="p">{</span><span class="nx">num</span><span class="o">:</span><span class="nx">i</span><span class="p">});</span>
-      <span class="k">this</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">newCell</span><span class="p">,</span> <span class="s1">&#39;#wrapper&#39;</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">newCell</span><span class="p">,</span> <span class="s1">&#39;#wrapper&#39;</span><span class="p">);</span>
     <span class="p">}</span>
   <span class="p">}</span>
 <span class="p">});</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">matrix</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">matrix</span><span class="p">);</span>
 </pre></div>
 
 
@@ -443,10 +443,10 @@
     <span class="nx">style</span><span class="o">:</span> <span class="s1">&#39;&amp; { color:green; font-style:italic; }&#39;</span>
   <span class="p">}</span>
 <span class="p">});</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">person1</span><span class="p">);</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">person2</span><span class="p">);</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">person3</span><span class="p">);</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">person4</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">person1</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">person2</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">person3</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">person4</span><span class="p">);</span>
 </pre></div>
 
 
@@ -457,7 +457,7 @@
     <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;You clicked me!&#39;</span><span class="p">);</span>
   <span class="p">}</span>
 <span class="p">});</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">button</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">button</span><span class="p">);</span>
 </pre></div>
 
 
@@ -477,7 +477,7 @@
     <span class="p">}</span>
   <span class="p">}</span>
 <span class="p">});</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">dataHolder</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">dataHolder</span><span class="p">);</span>
 
 <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
   <span class="nx">dataHolder</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span><span class="nx">first</span><span class="o">:</span><span class="s1">&#39;Mary&#39;</span><span class="p">});</span>
@@ -524,16 +524,29 @@
 <p>Nothing.</p>
 <h3><a href="#container">&mdash;</a></h3>
 <p>The methods below are specific to the object container.</p>
-<h3><a href="#core-add">.add()</a></h3>
-<p><em>Adds an Agility object to the object's container.</em></p>
+<h3><a href="#core-append">.append()</a></h3>
+<p><em>Adds an Agility object to the object's container, and appends its view to object's view.</em></p>
 <p><strong>Syntax:</strong> </p>
-<div class="codehilite"><pre><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">object</span> <span class="p">[,</span><span class="nx">selector</span><span class="p">])</span>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">object</span> <span class="p">[,</span><span class="nx">selector</span><span class="p">])</span>
 </pre></div>
 
 
 <ul>
 <li><code>object</code>: The Agility object to be added;</li>
-<li><code>selector</code>: A jQuery selector specifying where the object's root element should be appended in the object's view.</li>
+<li><code>selector</code>: A jQuery selector specifying where the object's root element should be appended in the object's view. Will append to root element if undefined.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Owner Agility object (for chainable calls).</p>
+<h3><a href="#core-prepend">.prepend()</a></h3>
+<p><em>Adds an Agility object to the object's container, and prepends its view to object's view.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">prepend</span><span class="p">(</span><span class="nx">object</span> <span class="p">[,</span><span class="nx">selector</span><span class="p">])</span>
+</pre></div>
+
+
+<ul>
+<li><code>object</code>: The Agility object to be added;</li>
+<li><code>selector</code>: A jQuery selector specifying where the object's root element should be prepended in the object's view. Will prepend to root element if undefined.</li>
 </ul>
 <p><strong>Returns:</strong></p>
 <p>Owner Agility object (for chainable calls).</p>
@@ -682,7 +695,7 @@
 <h2><a href="#globals">Globals</a></h2>
 <h3><a href="#globals-document">$$.document</a></h3>
 <p><em>Main Agility object representing the document's body.</em></p>
-<p>Typically you just <code>.add()</code> a new Agility object to it.</p>
+<p>Typically you just <code>.append()</code> a new Agility object to it.</p>
 <h1><a href="#plugins">Built-in plugins</a></h1>
 <h2><a href="#persist">persist</a></h2>
 <p>The plugin <code>persist</code> lets you save and retrieve models to/from a storage server using a given adapter. Persistence is always manual, i.e. needs to be explicitly called by user.</p>
@@ -724,7 +737,7 @@
 <p>Loads model from server:</p>
 <div class="codehilite"><pre><span class="kd">var</span> <span class="nx">person</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">id</span><span class="o">:</span><span class="mi">123</span><span class="p">},</span> <span class="s1">&#39;&lt;p&gt;Name: &lt;span data-bind=&quot;name&quot;/&gt;&lt;/p&gt;&#39;</span><span class="p">).</span><span class="nx">persist</span><span class="p">(</span><span class="nx">$$</span><span class="p">.</span><span class="nx">adapter</span><span class="p">.</span><span class="nx">restful</span><span class="p">,</span> <span class="p">{</span><span class="nx">collection</span><span class="o">:</span><span class="s1">&#39;people&#39;</span><span class="p">});</span>
 
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
 <span class="nx">person</span><span class="p">.</span><span class="nx">load</span><span class="p">();</span>
 </pre></div>
 
@@ -754,7 +767,7 @@
 <p>Creates new model on server:</p>
 <div class="codehilite"><pre><span class="kd">var</span> <span class="nx">person</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span><span class="s1">&#39;Joe Doe&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;p&gt;Name: &lt;span data-bind=&quot;name&quot;/&gt;&lt;/p&gt;&#39;</span><span class="p">).</span><span class="nx">persist</span><span class="p">(</span><span class="nx">$$</span><span class="p">.</span><span class="nx">adapter</span><span class="p">.</span><span class="nx">restful</span><span class="p">,</span> <span class="p">{</span><span class="nx">collection</span><span class="o">:</span><span class="s1">&#39;people&#39;</span><span class="p">});</span>
 
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
 <span class="nx">person</span><span class="p">.</span><span class="nx">save</span><span class="p">();</span>
 </pre></div>
 
@@ -762,7 +775,7 @@
 <p>Updates model on server:</p>
 <div class="codehilite"><pre><span class="kd">var</span> <span class="nx">person</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">id</span><span class="o">:</span><span class="mi">123</span><span class="p">,</span> <span class="nx">name</span><span class="o">:</span><span class="s1">&#39;Joe Doe&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;p&gt;Name: &lt;span data-bind=&quot;name&quot;/&gt;&lt;/p&gt;&#39;</span><span class="p">).</span><span class="nx">persist</span><span class="p">(</span><span class="nx">$$</span><span class="p">.</span><span class="nx">adapter</span><span class="p">.</span><span class="nx">restful</span><span class="p">,</span> <span class="p">{</span><span class="nx">collection</span><span class="o">:</span><span class="s1">&#39;people&#39;</span><span class="p">});</span>
 
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
 <span class="nx">person</span><span class="p">.</span><span class="nx">save</span><span class="p">();</span> <span class="c1">// will update, since &#39;id&#39; exists</span>
 </pre></div>
 
@@ -771,7 +784,7 @@
 <p>Owner Agility object (for chainable calls), with new model <code>id</code> (if created new resource).</p>
 <h3><a href="#persist-gather">.gather()</a></h3>
 <p><em>Loads a collection of models into container, using given prototype.</em></p>
-<p>Each gathered MVC object will be <code>.add()</code>ed to the container, and will be a direct descendant of given prototype object. All persistence information, including collection name, should be initialized in the prototype object.</p>
+<p>Each gathered MVC object will be <code>.append()</code>ed to the container, and will be a direct descendant of given prototype object. All persistence information, including collection name, should be initialized in the prototype object.</p>
 <p><strong>Syntax:</strong> </p>
 <div class="codehilite"><pre><span class="p">.</span><span class="nx">gather</span><span class="p">(</span><span class="nx">proto</span> <span class="p">[,</span><span class="nx">selector</span><span class="p">]</span> <span class="p">[,</span><span class="nx">query</span><span class="p">])</span>
 </pre></div>
@@ -790,7 +803,7 @@
 
 <span class="c1">// Container</span>
 <span class="kd">var</span> <span class="nx">people</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;div&gt;People: &lt;ul/&gt;&lt;/div&gt;&#39;</span><span class="p">).</span><span class="nx">persist</span><span class="p">();</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">people</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">people</span><span class="p">);</span>
 
 <span class="nx">people</span><span class="p">.</span><span class="nx">gather</span><span class="p">(</span><span class="nx">person</span><span class="p">,</span> <span class="s1">&#39;ul&#39;</span><span class="p">);</span>
 </pre></div>
@@ -828,7 +841,7 @@
     <span class="p">}</span>
   <span class="p">}</span>
 <span class="p">}).</span><span class="nx">persist</span><span class="p">();</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">people</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">people</span><span class="p">);</span>
 </pre></div>
 
 

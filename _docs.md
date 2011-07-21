@@ -87,7 +87,7 @@ Here's the full source of a "hello world" example:
     <body>
       <script type="text/javascript">
         var message = $$({txt:'Hello World'}, '<div data-bind="txt"/>');
-        $$.document.add(message);        
+        $$.document.append(message);        
       </script>
     </body>
 
@@ -104,7 +104,7 @@ Agility is framed around the notion of all-in-one MVC objects, or simply "Agilit
     var proto = $$({}, '<p data-bind="name" style="color:red"/>');
     // Create object from prototype object:
     var obj = $$(proto, {name:'Joe Doe'});
-    $$.document.add(obj);
+    $$.document.append(obj);
 <div class="demo"></div>
 
 Refer to the examples in the [home page](/) and elsewhere in this document for several different uses of the factory function, and the [factory function reference](#factory) for syntax details.
@@ -116,13 +116,13 @@ Agility offers painless two-way bindings to keep Models and Views in sync. Bindi
     :::javascript
     // Two-way input binding (text)
     var obj = $$({name:'Joe Doe'}, '<p><input type="text" data-bind="name"/> You typed: <span data-bind="name"/></p>');
-    $$.document.add(obj);
+    $$.document.append(obj);
 <div class="demo"></div>
 
     :::javascript
     // Two-way input binding (search)
     var obj = $$({query:'Type of query'}, '<p><input type="search" data-bind="name"/> Instant model change: <span data-bind="name"/></p>');
-    $$.document.add(obj);
+    $$.document.append(obj);
 <div class="demo"></div>
 
 More complex bindings are also supported for other input elements:
@@ -137,7 +137,7 @@ More complex bindings are also supported for other input elements:
           You selected: <span data-bind='opt'/> \
        </div>"
     );
-    $$.document.add(obj);
+    $$.document.append(obj);
 <div class="demo"></div>
 
     :::javascript
@@ -149,7 +149,7 @@ More complex bindings are also supported for other input elements:
           <input type='checkbox' name='test' data-bind='b'/> checked: <span data-bind='b'/><br/> \
        </div>"
     );
-    $$.document.add(obj);
+    $$.document.append(obj);
 <div class="demo"></div>
 
     :::javascript
@@ -164,7 +164,7 @@ More complex bindings are also supported for other input elements:
         You selected: <span data-bind='opt'/> \
        </div>"
     );
-    $$.document.add(obj);
+    $$.document.append(obj);
 <div class="demo"></div>
 
 ## [Format and style](#format-style)
@@ -176,15 +176,15 @@ Formats are specified through an HTML string, containing one (and only one) root
     :::javascript
     // INVALID CODE!! (missing root view element)
     var obj = $$({}, 'hey there');
-    $$.document.add(obj);
+    $$.document.append(obj);
 
     // INVALID CODE!! (more than one root elements)
     var obj = $$({}, '<div>hey there</div> <button>OK</button>');
-    $$.document.add(obj);
+    $$.document.append(obj);
 
     // Valid code
     var obj = $$({}, '<p>hey there</p>');
-    $$.document.add(obj);
+    $$.document.append(obj);
 
 Formats should always be specified upon object creation. Refer to the [factory function](#factory) for examples on how to initialize the format.
 
@@ -195,11 +195,11 @@ To ensure CSS selectors apply only to the intended object, *make sure all select
     :::javascript
     // ANTI-PATTERN!! (applies CSS style globally)
     var obj = $$({}, "<p><div>Please don't do this</div></p>", 'div { color:red; }');
-    $$.document.add(obj);
+    $$.document.append(obj);
 
     // Correct: applies style locally
     var obj = $$({}, '<p><div>Do this</div></p>', '& div { color:red; }');
-    $$.document.add(obj);
+    $$.document.append(obj);
 <div class="demo"></div>
 
 More complex formats and styles can be organized in multiple lines:
@@ -217,7 +217,7 @@ More complex formats and styles can be organized in multiple lines:
                & #world { background:red; }'
       }
     });
-    $$.document.add(obj);
+    $$.document.append(obj);
 <div class="demo"></div>
 
 If your `format` and/or `style` are too large, it's probably time to split your object into more Agility objects. (Unless of course you are creating a mostly static page, in which case Agility is probably not the best solution).
@@ -244,7 +244,7 @@ In addition to jQuery's selectors, the root selector `&` is also supported to pi
         this.model.set({msg:"I've been clicked!"});
       }
     });
-    $$.document.add(button);
+    $$.document.append(button);
 <div class="demo"></div>
 
 ### [Agility events](#events-agility)
@@ -276,7 +276,7 @@ The example below defines both a DOM and a Model event handler:
         this.view.$().append('<p>Model changed!</p>');
       }
     });
-    $$.document.add(catcher);
+    $$.document.append(catcher);
 <div class="demo"></div>
 
 ## [Auto-proxying](#auto-proxy)
@@ -289,7 +289,7 @@ All user-defined controllers initialized by the factory function `$$()` have the
         this.view.$().html( this.model.get('msg') );
       }
     });
-    $$.document.add(obj);
+    $$.document.append(obj);
     
     // Without auto-proxying the 'this' in myHandler would be 'window'
     setTimeout(obj.controller.myHandler, 100);
@@ -304,7 +304,7 @@ Agility adopts prototype-based ([differential](http://en.wikipedia.org/wiki/Diff
     :::javascript
     var proto = $$({}, '<p data-bind="msg"/>', '& {color:red}');
     var obj = $$(proto, {msg:'Hey there!'});
-    $$.document.add(obj);
+    $$.document.append(obj);
 <div class="demo"></div>
 
 Since derived objects reuse as much of their ancestors as possible, you can create large numbers of descendants from a prototype without worrying about memory bloat due to redundant storage:
@@ -330,11 +330,11 @@ Since derived objects reuse as much of their ancestors as possible, you can crea
         for (var i=0;i<500;i++) {
           // Inherits from cell
           var newCell = $$(cell, {num:i});
-          this.add(newCell, '#wrapper');
+          this.append(newCell, '#wrapper');
         }
       }
     });
-    $$.document.add(matrix);
+    $$.document.append(matrix);
 <div class="demo"></div>
 
 
@@ -402,10 +402,10 @@ Different view initialization methods:
         style: '& { color:green; font-style:italic; }'
       }
     });
-    $$.document.add(person1);
-    $$.document.add(person2);
-    $$.document.add(person3);
-    $$.document.add(person4);
+    $$.document.append(person1);
+    $$.document.append(person2);
+    $$.document.append(person3);
+    $$.document.append(person4);
 <div class="demo"></div>
 
 Specifying controller functions - compact:
@@ -416,7 +416,7 @@ Specifying controller functions - compact:
         alert('You clicked me!');
       }
     });
-    $$.document.add(button);
+    $$.document.append(button);
 <div class="demo"></div>
 
 and verbose:
@@ -436,7 +436,7 @@ and verbose:
         }
       }
     });
-    $$.document.add(dataHolder);
+    $$.document.append(dataHolder);
 
     setTimeout(function(){
       dataHolder.model.set({first:'Mary'});
@@ -509,21 +509,38 @@ The methods below are specific to the object container.
 
 
 
-### [.add()](#core-add)
+### [.append()](#core-append)
 
-_Adds an Agility object to the object's container._
+_Adds an Agility object to the object's container, and appends its view to object's view._
 
 **Syntax:** 
 
     :::javascript
-    .add(object [,selector])
+    .append(object [,selector])
 
 + `object`: The Agility object to be added;
-+ `selector`: A jQuery selector specifying where the object's root element should be appended in the object's view.
++ `selector`: A jQuery selector specifying where the object's root element should be appended in the object's view. Will append to root element if undefined.
 
 **Returns:**
 
 Owner Agility object (for chainable calls).
+
+### [.prepend()](#core-prepend)
+
+_Adds an Agility object to the object's container, and prepends its view to object's view._
+
+**Syntax:** 
+
+    :::javascript
+    .prepend(object [,selector])
+
++ `object`: The Agility object to be added;
++ `selector`: A jQuery selector specifying where the object's root element should be prepended in the object's view. Will prepend to root element if undefined.
+
+**Returns:**
+
+Owner Agility object (for chainable calls).
+
 
 ### [.remove()](#core-remove)
 
@@ -731,7 +748,7 @@ Please refer to the [factory function](#factory) and [event types](#events) for 
 
 _Main Agility object representing the document's body._
 
-Typically you just `.add()` a new Agility object to it.
+Typically you just `.append()` a new Agility object to it.
 
 # [Built-in plugins](#plugins)
 
@@ -788,7 +805,7 @@ Loads model from server:
     :::javascript
     var person = $$({id:123}, '<p>Name: <span data-bind="name"/></p>').persist($$.adapter.restful, {collection:'people'});
     
-    $$.document.add(person);
+    $$.document.append(person);
     person.load();
 <div class="demo"></div>
 
@@ -824,7 +841,7 @@ Creates new model on server:
     :::javascript
     var person = $$({name:'Joe Doe'}, '<p>Name: <span data-bind="name"/></p>').persist($$.adapter.restful, {collection:'people'});
     
-    $$.document.add(person);
+    $$.document.append(person);
     person.save();
 
 Updates model on server:
@@ -832,7 +849,7 @@ Updates model on server:
     :::javascript
     var person = $$({id:123, name:'Joe Doe'}, '<p>Name: <span data-bind="name"/></p>').persist($$.adapter.restful, {collection:'people'});
     
-    $$.document.add(person);
+    $$.document.append(person);
     person.save(); // will update, since 'id' exists
 
 **Returns**
@@ -843,7 +860,7 @@ Owner Agility object (for chainable calls), with new model `id` (if created new 
 
 _Loads a collection of models into container, using given prototype._
 
-Each gathered MVC object will be `.add()`ed to the container, and will be a direct descendant of given prototype object. All persistence information, including collection name, should be initialized in the prototype object.
+Each gathered MVC object will be `.append()`ed to the container, and will be a direct descendant of given prototype object. All persistence information, including collection name, should be initialized in the prototype object.
 
 **Syntax:** 
 
@@ -866,7 +883,7 @@ Loads a collection of persons from server:
     
     // Container
     var people = $$({}, '<div>People: <ul/></div>').persist();
-    $$.document.add(people);
+    $$.document.append(people);
 
     people.gather(person, 'ul');
 <div class="demo"></div>
@@ -904,7 +921,7 @@ Same as above, with load button and "Loading..." Ajax message:
         }
       }
     }).persist();
-    $$.document.add(people);
+    $$.document.append(people);
 <div class="demo"></div>
 
 **Returns**

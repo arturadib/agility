@@ -84,7 +84,7 @@
   <span class="p">},</span> 
   <span class="nx">controller</span><span class="o">:</span> <span class="p">{}</span>
 <span class="p">});</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
 </pre></div>
 
 
@@ -93,7 +93,7 @@
 <div class="codehilite"><pre><span class="c1">// Hello World</span>
 <span class="c1">// Compact syntax: initializers are passed in the order M, V, C:</span>
 <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;div&gt;Hello World&lt;/div&gt;&#39;</span><span class="p">);</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
 </pre></div>
 
 
@@ -102,12 +102,12 @@
 <p>The framework comes with a powerful model-view binder, so that views are always in sync with models and vice-versa. Establishing bindings is as simple as introducing a <code>data-bind</code> attribute in the desired DOM element; the factory function takes care of creating the necessary controllers:</p>
 <div class="codehilite"><pre><span class="c1">// Bind model to element&#39;s HTML content</span>
 <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">txt</span><span class="o">:</span><span class="s2">&quot;I&#39;m text from a model&quot;</span><span class="p">},</span> <span class="s1">&#39;&lt;div data-bind=&quot;txt&quot;/&gt;&#39;</span><span class="p">);</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
 
 <span class="c1">// Bind model to element&#39;s attribute</span>
 <span class="kd">var</span> <span class="nx">url</span> <span class="o">=</span> <span class="s1">&#39;http://google.com/favicon.ico&#39;</span><span class="p">;</span>
 <span class="kd">var</span> <span class="nx">icon</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">path</span><span class="o">:</span><span class="nx">url</span><span class="p">},</span> <span class="s1">&#39;&lt;p&gt;Image src from model: &lt;img data-bind=&quot;src path&quot;/&gt;&lt;/p&gt;&#39;</span><span class="p">);</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">icon</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">icon</span><span class="p">);</span>
 </pre></div>
 
 
@@ -121,7 +121,7 @@
 <span class="s2">      &lt;input type=&#39;checkbox&#39; name=&#39;test&#39; data-bind=&#39;b&#39;/&gt; checked: &lt;span data-bind=&#39;b&#39;/&gt;&lt;br/&gt; \</span>
 <span class="s2">   &lt;/div&gt;&quot;</span>
 <span class="p">);</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">check</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">check</span><span class="p">);</span>
 </pre></div>
 
 
@@ -143,7 +143,7 @@
     <span class="k">this</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#msg&#39;</span><span class="p">).</span><span class="nx">text</span><span class="p">(</span><span class="s1">&#39;Focused on input!&#39;</span><span class="p">);</span>
   <span class="p">}</span>
 <span class="p">});</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
 </pre></div>
 
 
@@ -155,8 +155,8 @@
 <span class="c1">// Derived objects with specified models:</span>
 <span class="kd">var</span> <span class="nx">obj1</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span><span class="nx">proto</span><span class="p">,</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span><span class="s1">&#39;Joe Doe&#39;</span><span class="p">});</span>
 <span class="kd">var</span> <span class="nx">obj2</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span><span class="nx">proto</span><span class="p">,</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span><span class="s1">&#39;Foo Bar&#39;</span><span class="p">});</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj1</span><span class="p">);</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj2</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">obj1</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">obj2</span><span class="p">);</span>
 </pre></div>
 
 
@@ -167,11 +167,11 @@
 <span class="kd">var</span> <span class="nx">list</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;div&gt; &lt;button&gt;Click me&lt;/button&gt; &lt;ul&gt;&lt;/ul&gt; &lt;/div&gt;&#39;</span><span class="p">,</span> <span class="p">{</span>
   <span class="s1">&#39;click button&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
     <span class="kd">var</span> <span class="nx">newItem</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span> <span class="p">{</span><span class="nx">id</span><span class="o">:</span><span class="nx">counter</span><span class="p">});</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">newItem</span><span class="p">,</span> <span class="s1">&#39;ul&#39;</span><span class="p">);</span> <span class="c1">// add object to container, append view at &lt;ul&gt;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">newItem</span><span class="p">,</span> <span class="s1">&#39;ul&#39;</span><span class="p">);</span> <span class="c1">// add object to container, append view at &lt;ul&gt;</span>
     <span class="nx">counter</span><span class="o">++</span><span class="p">;</span>
   <span class="p">}</span>
 <span class="p">})</span>    
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">list</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">list</span><span class="p">);</span>
 </pre></div>
 
 
@@ -195,7 +195,7 @@
     <span class="p">}</span>
   <span class="p">}</span>
 <span class="p">});</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">clock</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">clock</span><span class="p">);</span>
 </pre></div>
 
 
@@ -207,7 +207,7 @@
 <span class="c1">// Initialize plugin with RESTful adapter, load model with above id:</span>
 <span class="nx">person</span><span class="p">.</span><span class="nx">persist</span><span class="p">(</span><span class="nx">$$</span><span class="p">.</span><span class="nx">adapter</span><span class="p">.</span><span class="nx">restful</span><span class="p">,</span> <span class="p">{</span><span class="nx">collection</span><span class="o">:</span><span class="s1">&#39;people&#39;</span><span class="p">}).</span><span class="nx">load</span><span class="p">();</span>
 
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
 </pre></div>
 
 
@@ -250,7 +250,7 @@
     <span class="p">}</span>
   <span class="p">}</span>
 <span class="p">}).</span><span class="nx">persist</span><span class="p">();</span> <span class="c1">// this makes .gather() available</span>
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">people</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">people</span><span class="p">);</span>
 </pre></div>
 
 
@@ -278,11 +278,11 @@
 <span class="kd">var</span> <span class="nx">list</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;div&gt; &lt;button id=&quot;new&quot;&gt;New item&lt;/button&gt; &lt;ul&gt;&lt;/ul&gt; &lt;/div&gt;&#39;</span><span class="p">,</span> <span class="p">{</span>
   <span class="s1">&#39;click #new&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
     <span class="kd">var</span> <span class="nx">newItem</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span> <span class="p">{</span><span class="nx">content</span><span class="o">:</span><span class="s1">&#39;Click to edit&#39;</span><span class="p">});</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">newItem</span><span class="p">,</span> <span class="s1">&#39;ul&#39;</span><span class="p">);</span> <span class="c1">// add to container, appending at &lt;ul&gt;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">newItem</span><span class="p">,</span> <span class="s1">&#39;ul&#39;</span><span class="p">);</span> <span class="c1">// add to container, appending at &lt;ul&gt;</span>
   <span class="p">}</span>
 <span class="p">});</span>
 
-<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">list</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">list</span><span class="p">);</span>
 </pre></div>
 
 

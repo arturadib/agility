@@ -22,7 +22,7 @@ Agility works with a single object type that contains a full model-view-controll
       }, 
       controller: {}
     });
-    $$.document.add(message);
+    $$.document.append(message);
 <div class="demo"></div>
 
 A more compact syntax is also supported, and is handy when dealing with simple objects:
@@ -31,7 +31,7 @@ A more compact syntax is also supported, and is handy when dealing with simple o
     // Hello World
     // Compact syntax: initializers are passed in the order M, V, C:
     var message = $$({}, '<div>Hello World</div>');
-    $$.document.add(message);
+    $$.document.append(message);
 <div class="demo"></div>
 
 ### Model-view bindings
@@ -41,12 +41,12 @@ The framework comes with a powerful model-view binder, so that views are always 
     :::javascript
     // Bind model to element's HTML content
     var message = $$({txt:"I'm text from a model"}, '<div data-bind="txt"/>');
-    $$.document.add(message);
+    $$.document.append(message);
 
     // Bind model to element's attribute
     var url = 'http://google.com/favicon.ico';
     var icon = $$({path:url}, '<p>Image src from model: <img data-bind="src path"/></p>');
-    $$.document.add(icon);
+    $$.document.append(icon);
 <div class="demo"></div>
 
 Bindings are always two-way (instant updates in both directions), and work with most input types:
@@ -60,7 +60,7 @@ Bindings are always two-way (instant updates in both directions), and work with 
           <input type='checkbox' name='test' data-bind='b'/> checked: <span data-bind='b'/><br/> \
        </div>"
     );
-    $$.document.add(check);
+    $$.document.append(check);
 <div class="demo"></div>
 
 ### Controller-event bindings
@@ -83,7 +83,7 @@ User-defined controllers are bound to events by automatically matching function 
         this.view.$('#msg').text('Focused on input!');
       }
     });
-    $$.document.add(person);
+    $$.document.append(person);
 <div class="demo"></div>
 
 ### Inheritance and containers
@@ -96,8 +96,8 @@ Agility adopts a simple object hierarchy model. Objects can serve as the prototy
     // Derived objects with specified models:
     var obj1 = $$(proto, {name:'Joe Doe'});
     var obj2 = $$(proto, {name:'Foo Bar'});
-    $$.document.add(obj1);
-    $$.document.add(obj2);
+    $$.document.append(obj1);
+    $$.document.append(obj2);
 <div class="demo"></div>
 
 as well as containers for other Agility objects:
@@ -108,11 +108,11 @@ as well as containers for other Agility objects:
     var list = $$({}, '<div> <button>Click me</button> <ul></ul> </div>', {
       'click button': function(){
         var newItem = $$(item, {id:counter});
-        this.add(newItem, 'ul'); // add object to container, append view at <ul>
+        this.append(newItem, 'ul'); // add object to container, append view at <ul>
         counter++;
       }
     })    
-    $$.document.add(list);
+    $$.document.append(list);
 <div class="demo"></div>
 
 ### In-object content, style, and behavior
@@ -137,7 +137,7 @@ Views don't require styles (CSS) to be declared in-object, but doing so leads to
         }
       }
     });
-    $$.document.add(clock);
+    $$.document.append(clock);
 <div class="demo"></div>
 
 ### Persistence
@@ -150,7 +150,7 @@ Server- and client-side persistence can be implemented through the built-in plug
     // Initialize plugin with RESTful adapter, load model with above id:
     person.persist($$.adapter.restful, {collection:'people'}).load();
     
-    $$.document.add(person);
+    $$.document.append(person);
 <div class="demo"></div>
 
 (View JSON server response used in the request above: [GET api/people/123](api/people/123)).
@@ -194,7 +194,7 @@ You can also `gather` an entire collection of models and insert them as MVC obje
         }
       }
     }).persist(); // this makes .gather() available
-    $$.document.add(people);
+    $$.document.append(people);
 <div class="demo"></div>
 
 (View JSON server response used in the request above: [GET api/people/](api/people/)).
@@ -225,9 +225,9 @@ Last but not least, no modern MVC library is complete without a simple To-Do lis
     var list = $$({}, '<div> <button id="new">New item</button> <ul></ul> </div>', {
       'click #new': function(){
         var newItem = $$(item, {content:'Click to edit'});
-        this.add(newItem, 'ul'); // add to container, appending at <ul>
+        this.append(newItem, 'ul'); // add to container, appending at <ul>
       }
     });
     
-    $$.document.add(list);
+    $$.document.append(list);
 <div class="demo"></div>

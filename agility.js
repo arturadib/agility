@@ -135,14 +135,14 @@
     
     _container: {
 
-      // Adds child object to container, listens for child removal
-      add: function(obj, selector){
+      // Adds child object to container, appends view, listens for child removal
+      append: function(obj, selector){
         var self = this;
         if (!util.isAgility(obj)) {
-          throw "agility.js: add argument is not an agility object";
+          throw "agility.js: append argument is not an agility object";
         }
-        this._container.children[obj._id] = obj;
-        this.trigger('add', [obj, selector]);
+        this._container.children[obj._id] = obj; // children is *not* an array; this is for simpler lookups by global object id
+        this.trigger('append', [obj, selector]);
         // ensures object is removed from container when destroyed:
         obj.bind('destroy', function(event, id){ 
           self._container.remove(id);
@@ -262,7 +262,7 @@
         }
         else if (typeof arg === 'object') {
           if (params && params.reset) {
-            this.model._data = arg; // erases previous model attributes
+            this.model._data = $.extend({}, arg); // erases previous model attributes without pointing to object
           }
           else {
             $.extend(this.model._data, arg); // default is extend
@@ -538,9 +538,14 @@
         this.view.$().remove();
       },
 
-      // Triggered after child obj is added to container
-      _add: function(event, obj, selector){
+      // Triggered after child obj is appended to container
+      _append: function(event, obj, selector){
         this.view.$(selector).append(obj.view.$root);
+      },
+
+      // Triggered after child obj is prepended to container
+      _prepend: function(event, obj, selector){
+        this.view.$(selector).prepend(obj.view.$root);
       },
                   
       // Triggered after a child obj is removed from container (or self-removed)
@@ -570,8 +575,12 @@
     //
     // _Container shortcuts
     //
-    add: function(){      
-      this._container.add.apply(this, arguments);
+    append: function(){
+      this._container.append.apply(this, arguments);
+      return this; // for chainable calls
+    },
+    prepend: function(){
+      this._container.append.apply(this, arguments);
       return this; // for chainable calls
     },
     remove: function(){
@@ -882,9 +891,24 @@
 
     // .gather()
     // Loads collection and appends at selector. All persistence data including adapter comes from proto, not self
-    this.gather = function(proto, selector){
+    this.gather = function(proto, selectorOrQuery, query){
+      var selector;
       if (!proto) throw "agility.js plugin persist: gather() needs object prototype";
       if (!proto._data.persist) throw "agility.js plugin persist: prototype doesn't seem to contain persist() data";
+
+      // Determines arguments
+      if (query) {
+        selector = selectorOrQuery;        
+      }
+      else {
+        if (typeof selectorOrQuery === 'string') {
+          selector = selectorOrQuery;
+        }
+        else {
+          selector = undefined;
+          query = selectorOrQuery;
+        }
+      }
 
       if (self._data.persist.openRequests === 0) {
         self.trigger('persist:start');
@@ -892,6 +916,7 @@
       self._data.persist.openRequests++;
       proto._data.persist.adapter.call(proto, {
         type: 'GET',
+        data: query,
         complete: function(){
           self._data.persist.openRequests--;
           if (self._data.persist.openRequests === 0) {
@@ -901,7 +926,7 @@
         success: function(data){
           $.each(data, function(index, entry){
             var obj = $$(proto, entry);
-            self.add(obj, selector);
+            self.append(obj, selector);
           });
           self.trigger('persist:gather:success', {data:data});
         },
@@ -930,11 +955,5 @@
     }, _params);
     $.ajax(params);
   };
-
-  // // Local storage (HTML5)
-  // agility.adapter.localStorage = function(params){
-  //   if (params.type === 'GET') {
-  //   localStorage.getItem("bar", foo);
-  // }
   
 })(window);
