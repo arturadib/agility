@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>
-    Agility.js Javascript MVC library
+    Agility.js - Gallery
   </title>
   <meta charset="utf-8" />
 
@@ -16,6 +16,7 @@
     a:hover { text-decoration:underline; }
     div#decor { height:8px; background:#0000A0; }
     div#top { font-size:19px; color:#333; }
+    div#top a { font-size:15px; }
     div#menu { text-align:center; }
     div#menu li { display:inline; margin-right:40px; }
     div#box {
@@ -29,6 +30,10 @@
       box-shadow: 0px 0px 8px #999;
     }
     div#box-wrapper { padding:10px 20px; background:white; }
+    div#box h1 { border-top:10px solid #0000A0; }
+    div#box h2 { border-top:4px solid #A0A0D0; }
+    div#box h3 { border-top:1px solid #A0A0D0; }
+    div#box-wrapper img { border:2px solid black; }
 
     .demo { margin-top:-10px; margin-left:10px; font-size:80%; }
     div#demo-wrapper { font-size:90%; font-family:Arial, sans; }
@@ -60,18 +65,9 @@
   <a href="http://github.com/arturadib/agility"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://gs1.wac.edgecastcdn.net/80460E/assets/img/30f550e0d38ceb6ef5b81500c64d970b7fb0f028/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67" alt="Fork me on GitHub"></a>
 
   <div id="top" class='center'>
-    <div><img src="logo.png"/></div>
-    <div>Ship more. Code and maintain less.</div>
-  </div>
-
-  <div id="menu" class='center'>
-    <ul>
-      <li><a href="/">Home</a></li>
-      <li><a href="docs.html">Docs</a></li>
-      <li><a href="gallery.html">Gallery</a></li>
-      <li><a href="https://github.com/arturadib/agility/archives/master">Download</a></li>
-      <li><a href="https://github.com/arturadib/agility"><b>Contribute</b></a></li>
-    </ul>
+    <div><a href="/" style="text-decoration:none; border:none;"><img src="logo.png" style="border:none;"/></a></div>
+    <div><em>Gallery</em></div>
+    <p><a href="/" class="nav">&laquo; Back to Home</a></p>
   </div>
   
   <div id="box" class='center'>
@@ -82,46 +78,6 @@
 
     </div>
   </div>
-
-  <div id="demo-wrapper" style="display:none"></div>
-
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
-  <script src="jquery.simplemodal.1.4.1.min.js" type="text/javascript" charset="utf-8"></script>
-  <script type="text/javascript">
-    (function($){
-      //
-      // Each "Run demo"
-      //
-      $('div.demo').each(function(){
-        var code = $(this).prevAll('.codehilite:first').text();
-        //
-        // On demo click
-        //
-        var $link = $("<button>Run demo</button>").click(function(){
-          var $frame = $('<iframe \/>').attr('src', '_demo.html');
-          $('div#demo-wrapper')
-            .hide()
-            .empty()
-            .append('<div id="msg">Loading ...</div>')
-            .append($frame)
-            .modal({overlayClose: true});            
-          //
-          // Insert dynamic frame content (pure jQuery doesn't work with script tags)
-          //
-          $frame.load(function(){
-            $('div#demo-wrapper #msg').html('Press <b>esc</b> or click outside box to close')
-            var frameWindow = this.contentWindow ? this.contentWindow : this.contentDocument.defaultView;
-            var script = frameWindow.document.createElement("script");
-            script.type = "text/javascript";
-            script.text = '\n'+code+'\n';
-            frameWindow.document.body.appendChild(script);          
-          });
-          return false;
-        }); // demo click
-        $(this).append($link);
-      }); // each demo
-    })(jQuery);
-  </script>
 
 </body>
 
