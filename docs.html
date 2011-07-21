@@ -783,16 +783,17 @@
 <p><strong>Returns</strong></p>
 <p>Owner Agility object (for chainable calls), with new model <code>id</code> (if created new resource).</p>
 <h3><a href="#persist-gather">.gather()</a></h3>
-<p><em>Loads a collection of models into container, using given prototype.</em></p>
-<p>Each gathered MVC object will be <code>.append()</code>ed to the container, and will be a direct descendant of given prototype object. All persistence information, including collection name, should be initialized in the prototype object.</p>
+<p><em>Loads a collection of models and appends/prepends into container, using given prototype.</em></p>
+<p>Each gathered MVC object will be added to the container, appended/prepended to the view (depending on specified method), and will be a direct descendant of given prototype object. All persistence information, including collection name, should be initialized in the prototype object.</p>
 <p><strong>Syntax:</strong> </p>
-<div class="codehilite"><pre><span class="p">.</span><span class="nx">gather</span><span class="p">(</span><span class="nx">proto</span> <span class="p">[,</span><span class="nx">selector</span><span class="p">]</span> <span class="p">[,</span><span class="nx">query</span><span class="p">])</span>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">gather</span><span class="p">(</span><span class="nx">proto</span><span class="p">,</span> <span class="nx">method</span><span class="p">,</span> <span class="p">[,</span><span class="nx">selector</span><span class="p">]</span> <span class="p">[,</span><span class="nx">query</span><span class="p">])</span>
 </pre></div>
 
 
 <p>where:</p>
 <ul>
 <li><code>proto</code>: Prototype object with <code>persist</code> already initialized.</li>
+<li><code>method</code>: Name of owner object method to be invoked with each new Agility object to be added. Typically <code>append</code> or <code>prepend</code>.</li>
 <li><code>selector</code>: jQuery selector indicating where the view of <code>proto</code> should be appended. Will append to root element if omitted.</li>
 <li><code>query</code>: Javascript object containing parameters to be passed to the adapter for e.g. HTTP queries, like <code>{orderBy:'name'}</code>.</li>
 </ul>
@@ -805,7 +806,7 @@
 <span class="kd">var</span> <span class="nx">people</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;div&gt;People: &lt;ul/&gt;&lt;/div&gt;&#39;</span><span class="p">).</span><span class="nx">persist</span><span class="p">();</span>
 <span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">people</span><span class="p">);</span>
 
-<span class="nx">people</span><span class="p">.</span><span class="nx">gather</span><span class="p">(</span><span class="nx">person</span><span class="p">,</span> <span class="s1">&#39;ul&#39;</span><span class="p">);</span>
+<span class="nx">people</span><span class="p">.</span><span class="nx">gather</span><span class="p">(</span><span class="nx">person</span><span class="p">,</span> <span class="s1">&#39;append&#39;</span><span class="p">,</span> <span class="s1">&#39;ul&#39;</span><span class="p">);</span>
 </pre></div>
 
 
@@ -831,7 +832,7 @@
   <span class="nx">controller</span><span class="o">:</span> <span class="p">{</span>
     <span class="s1">&#39;click button&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">empty</span><span class="p">();</span>
-      <span class="k">this</span><span class="p">.</span><span class="nx">gather</span><span class="p">(</span><span class="nx">person</span><span class="p">,</span> <span class="s1">&#39;ul&#39;</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">gather</span><span class="p">(</span><span class="nx">person</span><span class="p">,</span> <span class="s1">&#39;append&#39;</span><span class="p">,</span> <span class="s1">&#39;ul&#39;</span><span class="p">);</span>
     <span class="p">},</span>
     <span class="s1">&#39;persist:start&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;span&#39;</span><span class="p">).</span><span class="nx">show</span><span class="p">();</span>

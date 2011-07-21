@@ -182,7 +182,7 @@ You can also `gather` an entire collection of models and insert them as MVC obje
       controller: {
         'click button': function(){
           this.empty();
-          this.gather(person, 'ul');
+          this.gather(person, 'append', 'ul');
         },
         // Ajax loading message - start
         'persist:start': function(){

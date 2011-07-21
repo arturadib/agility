@@ -858,18 +858,19 @@ Owner Agility object (for chainable calls), with new model `id` (if created new 
 
 ### [.gather()](#persist-gather)
 
-_Loads a collection of models into container, using given prototype._
+_Loads a collection of models and appends/prepends into container, using given prototype._
 
-Each gathered MVC object will be `.append()`ed to the container, and will be a direct descendant of given prototype object. All persistence information, including collection name, should be initialized in the prototype object.
+Each gathered MVC object will be added to the container, appended/prepended to the view (depending on specified method), and will be a direct descendant of given prototype object. All persistence information, including collection name, should be initialized in the prototype object.
 
 **Syntax:** 
 
     :::javascript
-    .gather(proto [,selector] [,query])
+    .gather(proto, method, [,selector] [,query])
 
 where:
 
 + `proto`: Prototype object with `persist` already initialized.
++ `method`: Name of owner object method to be invoked with each new Agility object to be added. Typically `append` or `prepend`.
 + `selector`: jQuery selector indicating where the view of `proto` should be appended. Will append to root element if omitted.
 + `query`: Javascript object containing parameters to be passed to the adapter for e.g. HTTP queries, like `{orderBy:'name'}`.
 
@@ -885,7 +886,7 @@ Loads a collection of persons from server:
     var people = $$({}, '<div>People: <ul/></div>').persist();
     $$.document.append(people);
 
-    people.gather(person, 'ul');
+    people.gather(person, 'append', 'ul');
 <div class="demo"></div>
 
 Same as above, with load button and "Loading..." Ajax message:
@@ -911,7 +912,7 @@ Same as above, with load button and "Loading..." Ajax message:
       controller: {
         'click button': function(){
           this.empty();
-          this.gather(person, 'ul');
+          this.gather(person, 'append', 'ul');
         },
         'persist:start': function(){
           this.view.$('span').show();
