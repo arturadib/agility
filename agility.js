@@ -905,8 +905,8 @@
     }; // erase()
 
     // .gather()
-    // Loads collection and appends at selector. All persistence data including adapter comes from proto, not self
-    this.gather = function(proto, selectorOrQuery, query){
+    // Loads collection and appends/prepends (depending on method) at selector. All persistence data including adapter comes from proto, not self
+    this.gather = function(proto, method, selectorOrQuery, query){
       var selector;
       if (!proto) throw "agility.js plugin persist: gather() needs object prototype";
       if (!proto._data.persist) throw "agility.js plugin persist: prototype doesn't seem to contain persist() data";
@@ -941,7 +941,9 @@
         success: function(data){
           $.each(data, function(index, entry){
             var obj = $$(proto, entry);
-            self.append(obj, selector);
+            if (typeof method === 'string') {
+              self[method](obj, selector);
+            }
           });
           self.trigger('persist:gather:success', {data:data});
         },

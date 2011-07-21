@@ -58,7 +58,7 @@
         start();
       }
     }).persist();
-    obj.gather(proto); // gather
+    obj.gather(proto, 'append'); // gather
   });
 
   asyncTest("Container - gather, second syntax", function(){
@@ -70,7 +70,7 @@
         start();
       }
     }).persist();
-    obj.gather(proto, 'ul'); // gather
+    obj.gather(proto, 'append', 'ul'); // gather
   });
 
   asyncTest("Container - gather, third syntax", function(){
@@ -82,7 +82,7 @@
         start();
       }
     }).persist();
-    obj.gather(proto, {some:'parameter'}); // gather
+    obj.gather(proto, 'append', {some:'parameter'}); // gather
   });
 
 })(jQuery, agility);
