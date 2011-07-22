@@ -30,7 +30,7 @@ Agility works with a single object type that contains a full model-view-controll
     $$.document.append(message);
 <div class="demo"></div>
 
-A more compact syntax is also supported, and is handy when dealing with simple objects:
+A more compact syntax is also supported. It's handy when dealing with simple objects:
 
     :::javascript
     // Hello World
