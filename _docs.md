@@ -794,8 +794,6 @@ Owner Agility object (for chainable calls).
 
 _Refreshes model from server, using the id in the model property `id`._
 
-Fires the following events in addition to generic `persist` events:
-
 **Syntax:** 
 
     :::javascript
@@ -818,7 +816,12 @@ Owner Agility object (for chainable calls), with updated model.
 
 ### [.save()](#persist-save)
 
-_Updates model on the server if `id` is present, creates a new resource otherwise._
+_Updates model on the server if `id` is present in the model, creates a new resource otherwise._
+
+**Syntax:** 
+
+    :::javascript
+    .save()
 
 If the resource is to be created (i.e. model has no `id`), the server is expected to send back the new `id` either in the body, e.g.
 
@@ -831,11 +834,6 @@ or in the `Location` header as the new resource URL, e.g.:
     Location: http://your-site.com/api/people/123
 
 Agility will parse either to extract the new `id`, and set the model accordingly. That way, further calls to `.save()` will update the model on the server.
-
-**Syntax:** 
-
-    :::javascript
-    .save()
 
 **Examples:** 
 
@@ -858,6 +856,19 @@ Updates model on server:
 **Returns**
 
 Owner Agility object (for chainable calls), with new model `id` (if created new resource).
+
+### [.erase()](#persist-erase)
+
+_Erases model from server, using the `id` given in the model._
+
+**Syntax:** 
+
+    :::javascript
+    .erase()
+
+**Returns**
+
+Owner Agility object (for chainable calls).
 
 ### [.gather()](#persist-gather)
 

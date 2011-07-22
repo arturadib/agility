@@ -738,7 +738,6 @@
 <p>Owner Agility object (for chainable calls).</p>
 <h3><a href="#persist-load">.load()</a></h3>
 <p><em>Refreshes model from server, using the id in the model property <code>id</code>.</em></p>
-<p>Fires the following events in addition to generic <code>persist</code> events:</p>
 <p><strong>Syntax:</strong> </p>
 <div class="codehilite"><pre><span class="p">.</span><span class="nx">load</span><span class="p">()</span>
 </pre></div>
@@ -757,7 +756,12 @@
 <p><strong>Returns</strong></p>
 <p>Owner Agility object (for chainable calls), with updated model.</p>
 <h3><a href="#persist-save">.save()</a></h3>
-<p><em>Updates model on the server if <code>id</code> is present, creates a new resource otherwise.</em></p>
+<p><em>Updates model on the server if <code>id</code> is present in the model, creates a new resource otherwise.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">save</span><span class="p">()</span>
+</pre></div>
+
+
 <p>If the resource is to be created (i.e. model has no <code>id</code>), the server is expected to send back the new <code>id</code> either in the body, e.g.</p>
 <div class="codehilite"><pre>{&quot;id&quot;:123}
 </pre></div>
@@ -769,11 +773,6 @@
 
 
 <p>Agility will parse either to extract the new <code>id</code>, and set the model accordingly. That way, further calls to <code>.save()</code> will update the model on the server.</p>
-<p><strong>Syntax:</strong> </p>
-<div class="codehilite"><pre><span class="p">.</span><span class="nx">save</span><span class="p">()</span>
-</pre></div>
-
-
 <p><strong>Examples:</strong> </p>
 <p>Creates new model on server:</p>
 <div class="codehilite"><pre><span class="kd">var</span> <span class="nx">person</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span><span class="s1">&#39;Joe Doe&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;p&gt;Name: &lt;span data-bind=&quot;name&quot;/&gt;&lt;/p&gt;&#39;</span><span class="p">).</span><span class="nx">persist</span><span class="p">(</span><span class="nx">$$</span><span class="p">.</span><span class="nx">adapter</span><span class="p">.</span><span class="nx">restful</span><span class="p">,</span> <span class="p">{</span><span class="nx">collection</span><span class="o">:</span><span class="s1">&#39;people&#39;</span><span class="p">});</span>
@@ -793,6 +792,15 @@
 
 <p><strong>Returns</strong></p>
 <p>Owner Agility object (for chainable calls), with new model <code>id</code> (if created new resource).</p>
+<h3><a href="#persist-erase">.erase()</a></h3>
+<p><em>Erases model from server, using the <code>id</code> given in the model.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">erase</span><span class="p">()</span>
+</pre></div>
+
+
+<p><strong>Returns</strong></p>
+<p>Owner Agility object (for chainable calls).</p>
 <h3><a href="#persist-gather">.gather()</a></h3>
 <p><em>Loads a collection of models and appends/prepends into container, using given prototype.</em></p>
 <p>Each gathered MVC object will be added to the container, appended/prepended to the view (depending on specified method), and will be a direct descendant of given prototype object. All persistence information, including collection name, should be initialized in the prototype object.</p>
