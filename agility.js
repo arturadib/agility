@@ -805,9 +805,14 @@
   
   // Main initializer
   agility.fn.persist = function(adapter, params){
-    var self = this;
+    var self = this,
+        id = 'id'; // name of id attribute
+        
     self._data.persist = $.extend({adapter:adapter}, params);
-    self._data.persist.openRequests = 0;  
+    self._data.persist.openRequests = 0;
+    if (params && params.id) {
+      id = params.id;
+    }
 
     // Creates persist methods
     
@@ -818,9 +823,9 @@
         self.trigger('persist:start');
       }
       self._data.persist.openRequests++;
-      this._data.persist.adapter.call(this, {
-        type: self.model.get('id') ? 'PUT' : 'POST', // update vs. create
-        id: self.model.get('id'),
+      self._data.persist.adapter.call(self, {
+        type: self.model.get(id) ? 'PUT' : 'POST', // update vs. create
+        id: self.model.get(id),
         data: self.model.get(),
         complete: function(){
           self._data.persist.openRequests--;
@@ -829,9 +834,9 @@
           }
         },
         success: function(data, textStatus, jqXHR){
-          if (data.id) {
+          if (data[id]) {
             // id in body
-            self.model.set({id:data.id}, {silent:true});
+            self.model.set({id:data[id]}, {silent:true});
           }
           else if (jqXHR.getResponseHeader('Location')) {
             // parse id from Location
@@ -851,15 +856,15 @@
     // .load()
     // Loads model with given id
     this.load = function(){
-      if (this.model.get('id') === undefined) throw 'agility.js: load() needs model id';
+      if (this.model.get(id) === undefined) throw 'agility.js: load() needs model id';
     
       if (self._data.persist.openRequests === 0) {
         self.trigger('persist:start');
       }
       self._data.persist.openRequests++;
-      this._data.persist.adapter.call(this, {
+      self._data.persist.adapter.call(self, {
         type: 'GET',
-        id: this.model.get('id'),
+        id: this.model.get(id),
         complete: function(){
           self._data.persist.openRequests--;
           if (self._data.persist.openRequests === 0) {
@@ -882,15 +887,15 @@
     // .erase()
     // Erases model with given id
     this.erase = function(){
-      if (this.model.get('id') === undefined) throw 'agility.js: erase() needs model id';
+      if (this.model.get(id) === undefined) throw 'agility.js: erase() needs model id';
     
       if (self._data.persist.openRequests === 0) {
         self.trigger('persist:start');
       }
       self._data.persist.openRequests++;
-      this._data.persist.adapter.call(this, {
+      self._data.persist.adapter.call(self, {
         type: 'DELETE',
-        id: this.model.get('id'),
+        id: this.model.get(id),
         complete: function(){
           self._data.persist.openRequests--;
           if (self._data.persist.openRequests === 0) {
