@@ -3,7 +3,7 @@
 _The Wall is a minimal Twitter clone, where everyone can post anonymously to a virtual "wall". It illustrates most features offered by Agility, including server-side persistence._
 
 + Demo: [http://thewall.agilityjs.com](http://thewall.agilityjs.com)
-+ Source: [https://github.com/arturadib/thewall](https://github.com/arturadib/thewall)
++ Full source: [https://github.com/arturadib/thewall/blob/master/public/app.js](https://github.com/arturadib/thewall/blob/master/public/app.js)
 + Screenshot:
 
 ![Screenshot](gallery/thewall.png)
