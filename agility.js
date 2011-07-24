@@ -226,10 +226,10 @@
         if (eventObj.selector) {
           // Manually override root selector, as jQuery selectors can't select self object
           if (eventObj.selector === ROOT_SELECTOR) {
-            this.view.$root.bind(eventObj.type, fn);
+            this.view.$().bind(eventObj.type, fn);
           }
           else {          
-            this.view.$root.delegate(eventObj.selector, eventObj.type, fn);
+            this.view.$().delegate(eventObj.selector, eventObj.type, fn);
           }
         }
         // Custom event
@@ -246,10 +246,10 @@
         if (eventObj.selector) {
           // Manually override root selector, as jQuery selectors can't select self object
           if (eventObj.selector === ROOT_SELECTOR) {
-            this.view.$root.trigger(eventObj.type, params);
+            this.view.$().trigger(eventObj.type, params);
           }
           else {          
-            this.view.$root.find(eventObj.selector).trigger(eventObj.type, params);
+            this.view.$().find(eventObj.selector).trigger(eventObj.type, params);
           }
         }
         // Custom event
@@ -352,6 +352,7 @@
       },
       
       // Render $root
+      // Only function to access $root directly other than $()
       render: function(){
         // Without format there is no view
         if (this.view.format.length === 0) {
@@ -503,7 +504,7 @@
       stylize: function(){
         var objClass,
             regex = new RegExp(ROOT_SELECTOR, 'g');
-        if (this.view.style.length === 0 || this.view.$root.size() === 0) {
+        if (this.view.style.length === 0 || this.view.$().size() === 0) {
           return;
         }
         // Own style
@@ -512,7 +513,7 @@
           objClass = 'agility_' + this._id;
           var styleStr = this.view.style.replace(regex, '.'+objClass);
           $('head', window.document).append('<style type="text/css">'+styleStr+'</style>');
-          this.view.$root.addClass(objClass);
+          this.view.$().addClass(objClass);
         }
         // Inherited style
         // Object inherits CSS class name from first ancestor to have own view.style
@@ -529,7 +530,7 @@
 
           var ancestorId = ancestorWithStyle(this);
           objClass = 'agility_' + ancestorId;
-          this.view.$root.addClass(objClass);
+          this.view.$().addClass(objClass);
         }
         return this;
       }
@@ -558,12 +559,12 @@
 
       // Triggered after child obj is appended to container
       _append: function(event, obj, selector){
-        this.view.$(selector).append(obj.view.$root);
+        this.view.$(selector).append(obj.view.$());
       },
 
       // Triggered after child obj is prepended to container
       _prepend: function(event, obj, selector){
-        this.view.$(selector).prepend(obj.view.$root);
+        this.view.$(selector).prepend(obj.view.$());
       },
                   
       // Triggered after a child obj is removed from container (or self-removed)
@@ -783,9 +784,14 @@
   //
   // -----------------------------------------
   
-  agility.document = agility({}, {}, {
-    create: function(){
-      this.view.$root = $('body');
+  agility.document = agility({
+    view: {
+      $: function(selector){ return selector ? $(selector, 'body') : $('body'); }
+    },
+    controller: {
+      // Override default controller
+      // (don't render, don't stylize, etc)
+      _create: function(){}
     }
   });
   
