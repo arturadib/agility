@@ -372,15 +372,42 @@
         return this;
       }, // render
   
-      // Parse data-bind string of the type '[attribute] variable'
-      // Returns { key:'model key' [, attr:'attribute'] }
+      // Parse data-bind string of the type '[attribute] variable[, attribute variable ]...'
+      // If the variable is not an attribute, it must be first in the list,
+      //   all following pairs in the list are assumed to be attributes
+      // Returns { key:'model key', attr: [ {name : 'name', value : 'value' }... ] }
       _parseBindStr: function(str){
-        var obj = { key:str }, 
-            spacePos = str.search(/\s/);
-        if (spacePos > -1) {
-          obj.attr = str.substr(0, spacePos);
-          obj.key = str.substr(spacePos+1);
+        var obj = { key:null, attr:[] },
+            pairs = str.split( ',' ),
+            regex = /(\w+)(?:\s+(\w+))?/,
+            matched;
+        
+        if ( pairs.length > 0 ) {
+          matched = pairs[ 0 ].match( regex );
+          // [ "attribute variable", "attribute", "variable" ]
+          // or
+          // [ "variable", "variable", undefined ]
+          // or
+          // null
+          if ( matched ) {
+            if ( typeof( matched[ 2 ] ) === "undefined" ) {
+              obj.key = matched[ 1 ];
+            } else {
+              obj.attr.push( { attr: matched[ 1 ], attrVar: matched[ 2 ] } );
+            }
+          }
+          if ( pairs.length > 1 ) {
+            for ( var i = 1; i < pairs.length; i++ ) {
+              matched = pairs[ i ].match( regex );
+              if ( matched ) {
+                if ( typeof( matched[ 2 ] ) !== "undefined" ) {
+                  obj.attr.push( { attr: matched[ 1 ], attrVar: matched[ 2 ] } );
+                }
+              }
+            }
+          }
         }
+        
         return obj;
       },
       
@@ -474,11 +501,14 @@
           // all other <tag>s: 1-way binding
           else {
             if (bindData.attr) {
-              self.bind('_change:'+bindData.key, function(){
-                $node.attr(bindData.attr, self.model.get(bindData.key));
-              });
+              for ( var i = 0; i < bindData.attr.length; i++ ) {
+                var attrPair = bindData.attr[ i ];
+                self.bind('_change:'+attrPair.attrVar, function() {
+                  $node.attr(attrPair.attr, self.model.get(attrPair.attrVar));
+                });
+              }
             }
-            else {
+            if ( bindData.key ) {
               self.bind('_change:'+bindData.key, function(){
                 $node.text(self.model.get(bindData.key).toString());
               });
