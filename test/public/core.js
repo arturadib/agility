@@ -70,6 +70,23 @@
     validateObject( obj );
     equals( obj.view.$().text(), 'JoeDoe', 'format as expected');
   });
+  
+  test("Two arguments (model object, view string) with multiple attribute bindings", function(){
+    var obj = $$({
+      first: 'Joe',
+      last: 'Doe',
+      name: 'Joe Doe',
+      firstColor: 'Red',
+      lastColor: 'Blue'
+    }, '<div><span data-bind="first, name name, firstColor firstColor"/>' +
+     '<span data-bind="last, name name, lastColor lastColor"/></div>');
+    validateObject( obj );
+    equals( obj.view.$().text(), 'JoeDoe', 'format as expected');
+    equals( obj.view.$( 'span' ).first().attr( 'name' ), 'Joe Doe', 'format as expected');
+    equals( obj.view.$( 'span' ).first().attr( 'firstColor' ), 'Red', 'format as expected');
+    equals( obj.view.$( 'span' ).last().attr( 'name' ), 'Joe Doe', 'format as expected');
+    equals( obj.view.$( 'span' ).last().attr( 'lastColor' ), 'Blue', 'format as expected');
+  });
 
   test("Three arguments (model string, view string, controller object)", function(){
     var obj = $$('Joe Doe', '<div data-bind="text"></div>', {
@@ -87,6 +104,24 @@
     equals( obj.view.$().text(), 'JoeDoe', 'format as expected');
   });
 
+  test("Three arguments (model object, view string, controller object) with multiple attribute bindings", function(){
+    var obj = $$({
+      first: 'Joe',
+      last: 'Doe',
+      name: 'Joe Doe',
+      firstColor: 'Red',
+      lastColor: 'Blue'
+    }, '<div><span data-bind="first, name name, firstColor firstColor"/>' +
+     '<span data-bind="last, name name, lastColor lastColor"/></div>',
+    {});
+    validateObject( obj );
+    equals( obj.view.$().text(), 'JoeDoe', 'format as expected');
+    equals( obj.view.$( 'span' ).first().attr( 'name' ), 'Joe Doe', 'format as expected');
+    equals( obj.view.$( 'span' ).first().attr( 'firstColor' ), 'Red', 'format as expected');
+    equals( obj.view.$( 'span' ).last().attr( 'name' ), 'Joe Doe', 'format as expected');
+    equals( obj.view.$( 'span' ).last().attr( 'lastColor' ), 'Blue', 'format as expected');
+  });
+  
   test("Three arguments (model string, view object, controller object)", function(){
     var obj = $$('Joe Doe', 
       {
@@ -100,12 +135,33 @@
     equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
     equals( obj.view.$().css('float'), 'right', 'style as expected');
   });
-
+  
   test("Three arguments (model object, view object, controller object)", function(){
     var obj = $$({first:'Joe', last:'Doe'}, {format:'<div><span data-bind="first"/><span data-bind="last"/></div>', style:'& {float:right; display:none;}'}, {});
     $$.document.append(obj); // necessary for IE
     validateObject( obj );
     equals( obj.view.$().text(), 'JoeDoe', 'format as expected');
+    equals( obj.view.$().css('float'), 'right', 'style as expected');
+  });
+  
+  test("Three arguments (model object, view string, controller object) with multiple attribute bindings", function(){
+    var obj = $$({
+      first: 'Joe',
+      last: 'Doe',
+      name: 'Joe Doe',
+      firstColor: 'Red',
+      lastColor: 'Blue'
+    }, {format:'<div><span data-bind="first, name name, firstColor firstColor"/>' +
+     '<span data-bind="last, name name, lastColor lastColor"/></div>',
+     style:'& {float:right; display:none;}'},
+    {});
+    $$.document.append(obj); // necessary for IE & Chrome
+    validateObject( obj );
+    equals( obj.view.$().text(), 'JoeDoe', 'format as expected');
+    equals( obj.view.$( 'span' ).first().attr( 'name' ), 'Joe Doe', 'format as expected');
+    equals( obj.view.$( 'span' ).first().attr( 'firstColor' ), 'Red', 'format as expected');
+    equals( obj.view.$( 'span' ).last().attr( 'name' ), 'Joe Doe', 'format as expected');
+    equals( obj.view.$( 'span' ).last().attr( 'lastColor' ), 'Blue', 'format as expected');
     equals( obj.view.$().css('float'), 'right', 'style as expected');
   });
   
@@ -126,6 +182,34 @@
     validateObject( obj );
     equals( typeof obj.myFunction, 'function', 'user-defined function as expected');
     equals( obj.view.$().text(), 'JoeDoe', 'format as expected');
+    equals( obj.view.$().css('float'), 'right', 'style as expected');
+  });
+  
+  test("One full object argument ({model, view, controller, user_func}) with multiple attribute bindings", function(){
+    var obj = $$({
+      model: {
+        first: 'Joe',
+        last: 'Doe',
+        name: 'Joe Doe',
+        firstColor: 'Red',
+        lastColor: 'Blue'
+      },
+      view: {
+        format: '<div><span data-bind="first, name name, firstColor firstColor"/>' +
+                '<span data-bind="last, name name, lastColor lastColor"/></div>',
+        style:'& {float:right; display:none;}'
+      },
+      controller: {},
+      myFunction: function(){}
+    });
+    $$.document.append(obj); // necessary for IE & Chrome
+    validateObject( obj );
+    equals( typeof obj.myFunction, 'function', 'user-defined function as expected');
+    equals( obj.view.$().text(), 'JoeDoe', 'format as expected');
+    equals( obj.view.$( 'span' ).first().attr( 'name' ), 'Joe Doe', 'format as expected');
+    equals( obj.view.$( 'span' ).first().attr( 'firstColor' ), 'Red', 'format as expected');
+    equals( obj.view.$( 'span' ).last().attr( 'name' ), 'Joe Doe', 'format as expected');
+    equals( obj.view.$( 'span' ).last().attr( 'lastColor' ), 'Blue', 'format as expected');
     equals( obj.view.$().css('float'), 'right', 'style as expected');
   });
   
