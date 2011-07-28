@@ -395,6 +395,56 @@
     obj.view.$().val('opt-b').change();
     equals(obj.model.get('opt'), 'opt-b', 'select input: DOM --> Model binding OK');
   });
+  
+  test("Two-way bindings with extra one-way bound attributes", function(){
+    var obj = $$({name:'Mary',myAttr:'myAttr'}, "<input type='text' data-bind='name, myAttr myAttr' />");
+    equals(obj.view.$().val(), 'Mary', 'text input: binding properly initialized');
+    equals(obj.view.$().attr('myAttr'), 'myAttr', 'extra attribute set');
+    obj.model.set({name:'Joe Doe'});
+    equals(obj.view.$().val(), 'Joe Doe', 'text input: Model --> DOM binding OK');
+    equals(obj.view.$().attr('myAttr'), 'myAttr', 'extra attribute set');
+    obj.view.$().val('Art Blakey').change();
+    equals(obj.model.get('name'), 'Art Blakey', 'text input: DOM --> Model binding OK');
+
+    var obj = $$({name:'Mary',myAttr:'myAttr'}, "<input type='search' data-bind='name, myAttr myAttr' />");
+    equals(obj.view.$().val(), 'Mary', 'search input: binding properly initialized');
+    equals(obj.view.$().attr('myAttr'), 'myAttr', 'extra attribute set');
+    obj.model.set({name:'Joe Doe'});
+    equals(obj.view.$().val(), 'Joe Doe', 'search input: Model --> DOM binding OK');
+    equals(obj.view.$().attr('myAttr'), 'myAttr', 'extra attribute set');
+    // can't test these synchronously as current implementation uses a 50ms timeout
+    // obj.view.$().val('Joe Doee').keypress();
+    // equals(obj.model.get('name'), 'Joe Doee', 'search input: DOM --> Model binding OK');
+
+    obj = $$({a:true,myAttr:'myAttr'}, "<input type='checkbox' data-bind='a, myAttr myAttr' />");
+    equals(obj.view.$().prop('checked'), true, 'checkbox input: binding properly initialized');
+    equals(obj.view.$().attr('myAttr'), 'myAttr', 'extra attribute set');
+    obj.model.set({a:false});
+    equals(obj.view.$().prop("checked"), false, 'checkbox input: Model --> DOM binding OK');
+    equals(obj.view.$().attr('myAttr'), 'myAttr', 'extra attribute set');
+    obj.view.$().prop('checked', true).change();
+    equals(obj.model.get('a'), true, 'checkbox input: DOM --> Model binding OK');
+
+    obj = $$({opt:'opt-b',myAttr:'myAttr'}, "<div><input type='radio' name='test' data-bind='opt, myAttr myAttr' value='opt-a' id='a'/> a<br/> <input type='radio' name='test' data-bind='opt' value='opt-b' id='b'/> b</div>");
+    equals(obj.view.$('input#b').prop("checked"), true, 'radio input: binding properly initialized');
+    equals(obj.view.$('input#a').attr('myAttr'), 'myAttr', 'extra attribute set');
+    equals(obj.view.$('input#b').attr('myAttr'), null, 'no extra attribute set');
+    obj.model.set({opt:'opt-a'});
+    equals(obj.view.$('input#a').prop("checked"), true, 'radio input: Model --> DOM binding OK');
+    equals(obj.view.$('input#a').attr('myAttr'), 'myAttr', 'extra attribute set');
+    equals(obj.view.$('input#b').attr('myAttr'), null, 'no extra attribute set');
+    obj.view.$('input#b').prop('checked', true).change();
+    equals(obj.model.get('opt'), 'opt-b', 'radio input: DOM --> Model binding OK');
+
+    obj = $$({opt:'opt-b',myAttr:'myAttr'}, "<select data-bind='opt, myAttr myAttr'> <option value='opt-a'/> <br/> <option value='opt-b'/> </select>");
+    equals(obj.view.$().val(), 'opt-b', 'select input: binding properly initialized');
+    equals(obj.view.$().attr('myAttr'), 'myAttr', 'extra attribute set');
+    obj.model.set({opt:'opt-a'});
+    equals(obj.view.$().val(), 'opt-a', 'select input: Model --> DOM binding OK');
+    equals(obj.view.$().attr('myAttr'), 'myAttr', 'extra attribute set');
+    obj.view.$().val('opt-b').change();
+    equals(obj.model.get('opt'), 'opt-b', 'select input: DOM --> Model binding OK');
+  });
 
   // ----------------------------------------------
   //

@@ -420,6 +420,21 @@
           var $node = $(this);
           var bindData = self.view._parseBindStr( $node.data('bind') );
 
+          var bindAttributesOneWay = function() {
+            // 1-way attribute binding
+            if (bindData.attr) {
+              for (var i = 0; i < bindData.attr.length; i++) {
+                self.bind('_change:'+bindData.attr[i].attrVar, (function(){
+                  // capture the attribute pair in closure
+                  var attrPair = bindData.attr[i];
+                  return function() {
+                    $node.attr(attrPair.attr, self.model.get(attrPair.attrVar));
+                  };
+                })());
+              }
+            }
+          };
+          
           // <input type="checkbox">: 2-way binding
           if ($node.is('input[type="checkbox"]')) {
             // Model --> DOM
@@ -432,6 +447,8 @@
               obj[bindData.key] = $(this).prop("checked");
               self.model.set(obj); // not silent as user might be listening to change events
             });
+            // 1-way attribute binding
+            bindAttributesOneWay();
           }
           
           // <select>: 2-way binding
@@ -448,6 +465,8 @@
               obj[bindData.key] = $node.val();
               self.model.set(obj); // not silent as user might be listening to change events
             });
+            // 1-way attribute binding
+            bindAttributesOneWay();
           }
           
           // <input type="radio">: 2-way binding
@@ -465,6 +484,8 @@
               obj[bindData.key] = $node.val();
               self.model.set(obj); // not silent as user might be listening to change events
             });
+            // 1-way attribute binding
+            bindAttributesOneWay();
           }
           
           // <input type="search"> (model is updated after every keypress event)
@@ -482,6 +503,8 @@
                 self.model.set(obj); // not silent as user might be listening to change events
               }, 50);
             });
+            // 1-way attribute binding
+            bindAttributesOneWay();
           }
 
           // <input type="text"> and <textarea>: 2-way binding
@@ -496,26 +519,18 @@
               obj[bindData.key] = $(this).val();
               self.model.set(obj); // not silent as user might be listening to change events
             });
+            // 1-way attribute binding
+            bindAttributesOneWay()
           }
           
           // all other <tag>s: 1-way binding
           else {
-            if (bindData.attr) {
-              for (var i = 0; i < bindData.attr.length; i++) {
-                self.bind('_change:'+bindData.attr[i].attrVar, (function(){
-                  // capture the attribute pair in closure
-                  var attrPair = bindData.attr[i];
-                  return function() {
-                    $node.attr(attrPair.attr, self.model.get(attrPair.attrVar));
-                  };
-                })());
-              }
-            }
             if (bindData.key) {
               self.bind('_change:'+bindData.key, function(){
                 $node.text(self.model.get(bindData.key).toString());
               });
             }
+            bindAttributesOneWay();
           }
         }); // nodes.each()
         return this;
