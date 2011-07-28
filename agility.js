@@ -139,13 +139,13 @@
     _container: {
 
       // Adds child object to container, appends view, listens for child removal
-      append: function(obj, selector){
+      _appendprepend: function(obj, selector, eventStr){
         var self = this;
         if (!util.isAgility(obj)) {
           throw "agility.js: append argument is not an agility object";
         }
         this._container.children[obj._id] = obj; // children is *not* an array; this is for simpler lookups by global object id
-        this.trigger('append', [obj, selector]);
+        this.trigger(eventStr, [obj, selector]);
         // ensures object is removed from container when destroyed:
         obj.bind('destroy', function(event, id){ 
           self._container.remove(id);
@@ -153,19 +153,20 @@
         return this;
       },
 
-      // Adds child object to container, prepends view, listens for child removal
-      prepend: function(obj, selector){
-        var self = this;
-        if (!util.isAgility(obj)) {
-          throw "agility.js: prepend argument is not an agility object";
-        }
-        this._container.children[obj._id] = obj; // children is *not* an array; this is for simpler lookups by global object id
-        this.trigger('prepend', [obj, selector]);
-        // ensures object is removed from container when destroyed:
-        obj.bind('destroy', function(event, id){ 
-          self._container.remove(id);
-        });
-        return this;
+      append: function(obj, selector) { 
+          return this._container._appendprepend.call(this, obj, selector, 'append'); 
+      },
+
+      prepend: function(obj, selector) { 
+          return this._container._appendprepend.call(this, obj, selector, 'prepend'); 
+      },
+
+      after: function(obj, selector) { 
+          return this._container._appendprepend.call(this, obj, selector, 'after'); 
+      },
+
+      before: function(obj, selector) { 
+          return this._container._appendprepend.call(this, obj, selector, 'before'); 
       },
       
       // Removes child object from container
@@ -566,7 +567,17 @@
       _prepend: function(event, obj, selector){
         this.view.$(selector).prepend(obj.view.$());
       },
-                  
+
+      // Triggered after child obj is inserted in the container
+      _before: function(event, obj, selector){
+        this.view.$(selector).before(obj.view.$());
+      },
+
+      // Triggered after child obj is inserted in the container
+      _after: function(event, obj, selector){
+        this.view.$(selector).after(obj.view.$());
+      },
+
       // Triggered after a child obj is removed from container (or self-removed)
       _remove: function(event, id){        
       },
@@ -600,6 +611,14 @@
     },
     prepend: function(){
       this._container.prepend.apply(this, arguments);
+      return this; // for chainable calls
+    },
+    after: function(){
+      this._container.after.apply(this, arguments);
+      return this; // for chainable calls
+    },
+    before: function(){
+      this._container.before.apply(this, arguments);
       return this; // for chainable calls
     },
     remove: function(){
