@@ -376,31 +376,31 @@
       //   all following pairs in the list are assumed to be attributes
       // Returns { key:'model key', attr: [ {name : 'name', value : 'value' }... ] }
       _parseBindStr: function(str){
-        var obj = { key:null, attr:[] },
-            pairs = str.split( ',' ),
+        var obj = {key:null, attr:[]},
+            pairs = str.split(','),
             regex = /(\w+)(?:\s+(\w+))?/,
             matched;
         
-        if ( pairs.length > 0 ) {
-          matched = pairs[ 0 ].match( regex );
+        if (pairs.length > 0) {
+          matched = pairs[0].match(regex);
           // [ "attribute variable", "attribute", "variable" ]
           // or
           // [ "variable", "variable", undefined ]
           // or
           // null
-          if ( matched ) {
-            if ( typeof( matched[ 2 ] ) === "undefined" ) {
-              obj.key = matched[ 1 ];
+          if (matched) {
+            if (typeof(matched[2]) === "undefined") {
+              obj.key = matched[1];
             } else {
-              obj.attr.push( { attr: matched[ 1 ], attrVar: matched[ 2 ] } );
+              obj.attr.push({attr: matched[1], attrVar: matched[2]});
             }
           }
-          if ( pairs.length > 1 ) {
-            for ( var i = 1; i < pairs.length; i++ ) {
-              matched = pairs[ i ].match( regex );
-              if ( matched ) {
-                if ( typeof( matched[ 2 ] ) !== "undefined" ) {
-                  obj.attr.push( { attr: matched[ 1 ], attrVar: matched[ 2 ] } );
+          if (pairs.length > 1) {
+            for (var i = 1; i < pairs.length; i++) {
+              matched = pairs[i].match(regex);
+              if (matched) {
+                if (typeof(matched[2]) !== "undefined") {
+                  obj.attr.push({attr: matched[1], attrVar: matched[2]});
                 }
               }
             }
@@ -500,14 +500,17 @@
           // all other <tag>s: 1-way binding
           else {
             if (bindData.attr) {
-              for ( var i = 0; i < bindData.attr.length; i++ ) {
-                var attrPair = bindData.attr[ i ];
-                self.bind('_change:'+attrPair.attrVar, function() {
-                  $node.attr(attrPair.attr, self.model.get(attrPair.attrVar));
-                });
+              for (var i = 0; i < bindData.attr.length; i++) {
+                self.bind('_change:'+bindData.attr[i].attrVar, (function(){
+                  // capture the attribute pair in closure
+                  var attrPair = bindData.attr[i];
+                  return function() {
+                    $node.attr(attrPair.attr, self.model.get(attrPair.attrVar));
+                  };
+                })());
               }
             }
-            if ( bindData.key ) {
+            if (bindData.key) {
               self.bind('_change:'+bindData.key, function(){
                 $node.text(self.model.get(bindData.key).toString());
               });
