@@ -573,7 +573,7 @@
 
       // Triggered after model is changed
       '_change': function(event){
-        
+        template_rerender();
       }
       
     }, // controller prototype
