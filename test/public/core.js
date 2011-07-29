@@ -244,6 +244,86 @@
     // equals( t2, o2, '_noProxy obj.*' );
   });
   
+  test("Hierarchical controller inheritence from four arguments (prototype, model, view, controller object)", function() {
+    var lbl = $$({}, '<span data-bind="label"/>');
+    var partial = $$({}, '<div/>', {
+      'create': function() {
+        var l = $$(lbl, {label: this.model.get('label')});
+        this.append(l);
+      }
+    });
+    var complete = $$(partial, {}, {}, {
+      'extend:create': function() {
+        var value = $$(lbl, {label: this.model.get('value')});
+        this.append(value);
+      } 
+    });
+    equals( typeof complete.controller['extend:create'], 'undefined', 'extend:create should not be present');
+    var first = $$(complete, {label:"firstLabel", value:"firstValue"});
+    var second = $$(complete, {label:"secondLabel", value:"secondValue"});
+    validateObject(first);
+    validateObject(second);
+    equals(first.view.$('span').length, 2, 'appended both labels');
+    equals(first.view.$('span').first().text(), 'firstLabel', 'executed partial create');
+    equals(first.view.$('span').last().text(), 'firstValue', 'executed extended create');
+    equals(second.view.$('span').length, 2, 'appended both labels');
+    equals(second.view.$('span').first().text(), 'secondLabel', 'executed partial create');
+    equals(second.view.$('span').last().text(), 'secondValue', 'executed extended create');
+    
+    var differential = $$(partial, {}, {}, {
+      'create': function() {
+        var value = $$(lbl, {label: this.model.get('value')});
+        this.append(value);
+      }
+    });
+    var third = $$(differential, {label:"thirdLabel",value:"thirdValue"});
+    validateObject(third);
+    equals(third.view.$('span').length, 1, 'only one child');
+    equals(third.view.$('span').first().text(), 'thirdValue', 'initialized from overriden create');
+  });
+  
+  test("Hierarchical controller inheritence from single object argument ({ ..., controller: ...})", function() {
+    var lbl = $$({}, '<span data-bind="label"/>');
+    var partial = $$({}, '<div/>', {
+      'create': function() {
+        var l = $$(lbl, {label: this.model.get('label')});
+        this.append(l);
+      }
+    });
+    var complete = $$(partial, {
+      controller:{
+        'extend:create': function() {
+          var value = $$(lbl, {label: this.model.get('value')});
+          this.append(value);
+        } 
+      }
+    });
+    equals( typeof complete.controller['extend:create'], 'undefined', 'extend:create should not be present');
+    var first = $$(complete, {label:"firstLabel", value:"firstValue"});
+    var second = $$(complete, {label:"secondLabel", value:"secondValue"});
+    validateObject(first);
+    validateObject(second);
+    equals(first.view.$('span').length, 2, 'appended both labels');
+    equals(first.view.$('span').first().text(), 'firstLabel', 'executed partial create');
+    equals(first.view.$('span').last().text(), 'firstValue', 'executed extended create');
+    equals(second.view.$('span').length, 2, 'appended both labels');
+    equals(second.view.$('span').first().text(), 'secondLabel', 'executed partial create');
+    equals(second.view.$('span').last().text(), 'secondValue', 'executed extended create');
+    
+    var differential = $$(partial, {
+      controller: {
+        'create': function() {
+          var value = $$(lbl, {label: this.model.get('value')});
+          this.append(value);
+        }
+      }
+    });
+    var third = $$(differential, {label:"thirdLabel",value:"thirdValue"});
+    validateObject(third);
+    equals(third.view.$('span').length, 1, 'only one child');
+    equals(third.view.$('span').first().text(), 'thirdValue', 'initialized from overriden create');
+  });
+  
   test("Object inheritance", function(){
     var objBase = $$({}, {format:'<div><span data-bind="first"/>.<span data-bind="last"/></div>', style:'& {float:right; display:none;}'});
     var objNewModel = {first:'Joe', last:'Doe'};
