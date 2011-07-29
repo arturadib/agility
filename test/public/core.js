@@ -250,13 +250,21 @@
       'create': function() {
         var l = $$(lbl, {label: this.model.get('label')});
         this.append(l);
+      },
+      'myEvent': function() {
+        var l = $$(lbl, {label: this.model.get('myEventLabel')});
+        this.append(l);
       }
     });
     var complete = $$(partial, {}, {}, {
       'extend:create': function() {
         var value = $$(lbl, {label: this.model.get('value')});
         this.append(value);
-      } 
+      },
+      'extend:myEvent': function() {
+        var value = $$(lbl, {label: this.model.get('myEventValue')});
+        this.append(value);
+      }
     });
     equals( typeof complete.controller['extend:create'], 'undefined', 'extend:create should not be present');
     var first = $$(complete, {label:"firstLabel", value:"firstValue"});
@@ -270,16 +278,45 @@
     equals(second.view.$('span').first().text(), 'secondLabel', 'executed partial create');
     equals(second.view.$('span').last().text(), 'secondValue', 'executed extended create');
     
+    first.model.set({myEventLabel: "myEventLabel", myEventValue: "myEventValue"});
+    first.trigger('myEvent');
+    equals(typeof complete.controller['extend:myEvent'], 'undefined', 'extend:myEvent should not be present');
+    equals(first.view.$('span').length, 4, 'appended all from myEvent chain');
+    equals(first.view.$('span').eq(2).text(), 'myEventLabel', 'executed partial myEvent');
+    equals(first.view.$('span').eq(3).text(), 'myEventValue', 'executed extended myEvent');
+    
     var differential = $$(partial, {}, {}, {
       'create': function() {
         var value = $$(lbl, {label: this.model.get('value')});
         this.append(value);
+      },
+      'myEvent': function() {
+        var l = $$(lbl, {label: this.model.get('myEventDifferential')});
+        this.append(l);
       }
     });
     var third = $$(differential, {label:"thirdLabel",value:"thirdValue"});
     validateObject(third);
     equals(third.view.$('span').length, 1, 'only one child');
     equals(third.view.$('span').first().text(), 'thirdValue', 'initialized from overriden create');
+    
+    third.model.set({myEventDifferential: "myEventDifferential"});
+    third.trigger('myEvent');
+    equals(typeof complete.controller['extend:myEvent'], 'undefined', 'extend:myEvent should not be present');
+    equals(third.view.$('span').length, 2, 'appended via myEvent');
+    equals(third.view.$('span').last().text(), 'myEventDifferential', 'executed from overrident myEvent');
+    
+    var nakedExtend = $$({}, '<div/>', {
+      'extend:create': function(){
+        var l = $$(lbl, {label: this.model.get('label')});
+        this.append(l);
+      }
+    });
+    equals(typeof nakedExtend.controller['extend:create'], 'undefined', 'extend:create should not be present');
+    var fourth = $$(nakedExtend, {label:"fourthLabel"});
+    validateObject(fourth);
+    equals(typeof fourth.controller['extend:create'], 'undefined', 'extend:create should not be present');
+    equals(fourth.view.$('span').first().text(), 'fourthLabel', 'naked extend:create collapsed correctly to "create"');
   });
   
   test("Hierarchical controller inheritence from single object argument ({ ..., controller: ...})", function() {
@@ -288,6 +325,10 @@
       'create': function() {
         var l = $$(lbl, {label: this.model.get('label')});
         this.append(l);
+      },
+      'myEvent': function() {
+        var l = $$(lbl, {label: this.model.get('myEventLabel')});
+        this.append(l);
       }
     });
     var complete = $$(partial, {
@@ -295,7 +336,11 @@
         'extend:create': function() {
           var value = $$(lbl, {label: this.model.get('value')});
           this.append(value);
-        } 
+        },
+        'extend:myEvent': function() {
+          var value = $$(lbl, {label: this.model.get('myEventValue')});
+          this.append(value);
+        }
       }
     });
     equals( typeof complete.controller['extend:create'], 'undefined', 'extend:create should not be present');
@@ -310,11 +355,22 @@
     equals(second.view.$('span').first().text(), 'secondLabel', 'executed partial create');
     equals(second.view.$('span').last().text(), 'secondValue', 'executed extended create');
     
+    first.model.set({myEventLabel: "myEventLabel", myEventValue: "myEventValue"});
+    first.trigger('myEvent');
+    equals(typeof complete.controller['extend:myEvent'], 'undefined', 'extend:myEvent should not be present');
+    equals(first.view.$('span').length, 4, 'appended all from myEvent chain');
+    equals(first.view.$('span').eq(2).text(), 'myEventLabel', 'executed partial myEvent');
+    equals(first.view.$('span').eq(3).text(), 'myEventValue', 'executed extended myEvent');
+    
     var differential = $$(partial, {
       controller: {
         'create': function() {
           var value = $$(lbl, {label: this.model.get('value')});
           this.append(value);
+        },
+        'myEvent': function() {
+          var l = $$(lbl, {label: this.model.get('myEventDifferential')});
+          this.append(l);
         }
       }
     });
@@ -322,6 +378,26 @@
     validateObject(third);
     equals(third.view.$('span').length, 1, 'only one child');
     equals(third.view.$('span').first().text(), 'thirdValue', 'initialized from overriden create');
+    
+    third.model.set({myEventDifferential: "myEventDifferential"});
+    third.trigger('myEvent');
+    equals(typeof complete.controller['extend:myEvent'], 'undefined', 'extend:myEvent should not be present');
+    equals(third.view.$('span').length, 2, 'appended via myEvent');
+    equals(third.view.$('span').last().text(), 'myEventDifferential', 'executed from overrident myEvent');
+    
+    var nakedExtend = $$({
+      controller: {
+        'extend:create': function() {
+          var l = $$(lbl, {label: this.model.get('label')});
+          this.append(l);
+        }
+      }
+    });
+    equals(typeof nakedExtend.controller['extend:create'], 'undefined', 'extend:create should not be present');
+    var fourth = $$(nakedExtend, {label:"fourthLabel"});
+    validateObject(fourth);
+    equals(typeof fourth.controller['extend:create'], 'undefined', 'extend:create should not be present');
+    equals(fourth.view.$('span').first().text(), 'fourthLabel', 'naked extend:create collapsed correctly to "create"');
   });
   
   test("Object inheritance", function(){

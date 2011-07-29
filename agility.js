@@ -746,37 +746,52 @@
           $.extend(object.view, args[0][prop]);
         }
         else if (prop === 'controller') {
+          var regex = /extend\:(\w+)/;
           // check for extended events
           var propertiesToDelete = [];
-          for (var ev in args[0][prop]) {
-            if (!args[0][prop].hasOwnProperty(ev)) continue;
-            if (typeof args[0][prop][ev] !== 'function') continue;
-            if (ev == 'extend:create') {
-              // there is always at least a default create, so preserve that
-              // TODO: recognize default create and don't bloat with unnecessary calls
-              // use closure because weird things happen if we don't capture
-              //   the variables in their current state
-              ( function() {
-                var originalCreate = object.controller.create;
-                var extendedCreate = args[0][prop][ev];
-                var createObj = {
-                  oCreate: originalCreate,
-                  eCreate: extendedCreate
-                };
-                var newCreate = {
-                  'create': function() {
-                    // proxy createObj methods to currently executing context
-                    util.proxyAll(createObj, this);
-                    for (var fn in createObj) {
-                      if (!createObj.hasOwnProperty(fn)) continue;
-                      createObj[fn]();
+          for (var event in args[0][prop]) {
+            if (!args[0][prop].hasOwnProperty(event)) continue;
+            if (typeof args[0][prop][event] !== 'function') continue;
+            var matched = event.match(regex);
+            // [ "extend:something", "something" ]
+            // or
+            // null
+            if (matched) {
+              var ev = matched[1];
+              var originalEvent = null;
+              // see if we need to chain events together
+              if (typeof object.controller[ev] !== 'undefined') {
+                originalEvent = ev;
+              }
+              if (originalEvent != null) {
+                // we need to chain
+                ( function() {
+                  var oEvent = object.controller[ev]; // we grab original without 'extend:' prefix
+                  var eEvent = args[0][prop][event]; // we grab property that has 'extend:' prefix
+                  var evObj = { // need to create an object so that proxyAll will work
+                    oEvent: oEvent,
+                    eEvent: eEvent
+                  };
+                  var newEvent = {};
+                  newEvent[ev] = function() {
+                    // proxy event object methods to currently executing context
+                    util.proxyAll(evObj, this);
+                    for (var fn in evObj) {
+                      if (!evObj.hasOwnProperty(fn)) continue;
+                      evObj[fn]();
                     }
-                  }
-                };         
-                $.extend(object.controller, newCreate);
-              })();
+                  };
+                  $.extend(object.controller, newEvent);
+                })();
+              } else {
+                // don't need to chain, this is the first event defined
+                // we will rename it without 'extend:' prefix
+                var newEvent = {};
+                newEvent[ev] = args[0][prop][event];
+                $.extend(object.controller, newEvent);
+              }
               // remove properties we already extended
-              propertiesToDelete.push(ev);
+              propertiesToDelete.push(event);
             }
           }
           for (var i = 0; i < propertiesToDelete.length; i++) {
@@ -825,37 +840,52 @@
       
       // Controller from object (..., ..., {method:function(){}})
       if (typeof args[2] === 'object') {
+        var regex = /extend\:(\w+)/;
         // check for extended events
         var propertiesToDelete = [];
-        for (var ev in args[2]) {
-          if (!args[2].hasOwnProperty(ev)) continue;
-          if (typeof args[2][ev] !== 'function') continue;
-          if (ev == 'extend:create') {
-            // there is always at least a default create, so preserve that
-            // TODO: recognize default create and don't bloat with unnecessary calls
-            // use closure because weird things happen if we don't capture
-            //   the variables in their current state
-            ( function() {
-              var originalCreate = object.controller.create;
-              var extendedCreate = args[2][ev];
-              var createObj = {
-                oCreate: originalCreate,
-                eCreate: extendedCreate
-              };
-              var newCreate = {
-                'create': function() {
-                  // proxy createObj methods to currently executing context
-                  util.proxyAll(createObj, this);
-                  for (var fn in createObj) {
-                    if (!createObj.hasOwnProperty(fn)) continue;
-                    createObj[fn]();
+        for (var event in args[2]) {
+          if (!args[2].hasOwnProperty(event)) continue;
+          if (typeof args[2][event] !== 'function') continue;
+          var matched = event.match(regex);
+          // [ "extend:something", "something" ]
+          // or
+          // null
+          if (matched) {
+            var ev = matched[1];
+            var originalEvent = null;
+            // see if we need to chain events together
+            if (typeof object.controller[ev] !== 'undefined') {
+              originalEvent = ev;
+            }
+            if (originalEvent != null) {
+              // we need to chain
+              ( function() {
+                var oEvent = object.controller[ev]; // we grab original without 'extend:' prefix
+                var eEvent = args[2][event]; // we grab property that has 'extend:' prefix
+                var evObj = { // need to create an object so that proxyAll will work
+                  oEvent: oEvent,
+                  eEvent: eEvent
+                };
+                var newEvent = {};
+                newEvent[ev] = function() {
+                  // proxy event object methods to currently executing context
+                  util.proxyAll(evObj, this);
+                  for (var fn in evObj) {
+                    if (!evObj.hasOwnProperty(fn)) continue;
+                    evObj[fn]();
                   }
-                }
-              };         
-              $.extend(object.controller, newCreate);
-            })();
+                };
+                $.extend(object.controller, newEvent);
+              })();
+            } else {
+              // don't need to chain, this is the first event defined
+              // we will rename it without 'extend:' prefix
+              var newEvent = {};
+              newEvent[ev] = args[2][event];
+              $.extend(object.controller, newEvent);
+            }
             // remove properties we already extended
-            propertiesToDelete.push(ev);
+            propertiesToDelete.push(event);
           }
         }
         for (var i = 0; i < propertiesToDelete.length; i++) {
