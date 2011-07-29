@@ -80,6 +80,62 @@
   util.isAgility = function(obj){
    return obj._agility === true;
   };
+  
+  // Checks first for hierarchical inheritance by chaining together controller events
+  //  and then implements differential inhertiance on remaining controller events
+  util.extendController = function(object, extendingController) {
+    // check for extended events
+    var propertiesToDelete = [];
+    for (var controllerName in extendingController) {
+      if (!extendingController.hasOwnProperty(controllerName)) continue;
+      if (typeof extendingController[controllerName] !== 'function') continue;
+      var matched = controllerName.match(/extend\:(\w+)/);
+      // [ "extend:something", "something" ]
+      // or
+      // null
+      if (matched) {
+        var event = matched[1],
+            originalEvent;
+        // see if we need to chain events together
+        if (typeof object.controller[event] !== 'undefined') {
+          originalEvent = event;
+        }
+        if (originalEvent) {
+          // we need to chain
+          ( function() {
+            var oEvent = object.controller[event]; // we grab original without 'extend:' prefix
+            var eEvent = extendingController[controllerName]; // we grab property that has 'extend:' prefix
+            var evObj = { // need to create an object so that proxyAll will work
+              oEvent: oEvent,
+              eEvent: eEvent
+            };
+            var newEvent = {};
+            newEvent[event] = function() {
+              // proxy event object methods to currently executing context
+              util.proxyAll(evObj, this);
+              for (var fn in evObj) {
+                if (!evObj.hasOwnProperty(fn)) continue;
+                evObj[fn]();
+              }
+            }; // newEvent[event]
+            $.extend(object.controller, newEvent);
+          })(); // "we need to chain" closure
+        } else {
+          // don't need to chain, this is the first event defined
+          // we will rename it without 'extend:' prefix
+          var newEvent = {};
+          newEvent[event] = extendingController[controllerName];
+          $.extend(object.controller, newEvent);
+        } // if else (originalEvent)
+        // remove properties we already extended
+        propertiesToDelete.push(controllerName);
+      } // if (matched)
+    } // for (controllerName in extendingController)
+    for (var i = 0; i < propertiesToDelete.length; i++) {
+      delete extendingController[propertiesToDelete[i]];
+    }
+    $.extend(object.controller, extendingController);
+  }; // extendController
 
   // Scans object for functions (depth=2) and proxies their 'this' to dest.
   // To ensure it works with previously proxied objects, we save the original function as 
@@ -374,7 +430,7 @@
       // Parse data-bind string of the type '[attribute] variable[, attribute variable ]...'
       // If the variable is not an attribute, it must be first in the list,
       //   all following pairs in the list are assumed to be attributes
-      // Returns { key:'model key', attr: [ {name : 'name', value : 'value' }... ] }
+      // Returns { key:'model key', attr: [ {attr : 'attribute', attrVar : 'variable' }... ] }
       _parseBindStr: function(str){
         var obj = {key:null, attr:[]},
             pairs = str.split(','),
@@ -393,8 +449,8 @@
               obj.key = matched[1];
             } else {
               obj.attr.push({attr: matched[1], attrVar: matched[2]});
-            }
-          }
+            } 
+          } // if (matched )
           if (pairs.length > 1) {
             for (var i = 1; i < pairs.length; i++) {
               matched = pairs[i].match(regex);
@@ -402,10 +458,10 @@
                 if (typeof(matched[2]) !== "undefined") {
                   obj.attr.push({attr: matched[1], attrVar: matched[2]});
                 }
-              }
-            }
-          }
-        }
+              } // if (matched)
+            } // for (pairs.length)
+          } // if (pairs.length > 1)
+        } // if (pairs.length > 0)
         
         return obj;
       },
@@ -429,10 +485,10 @@
                   return function() {
                     $node.attr(attrPair.attr, self.model.get(attrPair.attrVar));
                   };
-                })());
-              }
-            }
-          };
+                })()); // self.bind
+              } // for (bindData.attr)
+            } // if (bindData.attr)
+          }; // bindAttributesOneWay()
           
           // <input type="checkbox">: 2-way binding
           if ($node.is('input[type="checkbox"]')) {
@@ -746,58 +802,7 @@
           $.extend(object.view, args[0][prop]);
         }
         else if (prop === 'controller') {
-          var regex = /extend\:(\w+)/;
-          // check for extended events
-          var propertiesToDelete = [];
-          for (var event in args[0][prop]) {
-            if (!args[0][prop].hasOwnProperty(event)) continue;
-            if (typeof args[0][prop][event] !== 'function') continue;
-            var matched = event.match(regex);
-            // [ "extend:something", "something" ]
-            // or
-            // null
-            if (matched) {
-              var ev = matched[1];
-              var originalEvent = null;
-              // see if we need to chain events together
-              if (typeof object.controller[ev] !== 'undefined') {
-                originalEvent = ev;
-              }
-              if (originalEvent != null) {
-                // we need to chain
-                ( function() {
-                  var oEvent = object.controller[ev]; // we grab original without 'extend:' prefix
-                  var eEvent = args[0][prop][event]; // we grab property that has 'extend:' prefix
-                  var evObj = { // need to create an object so that proxyAll will work
-                    oEvent: oEvent,
-                    eEvent: eEvent
-                  };
-                  var newEvent = {};
-                  newEvent[ev] = function() {
-                    // proxy event object methods to currently executing context
-                    util.proxyAll(evObj, this);
-                    for (var fn in evObj) {
-                      if (!evObj.hasOwnProperty(fn)) continue;
-                      evObj[fn]();
-                    }
-                  };
-                  $.extend(object.controller, newEvent);
-                })();
-              } else {
-                // don't need to chain, this is the first event defined
-                // we will rename it without 'extend:' prefix
-                var newEvent = {};
-                newEvent[ev] = args[0][prop][event];
-                $.extend(object.controller, newEvent);
-              }
-              // remove properties we already extended
-              propertiesToDelete.push(event);
-            }
-          }
-          for (var i = 0; i < propertiesToDelete.length; i++) {
-            delete args[0][prop][propertiesToDelete[i]];
-          }
-          $.extend(object.controller, args[0][prop]);
+          util.extendController(object, args[0][prop]);
         }
         // User-defined methods
         else {
@@ -840,58 +845,7 @@
       
       // Controller from object (..., ..., {method:function(){}})
       if (typeof args[2] === 'object') {
-        var regex = /extend\:(\w+)/;
-        // check for extended events
-        var propertiesToDelete = [];
-        for (var event in args[2]) {
-          if (!args[2].hasOwnProperty(event)) continue;
-          if (typeof args[2][event] !== 'function') continue;
-          var matched = event.match(regex);
-          // [ "extend:something", "something" ]
-          // or
-          // null
-          if (matched) {
-            var ev = matched[1];
-            var originalEvent = null;
-            // see if we need to chain events together
-            if (typeof object.controller[ev] !== 'undefined') {
-              originalEvent = ev;
-            }
-            if (originalEvent != null) {
-              // we need to chain
-              ( function() {
-                var oEvent = object.controller[ev]; // we grab original without 'extend:' prefix
-                var eEvent = args[2][event]; // we grab property that has 'extend:' prefix
-                var evObj = { // need to create an object so that proxyAll will work
-                  oEvent: oEvent,
-                  eEvent: eEvent
-                };
-                var newEvent = {};
-                newEvent[ev] = function() {
-                  // proxy event object methods to currently executing context
-                  util.proxyAll(evObj, this);
-                  for (var fn in evObj) {
-                    if (!evObj.hasOwnProperty(fn)) continue;
-                    evObj[fn]();
-                  }
-                };
-                $.extend(object.controller, newEvent);
-              })();
-            } else {
-              // don't need to chain, this is the first event defined
-              // we will rename it without 'extend:' prefix
-              var newEvent = {};
-              newEvent[ev] = args[2][event];
-              $.extend(object.controller, newEvent);
-            }
-            // remove properties we already extended
-            propertiesToDelete.push(event);
-          }
-        }
-        for (var i = 0; i < propertiesToDelete.length; i++) {
-          delete args[2][propertiesToDelete[i]];
-        }
-        $.extend(object.controller, args[2]);
+        util.extendController(object, args[2]);
       }
       else if (args[2]) {
         throw "agility.js: unknown argument type (controller)";
