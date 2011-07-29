@@ -144,7 +144,7 @@
     equals( obj.view.$().css('float'), 'right', 'style as expected');
   });
   
-  test("Three arguments (model object, view string, controller object) with multiple attribute bindings", function(){
+  test("Three arguments (model object, view object, controller object) with multiple attribute bindings", function(){
     var obj = $$({
       first: 'Joe',
       last: 'Doe',
