@@ -746,6 +746,42 @@
           $.extend(object.view, args[0][prop]);
         }
         else if (prop === 'controller') {
+          // check for extended events
+          var propertiesToDelete = [];
+          for (var ev in args[0][prop]) {
+            if (!args[0][prop].hasOwnProperty(ev)) continue;
+            if (typeof args[0][prop][ev] !== 'function') continue;
+            if (ev == 'extend:create') {
+              // there is always at least a default create, so preserve that
+              // TODO: recognize default create and don't bloat with unnecessary calls
+              // use closure because weird things happen if we don't capture
+              //   the variables in their current state
+              ( function() {
+                var originalCreate = object.controller.create;
+                var extendedCreate = args[0][prop][ev];
+                var createObj = {
+                  oCreate: originalCreate,
+                  eCreate: extendedCreate
+                };
+                var newCreate = {
+                  'create': function() {
+                    // proxy createObj methods to currently executing context
+                    util.proxyAll(createObj, this);
+                    for (var fn in createObj) {
+                      if (!createObj.hasOwnProperty(fn)) continue;
+                      createObj[fn]();
+                    }
+                  }
+                };         
+                $.extend(object.controller, newCreate);
+              })();
+              // remove properties we already extended
+              propertiesToDelete.push(ev);
+            }
+          }
+          for (var i = 0; i < propertiesToDelete.length; i++) {
+            delete args[0][prop][propertiesToDelete[i]];
+          }
           $.extend(object.controller, args[0][prop]);
         }
         // User-defined methods
@@ -789,6 +825,42 @@
       
       // Controller from object (..., ..., {method:function(){}})
       if (typeof args[2] === 'object') {
+        // check for extended events
+        var propertiesToDelete = [];
+        for (var ev in args[2]) {
+          if (!args[2].hasOwnProperty(ev)) continue;
+          if (typeof args[2][ev] !== 'function') continue;
+          if (ev == 'extend:create') {
+            // there is always at least a default create, so preserve that
+            // TODO: recognize default create and don't bloat with unnecessary calls
+            // use closure because weird things happen if we don't capture
+            //   the variables in their current state
+            ( function() {
+              var originalCreate = object.controller.create;
+              var extendedCreate = args[2][ev];
+              var createObj = {
+                oCreate: originalCreate,
+                eCreate: extendedCreate
+              };
+              var newCreate = {
+                'create': function() {
+                  // proxy createObj methods to currently executing context
+                  util.proxyAll(createObj, this);
+                  for (var fn in createObj) {
+                    if (!createObj.hasOwnProperty(fn)) continue;
+                    createObj[fn]();
+                  }
+                }
+              };         
+              $.extend(object.controller, newCreate);
+            })();
+            // remove properties we already extended
+            propertiesToDelete.push(ev);
+          }
+        }
+        for (var i = 0; i < propertiesToDelete.length; i++) {
+          delete args[2][propertiesToDelete[i]];
+        }
         $.extend(object.controller, args[2]);
       }
       else if (args[2]) {
