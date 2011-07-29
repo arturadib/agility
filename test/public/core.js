@@ -285,6 +285,21 @@
     equals(first.view.$('span').eq(2).text(), 'myEventLabel', 'executed partial myEvent');
     equals(first.view.$('span').eq(3).text(), 'myEventValue', 'executed extended myEvent');
     
+    var doubleExtend = $$(complete, {}, {}, {
+      'extend:create': function() {
+        var doub = $$(lbl, {label: this.model.get('doubleExtension')});
+        this.append(doub);
+      }
+    });
+    equals(typeof doubleExtend.controller['extend:create'], 'undefined', 'doubly extended extend:create should not be present');
+    var dExtend = $$(doubleExtend, {label:"firstLabel",value:"extendedOnce",doubleExtension:"extendedTwice"});
+    validateObject(dExtend);
+    equals(typeof dExtend.controller['extend:create'], 'undefined', 'doubly extended extend:create should not be present');
+    equals(dExtend.view.$('span').length, 3, 'appended labels from three chained create events');
+    equals(dExtend.view.$('span').first().text(), 'firstLabel', 'executed first create');
+    equals(dExtend.view.$('span').eq(1).text(), 'extendedOnce', 'executed second create');
+    equals(dExtend.view.$('span').last().text(), 'extendedTwice', 'executed third create');
+    
     var differential = $$(partial, {}, {}, {
       'create': function() {
         var value = $$(lbl, {label: this.model.get('value')});
@@ -361,6 +376,23 @@
     equals(first.view.$('span').length, 4, 'appended all from myEvent chain');
     equals(first.view.$('span').eq(2).text(), 'myEventLabel', 'executed partial myEvent');
     equals(first.view.$('span').eq(3).text(), 'myEventValue', 'executed extended myEvent');
+    
+    var doubleExtend = $$(complete, {
+      controller:{
+        'extend:create': function() {
+          var doub = $$(lbl, {label: this.model.get('doubleExtension')});
+          this.append(doub);
+        }
+      }
+    });
+    equals(typeof doubleExtend.controller['extend:create'], 'undefined', 'doubly extended extend:create should not be present');
+    var dExtend = $$(doubleExtend, {label:"firstLabel",value:"extendedOnce",doubleExtension:"extendedTwice"});
+    validateObject(dExtend);
+    equals(typeof dExtend.controller['extend:create'], 'undefined', 'doubly extended extend:create should not be present');
+    equals(dExtend.view.$('span').length, 3, 'appended labels from three chained create events');
+    equals(dExtend.view.$('span').first().text(), 'firstLabel', 'executed first create');
+    equals(dExtend.view.$('span').eq(1).text(), 'extendedOnce', 'executed second create');
+    equals(dExtend.view.$('span').last().text(), 'extendedTwice', 'executed third create');
     
     var differential = $$(partial, {
       controller: {
