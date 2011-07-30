@@ -514,7 +514,7 @@ The methods below are specific to the object container.
 
 ### [.append()](#core-append)
 
-_Adds an Agility object to the object's container, and appends its view to object's view._
+_Adds an Agility object to the object's container, and appends its view to containing object's view._
 
 **Syntax:** 
 
@@ -530,7 +530,7 @@ Owner Agility object (for chainable calls).
 
 ### [.prepend()](#core-prepend)
 
-_Adds an Agility object to the object's container, and prepends its view to object's view._
+_Adds an Agility object to the object's container, and prepends its view to containing object's view._
 
 **Syntax:** 
 
@@ -544,6 +544,37 @@ _Adds an Agility object to the object's container, and prepends its view to obje
 
 Owner Agility object (for chainable calls).
 
+### [.before()](#core-before)
+
+_Adds an Agility object to the object's container, and inserts its view before given selector of containing object's view._
+
+**Syntax:** 
+
+    :::javascript
+    .before(object, selector)
+
++ `object`: The Agility object to be added;
++ `selector`: jQuery selector before which the object's root element should be inserted.
+
+**Returns:**
+
+Owner Agility object (for chainable calls).
+
+### [.after()](#core-after)
+
+_Adds an Agility object to the object's container, and inserts its view after given selector of containing object's view._
+
+**Syntax:** 
+
+    :::javascript
+    .after(object, selector)
+
++ `object`: The Agility object to be added;
++ `selector`: jQuery selector after which the object's root element should be inserted.
+
+**Returns:**
+
+Owner Agility object (for chainable calls).
 
 ### [.remove()](#core-remove)
 
@@ -884,7 +915,7 @@ Each gathered MVC object will be added to the container, appended/prepended to t
 where:
 
 + `proto`: Prototypal Agility object with `persist` already initialized.
-+ `method`: String containing name of method to be invoked with each new Agility object to be added. Typically `'append'` or `'prepend'`.
++ `method`: String containing name of method to be invoked with each new Agility object to be added (e.g. `'append'`, `'prepend'`, `'before'`, `'after'`).
 + `selector`: jQuery selector indicating where the view of `proto` should be appended. Will append to root element if omitted.
 + `query`: Javascript object containing parameters to be passed to the adapter for e.g. HTTP queries, like `{orderBy:'name'}`.
 

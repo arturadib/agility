@@ -536,7 +536,7 @@
 <h3><a href="#container">&mdash;</a></h3>
 <p>The methods below are specific to the object container.</p>
 <h3><a href="#core-append">.append()</a></h3>
-<p><em>Adds an Agility object to the object's container, and appends its view to object's view.</em></p>
+<p><em>Adds an Agility object to the object's container, and appends its view to containing object's view.</em></p>
 <p><strong>Syntax:</strong> </p>
 <div class="codehilite"><pre><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">object</span> <span class="p">[,</span><span class="nx">selector</span><span class="p">])</span>
 </pre></div>
@@ -549,7 +549,7 @@
 <p><strong>Returns:</strong></p>
 <p>Owner Agility object (for chainable calls).</p>
 <h3><a href="#core-prepend">.prepend()</a></h3>
-<p><em>Adds an Agility object to the object's container, and prepends its view to object's view.</em></p>
+<p><em>Adds an Agility object to the object's container, and prepends its view to containing object's view.</em></p>
 <p><strong>Syntax:</strong> </p>
 <div class="codehilite"><pre><span class="p">.</span><span class="nx">prepend</span><span class="p">(</span><span class="nx">object</span> <span class="p">[,</span><span class="nx">selector</span><span class="p">])</span>
 </pre></div>
@@ -558,6 +558,32 @@
 <ul>
 <li><code>object</code>: The Agility object to be added;</li>
 <li><code>selector</code>: A jQuery selector specifying where the object's root element should be prepended in the object's view. Will prepend to root element if undefined.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Owner Agility object (for chainable calls).</p>
+<h3><a href="#core-before">.before()</a></h3>
+<p><em>Adds an Agility object to the object's container, and inserts its view before given selector of containing object's view.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">before</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">selector</span><span class="p">)</span>
+</pre></div>
+
+
+<ul>
+<li><code>object</code>: The Agility object to be added;</li>
+<li><code>selector</code>: jQuery selector before which the object's root element should be inserted.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Owner Agility object (for chainable calls).</p>
+<h3><a href="#core-after">.after()</a></h3>
+<p><em>Adds an Agility object to the object's container, and inserts its view after given selector of containing object's view.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">after</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">selector</span><span class="p">)</span>
+</pre></div>
+
+
+<ul>
+<li><code>object</code>: The Agility object to be added;</li>
+<li><code>selector</code>: jQuery selector after which the object's root element should be inserted.</li>
 </ul>
 <p><strong>Returns:</strong></p>
 <p>Owner Agility object (for chainable calls).</p>
@@ -812,7 +838,7 @@
 <p>where:</p>
 <ul>
 <li><code>proto</code>: Prototypal Agility object with <code>persist</code> already initialized.</li>
-<li><code>method</code>: String containing name of method to be invoked with each new Agility object to be added. Typically <code>'append'</code> or <code>'prepend'</code>.</li>
+<li><code>method</code>: String containing name of method to be invoked with each new Agility object to be added (e.g. <code>'append'</code>, <code>'prepend'</code>, <code>'before'</code>, <code>'after'</code>).</li>
 <li><code>selector</code>: jQuery selector indicating where the view of <code>proto</code> should be appended. Will append to root element if omitted.</li>
 <li><code>query</code>: Javascript object containing parameters to be passed to the adapter for e.g. HTTP queries, like <code>{orderBy:'name'}</code>.</li>
 </ul>
