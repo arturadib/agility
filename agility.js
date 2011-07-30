@@ -360,10 +360,10 @@
           throw "agility.js: empty format in view.render()";
         }                
         if (this.view.$root.size() === 0) {
-          this.view.$root = $(this.view.format);
+          this.view.$root = $($$.template(this.view.format, this.model.get()));
         }
         else {
-          this.view.$root.html( $(this.view.format).html() ); // can't overwrite $root as this would reset its presence in the DOM and all events already bound, and 
+          this.view.$root.html( $($$.template(this.view.format, this.model.get())).html() ); // can't overwrite $root as this would reset its presence in the DOM and all events already bound, and 
         }
         // Ensure we have a valid (non-empty) $root
         if (this.view.$root.size() === 0) {
@@ -586,6 +586,7 @@
 
       // Triggered after model is changed
       '_change': function(event){
+        $$.template_rerender(this);
       }
       
     }, // controller prototype
@@ -821,6 +822,9 @@
 
   // Globals
   window.agility = window.$$ = agility;
+
+  agility.template = function(template, data) {return template;} //Do nothing by default
+  agility.template_rerender = void;
 
 
 
