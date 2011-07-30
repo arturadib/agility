@@ -1,6 +1,11 @@
 # Contributing
 
-You should only have to modify the files `_docs.md` and `_index.md`.
+You should only have to modify the files `_docs.md` and `_index.md`. If you're documenting a new feature, please do so in the branch:
+
+    :::text
+    gh-pages-dev
+
+The branch `gh-pages` is for the latest stable version. The development branch will be merged on the main branch upon a new release.
 
 # Compiling for production
 
