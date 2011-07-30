@@ -782,7 +782,7 @@ _Initializes persistence plugin, creates persistence methods for owner object._
 where:
 
 + `adapter`: Function containing the implementation of the persistence algorithms.
-+ `params`: Parameters to be passed to adapter. Requires at least `{collection:'collection_name'}`.
++ `params`: Parameters to be passed to adapter: The id property name on the server side, `{id:'id_name'}` (default is simply `{id:'id'}`), and the collection name `{collection:'collection_name'}` (required).
 
 If the adapter-params pair is not given, the only method that can be invoked is [gather](#persist-gather).
 

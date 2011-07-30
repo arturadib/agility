@@ -731,7 +731,7 @@
 <p>where:</p>
 <ul>
 <li><code>adapter</code>: Function containing the implementation of the persistence algorithms.</li>
-<li><code>params</code>: Parameters to be passed to adapter. Requires at least <code>{collection:'collection_name'}</code>.</li>
+<li><code>params</code>: Parameters to be passed to adapter: The id property name on the server side, <code>{id:'id_name'}</code> (default is simply <code>{id:'id'}</code>), and the collection name <code>{collection:'collection_name'}</code> (required).</li>
 </ul>
 <p>If the adapter-params pair is not given, the only method that can be invoked is <a href="#persist-gather">gather</a>.</p>
 <p><strong>Returns:</strong></p>
