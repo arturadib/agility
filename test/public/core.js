@@ -218,6 +218,16 @@
     obj1.prepend(obj2, 'ul');
     equals(obj1.view.$('ul span').prev().html(), 'hello', 'prepend() prepends at given selector');        
 
+    obj1 = $$({}, '<div><ul><li id="a"/> <li id="b"/></ul></div>');
+    obj2 = $$('hello'); // default format should have a <div> root
+    obj1.before(obj2, '#b');
+    equals(obj1.view.$('ul li#a').next().html(), 'hello', 'before() inserts correctly');
+
+    obj1 = $$({}, '<div><ul><li id="a"/> <li id="b"/></ul></div>');
+    obj2 = $$('hello'); // default format should have a <div> root
+    obj1.after(obj2, '#a');
+    equals(obj1.view.$('ul li#a').next().html(), 'hello', 'after() inserts correctly');
+
     obj1 = $$({}, '<div><span></span></div>');
     for (var i=0;i<10;i++) {
       obj2 = $$('hello', '<div class="test"></div>'); // default format should have a <div> root

@@ -138,14 +138,14 @@
     
     _container: {
 
-      // Adds child object to container, appends view, listens for child removal
-      _appendprepend: function(obj, selector, eventStr){
+      // Adds child object to container, appends/prepends/etc view, listens for child removal
+      _insertObject: function(obj, selector, method){
         var self = this;
         if (!util.isAgility(obj)) {
           throw "agility.js: append argument is not an agility object";
         }
         this._container.children[obj._id] = obj; // children is *not* an array; this is for simpler lookups by global object id
-        this.trigger(eventStr, [obj, selector]);
+        this.trigger(method, [obj, selector]);
         // ensures object is removed from container when destroyed:
         obj.bind('destroy', function(event, id){ 
           self._container.remove(id);
@@ -154,19 +154,19 @@
       },
 
       append: function(obj, selector) { 
-          return this._container._appendprepend.call(this, obj, selector, 'append'); 
+          return this._container._insertObject.call(this, obj, selector, 'append'); 
       },
 
       prepend: function(obj, selector) { 
-          return this._container._appendprepend.call(this, obj, selector, 'prepend'); 
+          return this._container._insertObject.call(this, obj, selector, 'prepend'); 
       },
 
       after: function(obj, selector) { 
-          return this._container._appendprepend.call(this, obj, selector, 'after'); 
+          return this._container._insertObject.call(this, obj, selector, 'after'); 
       },
 
       before: function(obj, selector) { 
-          return this._container._appendprepend.call(this, obj, selector, 'before'); 
+          return this._container._insertObject.call(this, obj, selector, 'before'); 
       },
       
       // Removes child object from container
@@ -570,11 +570,13 @@
 
       // Triggered after child obj is inserted in the container
       _before: function(event, obj, selector){
+        if (!selector) throw 'agility.js: _before needs a selector';
         this.view.$(selector).before(obj.view.$());
       },
 
       // Triggered after child obj is inserted in the container
       _after: function(event, obj, selector){
+        if (!selector) throw 'agility.js: _after needs a selector';
         this.view.$(selector).after(obj.view.$());
       },
 
