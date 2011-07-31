@@ -262,28 +262,24 @@
             // we defined hierarchical inheritance
             // walk up the prototype chain until we DON'T find a name starting with '~'
             // and build the trigger stack
-            var triggerStack = new Array(),
+            var triggerStack = [],
                 protoObject = Object.getPrototypeOf(this),
-                self = this; 
-            while (protoObject != null) {
+                self = this,
+                pushOnTriggerStack = function(protoObject, eventObj, extension) {
+                  var protoController = protoObject.controller, // capture controller in closure
+                      protoName = extension + eventObj.type; // capture name in closure
+                  util.proxyAll(protoController, self);
+                  triggerStack.push({controller: protoController, name: protoName});
+                };
+            while (protoObject !== null) {
               if (protoObject.controller.hasOwnProperty('~'+eventObj.type)) {
                 // we found another hierarchical inheritance call, keep going
                 // capture in closure
-                ( function() {
-                  var protoController = protoObject.controller,
-                      protoName = '~'+eventObj.type;
-                  util.proxyAll(protoController, self);
-                  triggerStack.push({controller: protoController, name: protoName});
-                })();
+                pushOnTriggerStack(protoObject, eventObj, '~');
                 protoObject = Object.getPrototypeOf(protoObject); // keep going
               } else if (protoObject.controller.hasOwnProperty(eventObj.type)) {
                 // found differentially inherited name, do not go further
-                ( function() {
-                  var protoController = protoObject.controller,
-                      protoName = eventObj.type;
-                  util.proxyAll(protoController, self);
-                  triggerStack.push({controller: protoController, name: protoName});
-                })();
+                pushOnTriggerStack(protoObject, eventObj, '');
                 break; // don't go further
               } else { 
                 break; // found nothing, stop
@@ -459,6 +455,12 @@
         var self = this;
         var $rootNode = this.view.$().filter('[data-bind]');
         var $childNodes = this.view.$('[data-bind]');
+        var createAttributePairClosure = function(bindData, node, i) {
+          var attrPair = bindData.attr[i]; // capture the attribute pair in closure
+          return function() {
+            node.attr(attrPair.attr, self.model.get(attrPair.attrVar));
+          };
+        };
         $rootNode.add($childNodes).each(function(){
           var $node = $(this);
           var bindData = self.view._parseBindStr( $node.data('bind') );
@@ -467,13 +469,8 @@
             // 1-way attribute binding
             if (bindData.attr) {
               for (var i = 0; i < bindData.attr.length; i++) {
-                self.bind('_change:'+bindData.attr[i].attrVar, (function(){
-                  // capture the attribute pair in closure
-                  var attrPair = bindData.attr[i];
-                  return function() {
-                    $node.attr(attrPair.attr, self.model.get(attrPair.attrVar));
-                  };
-                })()); // self.bind
+                self.bind('_change:'+bindData.attr[i].attrVar,
+                  createAttributePairClosure(bindData, $node, i));
               } // for (bindData.attr)
             } // if (bindData.attr)
           }; // bindAttributesOneWay()
@@ -563,7 +560,7 @@
               self.model.set(obj); // not silent as user might be listening to change events
             });
             // 1-way attribute binding
-            bindAttributesOneWay()
+            bindAttributesOneWay();
           }
           
           // all other <tag>s: 1-way binding
