@@ -16,12 +16,19 @@
  
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
-  <script src="../agility.js" type="text/javascript" charset="utf-8"></script>
 
   <link rel="stylesheet" href="qunit.css" />
-  <script src="public/qunit.js" type="text/javascript" charset="utf-8"></script>
+  <script src="qunit.js" type="text/javascript" charset="utf-8"></script>
+  <script src="jshint.js" type="text/javascript" charset="utf-8"></script>
 
-  <script src="public/core.js" type="text/javascript" charset="utf-8"></script>
+  <script>
+    // Gets agility.js dynamically so we can access its source
+    $.getScript('agility.js', function(data, status){
+      window.agilitySource = data;
+      
+      $.getScript('core.js');
+    });
+  </script>
 </body>
 
 </html>
