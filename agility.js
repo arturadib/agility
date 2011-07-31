@@ -80,7 +80,7 @@
   util.isAgility = function(obj){
    return obj._agility === true;
   };
-
+  
   // Scans object for functions (depth=2) and proxies their 'this' to dest.
   // To ensure it works with previously proxied objects, we save the original function as 
   // a '._preProxy' method and when available always use that as the proxy source.
@@ -256,7 +256,47 @@
         // Custom event
         else {
           $(this._events.data).trigger('_'+eventObj.type, params);
-          $(this._events.data).trigger(eventObj.type, params);
+          // See if we defined hierarchical inheritance instead of differential.
+          // Hierarchical inheritance will have ~event names, which means
+          // that it expects the 'parent' to be called first
+          if (this.controller['~'+eventObj.type]) {
+            // we defined hierarchical inheritance
+            // walk up the prototype chain until we DON'T find a name starting with '~'
+            // and build the trigger stack
+            var triggerStack = [],
+                protoObject = Object.getPrototypeOf(this),
+                self = this,
+                pushOnTriggerStack = function(protoObject, eventObj, extension) {
+                  var protoController = protoObject.controller, // capture controller in closure
+                      protoName = extension + eventObj.type; // capture name in closure
+                  util.proxyAll(protoController, self);
+                  triggerStack.push({controller: protoController, name: protoName});
+                };
+            while (protoObject !== null) {
+              if (protoObject.controller.hasOwnProperty('~'+eventObj.type)) {
+                // we found another hierarchical inheritance call, keep going
+                // capture in closure
+                pushOnTriggerStack(protoObject, eventObj, '~');
+                protoObject = Object.getPrototypeOf(protoObject); // keep going
+              } else if (protoObject.controller.hasOwnProperty(eventObj.type)) {
+                // found differentially inherited name, do not go further
+                pushOnTriggerStack(protoObject, eventObj, '');
+                break; // don't go further
+              } else { 
+                break; // found nothing, stop
+              }
+            }
+            // At this point, if we have to call anything from the inheritance chain
+            // we just pop it off the trigger stack
+            for (var i = 0; i < triggerStack.length; i++ ) {
+              protoObject = triggerStack.pop();
+              protoObject.controller[protoObject.name]();
+            }
+            // Finish by triggering the event
+            $(this._events.data).trigger('~'+eventObj.type, params);
+          } else { // we did not find hierarchical inheritance
+            $(this._events.data).trigger(eventObj.type, params);
+          } // if ('~'+eventObj.type)
         }
         return this; // for chainable calls
       } // trigger
@@ -372,15 +412,42 @@
         return this;
       }, // render
   
-      // Parse data-bind string of the type '[attribute] variable'
-      // Returns { key:'model key' [, attr:'attribute'] }
+      // Parse data-bind string of the type '[attribute] variable[, attribute variable ]...'
+      // If the variable is not an attribute, it must be first in the list,
+      //   all following pairs in the list are assumed to be attributes
+      // Returns { key:'model key', attr: [ {attr : 'attribute', attrVar : 'variable' }... ] }
       _parseBindStr: function(str){
-        var obj = { key:str }, 
-            spacePos = str.search(/\s/);
-        if (spacePos > -1) {
-          obj.attr = str.substr(0, spacePos);
-          obj.key = str.substr(spacePos+1);
-        }
+        var obj = {key:null, attr:[]},
+            pairs = str.split(','),
+            regex = /(\w+)(?:\s+(\w+))?/,
+            matched;
+        
+        if (pairs.length > 0) {
+          matched = pairs[0].match(regex);
+          // [ "attribute variable", "attribute", "variable" ]
+          // or
+          // [ "variable", "variable", undefined ]
+          // or
+          // null
+          if (matched) {
+            if (typeof(matched[2]) === "undefined") {
+              obj.key = matched[1];
+            } else {
+              obj.attr.push({attr: matched[1], attrVar: matched[2]});
+            } 
+          } // if (matched )
+          if (pairs.length > 1) {
+            for (var i = 1; i < pairs.length; i++) {
+              matched = pairs[i].match(regex);
+              if (matched) {
+                if (typeof(matched[2]) !== "undefined") {
+                  obj.attr.push({attr: matched[1], attrVar: matched[2]});
+                }
+              } // if (matched)
+            } // for (pairs.length)
+          } // if (pairs.length > 1)
+        } // if (pairs.length > 0)
+        
         return obj;
       },
       
@@ -389,10 +456,26 @@
         var self = this;
         var $rootNode = this.view.$().filter('[data-bind]');
         var $childNodes = this.view.$('[data-bind]');
+        var createAttributePairClosure = function(bindData, node, i) {
+          var attrPair = bindData.attr[i]; // capture the attribute pair in closure
+          return function() {
+            node.attr(attrPair.attr, self.model.get(attrPair.attrVar));
+          };
+        };
         $rootNode.add($childNodes).each(function(){
           var $node = $(this);
           var bindData = self.view._parseBindStr( $node.data('bind') );
 
+          var bindAttributesOneWay = function() {
+            // 1-way attribute binding
+            if (bindData.attr) {
+              for (var i = 0; i < bindData.attr.length; i++) {
+                self.bind('_change:'+bindData.attr[i].attrVar,
+                  createAttributePairClosure(bindData, $node, i));
+              } // for (bindData.attr)
+            } // if (bindData.attr)
+          }; // bindAttributesOneWay()
+          
           // <input type="checkbox">: 2-way binding
           if ($node.is('input[type="checkbox"]')) {
             // Model --> DOM
@@ -405,6 +488,8 @@
               obj[bindData.key] = $(this).prop("checked");
               self.model.set(obj); // not silent as user might be listening to change events
             });
+            // 1-way attribute binding
+            bindAttributesOneWay();
           }
           
           // <select>: 2-way binding
@@ -421,6 +506,8 @@
               obj[bindData.key] = $node.val();
               self.model.set(obj); // not silent as user might be listening to change events
             });
+            // 1-way attribute binding
+            bindAttributesOneWay();
           }
           
           // <input type="radio">: 2-way binding
@@ -438,6 +525,8 @@
               obj[bindData.key] = $node.val();
               self.model.set(obj); // not silent as user might be listening to change events
             });
+            // 1-way attribute binding
+            bindAttributesOneWay();
           }
           
           // <input type="search"> (model is updated after every keypress event)
@@ -455,6 +544,8 @@
                 self.model.set(obj); // not silent as user might be listening to change events
               }, 50);
             });
+            // 1-way attribute binding
+            bindAttributesOneWay();
           }
 
           // <input type="text"> and <textarea>: 2-way binding
@@ -469,20 +560,18 @@
               obj[bindData.key] = $(this).val();
               self.model.set(obj); // not silent as user might be listening to change events
             });
+            // 1-way attribute binding
+            bindAttributesOneWay();
           }
           
           // all other <tag>s: 1-way binding
           else {
-            if (bindData.attr) {
-              self.bind('_change:'+bindData.key, function(){
-                $node.attr(bindData.attr, self.model.get(bindData.key));
-              });
-            }
-            else {
+            if (bindData.key) {
               self.bind('_change:'+bindData.key, function(){
                 $node.text(self.model.get(bindData.key).toString());
               });
             }
+            bindAttributesOneWay();
           }
         }); // nodes.each()
         return this;
