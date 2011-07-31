@@ -81,62 +81,6 @@
    return obj._agility === true;
   };
   
-  // Checks first for hierarchical inheritance by chaining together controller events
-  //  and then implements differential inhertiance on remaining controller events
-  util.extendController = function(object, extendingController) {
-    // check for extended events
-    var propertiesToDelete = [];
-    for (var controllerName in extendingController) {
-      if (!extendingController.hasOwnProperty(controllerName)) continue;
-      if (typeof extendingController[controllerName] !== 'function') continue;
-      var matched = controllerName.match(/extend\:(\w+)/);
-      // [ "extend:something", "something" ]
-      // or
-      // null
-      if (matched) {
-        var event = matched[1],
-            originalEvent;
-        // see if we need to chain events together
-        if (typeof object.controller[event] !== 'undefined') {
-          originalEvent = event;
-        }
-        if (originalEvent) {
-          // we need to chain
-          ( function() {
-            var oEvent = object.controller[event]; // we grab original without 'extend:' prefix
-            var eEvent = extendingController[controllerName]; // we grab property that has 'extend:' prefix
-            var evObj = { // need to create an object so that proxyAll will work
-              oEvent: oEvent,
-              eEvent: eEvent
-            };
-            var newEvent = {};
-            newEvent[event] = function() {
-              // proxy event object methods to currently executing context
-              util.proxyAll(evObj, this);
-              for (var fn in evObj) {
-                if (!evObj.hasOwnProperty(fn)) continue;
-                evObj[fn]();
-              }
-            }; // newEvent[event]
-            $.extend(object.controller, newEvent);
-          })(); // "we need to chain" closure
-        } else {
-          // don't need to chain, this is the first event defined
-          // we will rename it without 'extend:' prefix
-          var newEvent = {};
-          newEvent[event] = extendingController[controllerName];
-          $.extend(object.controller, newEvent);
-        } // if else (originalEvent)
-        // remove properties we already extended
-        propertiesToDelete.push(controllerName);
-      } // if (matched)
-    } // for (controllerName in extendingController)
-    for (var i = 0; i < propertiesToDelete.length; i++) {
-      delete extendingController[propertiesToDelete[i]];
-    }
-    $.extend(object.controller, extendingController);
-  }; // extendController
-
   // Scans object for functions (depth=2) and proxies their 'this' to dest.
   // To ensure it works with previously proxied objects, we save the original function as 
   // a '._preProxy' method and when available always use that as the proxy source.
@@ -311,7 +255,51 @@
         // Custom event
         else {
           $(this._events.data).trigger('_'+eventObj.type, params);
-          $(this._events.data).trigger(eventObj.type, params);
+          // See if we defined hierarchical inheritance instead of differential.
+          // Hierarchical inheritance will have ~event names, which means
+          // that it expects the 'parent' to be called first
+          if (this.controller['~'+eventObj.type]) {
+            // we defined hierarchical inheritance
+            // walk up the prototype chain until we DON'T find a name starting with '~'
+            // and build the trigger stack
+            var triggerStack = new Array(),
+                protoObject = Object.getPrototypeOf(this),
+                self = this; 
+            while (protoObject != null) {
+              if (protoObject.controller.hasOwnProperty('~'+eventObj.type)) {
+                // we found another hierarchical inheritance call, keep going
+                // capture in closure
+                ( function() {
+                  var protoController = protoObject.controller,
+                      protoName = '~'+eventObj.type;
+                  util.proxyAll(protoController, self);
+                  triggerStack.push({controller: protoController, name: protoName});
+                })();
+                protoObject = Object.getPrototypeOf(protoObject); // keep going
+              } else if (protoObject.controller.hasOwnProperty(eventObj.type)) {
+                // found differentially inherited name, do not go further
+                ( function() {
+                  var protoController = protoObject.controller,
+                      protoName = eventObj.type;
+                  util.proxyAll(protoController, self);
+                  triggerStack.push({controller: protoController, name: protoName});
+                })();
+                break; // don't go further
+              } else { 
+                break; // found nothing, stop
+              }
+            }
+            // At this point, if we have to call anything from the inheritance chain
+            // we just pop it off the trigger stack
+            for (var i = 0; i < triggerStack.length; i++ ) {
+              protoObject = triggerStack.pop();
+              protoObject.controller[protoObject.name]();
+            }
+            // Finish by triggering the event
+            $(this._events.data).trigger('~'+eventObj.type, params);
+          } else { // we did not find hierarchical inheritance
+            $(this._events.data).trigger(eventObj.type, params);
+          } // if ('~'+eventObj.type)
         }
         return this; // for chainable calls
       } // trigger
@@ -802,7 +790,7 @@
           $.extend(object.view, args[0][prop]);
         }
         else if (prop === 'controller') {
-          util.extendController(object, args[0][prop]);
+          $.extend(object.controller, args[0][prop]);
         }
         // User-defined methods
         else {
@@ -845,7 +833,7 @@
       
       // Controller from object (..., ..., {method:function(){}})
       if (typeof args[2] === 'object') {
-        util.extendController(object, args[2]);
+        $.extend(object.controller, args[2]);
       }
       else if (args[2]) {
         throw "agility.js: unknown argument type (controller)";

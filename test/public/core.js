@@ -27,7 +27,7 @@
     ok( !$.isEmptyObject(o.model), "obj.model defined");
     ok( !$.isEmptyObject(o.view), "obj.view defined");    
     ok( !$.isEmptyObject(o.controller), "obj.controller defined");    
-  }
+  };
 
   test("No arguments", function(){
     var obj = $$(); // default object
@@ -257,16 +257,15 @@
       }
     });
     var complete = $$(partial, {}, {}, {
-      'extend:create': function() {
+      '~create': function() {
         var value = $$(lbl, {label: this.model.get('value')});
         this.append(value);
       },
-      'extend:myEvent': function() {
+      '~myEvent': function() {
         var value = $$(lbl, {label: this.model.get('myEventValue')});
         this.append(value);
       }
     });
-    equals( typeof complete.controller['extend:create'], 'undefined', 'extend:create should not be present');
     var first = $$(complete, {label:"firstLabel", value:"firstValue"});
     var second = $$(complete, {label:"secondLabel", value:"secondValue"});
     validateObject(first);
@@ -280,21 +279,18 @@
     
     first.model.set({myEventLabel: "myEventLabel", myEventValue: "myEventValue"});
     first.trigger('myEvent');
-    equals(typeof complete.controller['extend:myEvent'], 'undefined', 'extend:myEvent should not be present');
     equals(first.view.$('span').length, 4, 'appended all from myEvent chain');
     equals(first.view.$('span').eq(2).text(), 'myEventLabel', 'executed partial myEvent');
     equals(first.view.$('span').eq(3).text(), 'myEventValue', 'executed extended myEvent');
     
     var doubleExtend = $$(complete, {}, {}, {
-      'extend:create': function() {
+      '~create': function() {
         var doub = $$(lbl, {label: this.model.get('doubleExtension')});
         this.append(doub);
       }
     });
-    equals(typeof doubleExtend.controller['extend:create'], 'undefined', 'doubly extended extend:create should not be present');
     var dExtend = $$(doubleExtend, {label:"firstLabel",value:"extendedOnce",doubleExtension:"extendedTwice"});
     validateObject(dExtend);
-    equals(typeof dExtend.controller['extend:create'], 'undefined', 'doubly extended extend:create should not be present');
     equals(dExtend.view.$('span').length, 3, 'appended labels from three chained create events');
     equals(dExtend.view.$('span').first().text(), 'firstLabel', 'executed first create');
     equals(dExtend.view.$('span').eq(1).text(), 'extendedOnce', 'executed second create');
@@ -317,20 +313,17 @@
     
     third.model.set({myEventDifferential: "myEventDifferential"});
     third.trigger('myEvent');
-    equals(typeof complete.controller['extend:myEvent'], 'undefined', 'extend:myEvent should not be present');
     equals(third.view.$('span').length, 2, 'appended via myEvent');
     equals(third.view.$('span').last().text(), 'myEventDifferential', 'executed from overrident myEvent');
     
     var nakedExtend = $$({}, '<div/>', {
-      'extend:create': function(){
+      '~create': function(){
         var l = $$(lbl, {label: this.model.get('label')});
         this.append(l);
       }
     });
-    equals(typeof nakedExtend.controller['extend:create'], 'undefined', 'extend:create should not be present');
     var fourth = $$(nakedExtend, {label:"fourthLabel"});
     validateObject(fourth);
-    equals(typeof fourth.controller['extend:create'], 'undefined', 'extend:create should not be present');
     equals(fourth.view.$('span').first().text(), 'fourthLabel', 'naked extend:create collapsed correctly to "create"');
   });
   
@@ -348,17 +341,16 @@
     });
     var complete = $$(partial, {
       controller:{
-        'extend:create': function() {
+        '~create': function() {
           var value = $$(lbl, {label: this.model.get('value')});
           this.append(value);
         },
-        'extend:myEvent': function() {
+        '~myEvent': function() {
           var value = $$(lbl, {label: this.model.get('myEventValue')});
           this.append(value);
         }
       }
     });
-    equals( typeof complete.controller['extend:create'], 'undefined', 'extend:create should not be present');
     var first = $$(complete, {label:"firstLabel", value:"firstValue"});
     var second = $$(complete, {label:"secondLabel", value:"secondValue"});
     validateObject(first);
@@ -372,23 +364,20 @@
     
     first.model.set({myEventLabel: "myEventLabel", myEventValue: "myEventValue"});
     first.trigger('myEvent');
-    equals(typeof complete.controller['extend:myEvent'], 'undefined', 'extend:myEvent should not be present');
     equals(first.view.$('span').length, 4, 'appended all from myEvent chain');
     equals(first.view.$('span').eq(2).text(), 'myEventLabel', 'executed partial myEvent');
     equals(first.view.$('span').eq(3).text(), 'myEventValue', 'executed extended myEvent');
     
     var doubleExtend = $$(complete, {
       controller:{
-        'extend:create': function() {
+        '~create': function() {
           var doub = $$(lbl, {label: this.model.get('doubleExtension')});
           this.append(doub);
         }
       }
     });
-    equals(typeof doubleExtend.controller['extend:create'], 'undefined', 'doubly extended extend:create should not be present');
     var dExtend = $$(doubleExtend, {label:"firstLabel",value:"extendedOnce",doubleExtension:"extendedTwice"});
     validateObject(dExtend);
-    equals(typeof dExtend.controller['extend:create'], 'undefined', 'doubly extended extend:create should not be present');
     equals(dExtend.view.$('span').length, 3, 'appended labels from three chained create events');
     equals(dExtend.view.$('span').first().text(), 'firstLabel', 'executed first create');
     equals(dExtend.view.$('span').eq(1).text(), 'extendedOnce', 'executed second create');
@@ -413,22 +402,19 @@
     
     third.model.set({myEventDifferential: "myEventDifferential"});
     third.trigger('myEvent');
-    equals(typeof complete.controller['extend:myEvent'], 'undefined', 'extend:myEvent should not be present');
     equals(third.view.$('span').length, 2, 'appended via myEvent');
     equals(third.view.$('span').last().text(), 'myEventDifferential', 'executed from overrident myEvent');
     
     var nakedExtend = $$({
       controller: {
-        'extend:create': function() {
+        '~create': function() {
           var l = $$(lbl, {label: this.model.get('label')});
           this.append(l);
         }
       }
     });
-    equals(typeof nakedExtend.controller['extend:create'], 'undefined', 'extend:create should not be present');
     var fourth = $$(nakedExtend, {label:"fourthLabel"});
     validateObject(fourth);
-    equals(typeof fourth.controller['extend:create'], 'undefined', 'extend:create should not be present');
     equals(fourth.view.$('span').first().text(), 'fourthLabel', 'naked extend:create collapsed correctly to "create"');
   });
   
