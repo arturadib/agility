@@ -9,7 +9,7 @@
   <script type="text/javascript">
     // enable doT templates in Agility.js
     $$.fn.view.template = function(temp) {return doT.template(temp);};
-    $$.fn.view.template_rerender = true;
+    $$.fn.controller._change = function() {this.view.render();};
     doT.templateSettings.varname = 'm';
     $$.fn.view.raw = false;
 
