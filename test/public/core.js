@@ -41,12 +41,6 @@
     ok($.isEmptyObject(obj.model.get()), "model is empty");
   });
 
-  test("One argument (model string)", function(){
-    var obj = $$('Joe Doe');
-    validateObject( obj );
-    equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
-  });
-
   test("One argument (model object)", function(){
     var obj = $$({
       first: 'Joe',
@@ -54,12 +48,6 @@
     });
     validateObject( obj );
     equals( obj.view.$().text(), '', 'format as expected'); // lib doesn't have a default format for an arbitrary model
-  });
-
-  test("Two arguments (model, view string)", function(){
-    var obj = $$('Joe Doe', '<div data-bind="text"></div>');
-    validateObject( obj );
-    equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
   });
 
   test("Two arguments (model object, view string)", function(){
@@ -88,16 +76,6 @@
     equals( obj.view.$( 'span' ).last().attr( 'lastColor' ), 'Blue', 'format as expected');
   });
 
-  test("Three arguments (model string, view string, controller object)", function(){
-    var obj = $$('Joe Doe', '<div data-bind="text"></div>', {
-      init: function(){
-        this.view.render();
-      }
-    });
-    validateObject( obj );
-    equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
-  });
-
   test("Three arguments (model object, view string, controller object)", function(){
     var obj = $$({first:'Joe', last:'Doe'}, '<div><span data-bind="first"/><span data-bind="last"/></div>', {});
     validateObject( obj );
@@ -120,20 +98,6 @@
     equals( obj.view.$( 'span' ).first().attr( 'firstColor' ), 'Red', 'format as expected');
     equals( obj.view.$( 'span' ).last().attr( 'name' ), 'Joe Doe', 'format as expected');
     equals( obj.view.$( 'span' ).last().attr( 'lastColor' ), 'Blue', 'format as expected');
-  });
-  
-  test("Three arguments (model string, view object, controller object)", function(){
-    var obj = $$('Joe Doe', 
-      {
-        format:'<div data-bind="text"></div>', 
-        style:'& { float:right; display:none; }' 
-      },
-      {}
-    );
-    $$.document.append(obj); // necessary for IE
-    validateObject( obj );
-    equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
-    equals( obj.view.$().css('float'), 'right', 'style as expected');
   });
   
   test("Three arguments (model object, view object, controller object)", function(){
@@ -472,38 +436,38 @@
 
   test("Container calls", function(){
     var obj1 = $$({}, '<div><span class="here"></span></div>');
-    var obj2 = $$('hello');
+    var obj2 = $$({ text: 'hello' }, '<div data-bind="text"/>');
     obj1.append(obj2, '.here');
     equals(obj1.view.$('.here div').html(), 'hello', 'append() appends at given selector');
 
     obj1 = $$({}, '<div><span></span></div>');
-    obj2 = $$('hello'); // default format should have a <div> root
+    obj2 = $$({ text: 'hello' }, '<div data-bind="text"/>'); // default format should have a <div> root
     obj1.append(obj2);
     equals(obj1.view.$('span').next().html(), 'hello', 'append() appends at root element');        
 
     obj1 = $$({}, '<div><ul/></div>');
-    obj2 = $$('hello'); // default format should have a <div> root
+    obj2 = $$({ text: 'hello' }, '<div data-bind="text"/>'); // default format should have a <div> root
     obj1.prepend(obj2);
     equals(obj1.view.$('ul').prev().html(), 'hello', 'prepend() prepends at root element');        
 
     obj1 = $$({}, '<div><ul><span/></ul></div>');
-    obj2 = $$('hello'); // default format should have a <div> root
+    obj2 = $$({ text: 'hello' }, '<div data-bind="text"/>'); // default format should have a <div> root
     obj1.prepend(obj2, 'ul');
     equals(obj1.view.$('ul span').prev().html(), 'hello', 'prepend() prepends at given selector');        
 
     obj1 = $$({}, '<div><ul><li id="a"/> <li id="b"/></ul></div>');
-    obj2 = $$('hello'); // default format should have a <div> root
+    obj2 = $$({ text: 'hello' }, '<div data-bind="text"/>'); // default format should have a <div> root
     obj1.before(obj2, '#b');
     equals(obj1.view.$('ul li#a').next().html(), 'hello', 'before() inserts correctly');
 
     obj1 = $$({}, '<div><ul><li id="a"/> <li id="b"/></ul></div>');
-    obj2 = $$('hello'); // default format should have a <div> root
+    obj2 = $$({ text: 'hello' }, '<div data-bind="text"/>'); // default format should have a <div> root
     obj1.after(obj2, '#a');
     equals(obj1.view.$('ul li#a').next().html(), 'hello', 'after() inserts correctly');
 
     obj1 = $$({}, '<div><span></span></div>');
     for (var i=0;i<10;i++) {
-      obj2 = $$('hello', '<div class="test"></div>'); // default format should have a <div> root
+      obj2 = $$({text: 'hello'}, '<div class="test" data-bind="text"></div>'); // default format should have a <div> root
       obj1.append(obj2, 'span');
     }
     equals(obj1.size(), 10, 'correct container size()');
@@ -672,7 +636,7 @@
 
   test("DOM events", function(){
     var t = false;
-    var obj = $$('hello', '<div><button>${text}</button></div>', {
+    var obj = $$({ text: 'hello' }, '<div><button>${text}</button></div>', {
       'click button': function(event){
         t = true;
       }
@@ -685,7 +649,7 @@
     ok(t===false, "click event properly filtered selector");
 
     t = false;
-    obj = $$('hello', '<button>${text}</button>', {
+    obj = $$({ text: 'hello' }, '<button>${text}</button>', {
       'click &': function(event){
         t = true;
       }

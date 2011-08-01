@@ -310,11 +310,7 @@
       set: function(arg, params) {
         var self = this;
         var modified = []; // list of modified model attributes
-        if (typeof arg === 'string') {
-          this.model._data.text = arg; // default model attribute
-          modified.push('text');
-        }
-        else if (typeof arg === 'object') {
+        if (typeof arg === 'object') {
           if (params && params.reset) {
             this.model._data = $.extend({}, arg); // erases previous model attributes without pointing to object
           }
@@ -379,7 +375,7 @@
     view: {
         
       // Defaults
-      format: '<div data-bind="text"></div>',
+      format: '<div/>',
       style: '',
       
       // Shortcut to view.$root or view.$root.find(), depending on selector presence
@@ -817,10 +813,7 @@
     else {
       
       // Model from string
-      if (typeof args[0] === 'string') {
-        $.extend(object.model._data, {text: args[0]});
-      }
-      else if (typeof args[0] === 'object') {
+      if (typeof args[0] === 'object') {
         $.extend(object.model._data, args[0]);
       }
       else if (args[0]) {
