@@ -128,6 +128,20 @@ Agility offers painless two-way bindings to keep Models and Views in sync. Bindi
     $$.document.append(obj);
 <div class="demo"></div>
 
+You can also bind models to DOM element attributes in addition to the element HTML content using the following syntax for `data-bind`:
+
+    :::javascript
+    // data-bind syntax
+    [model_var] [, attribute1 model_var1 [, attribute2 model_var2] ... ]
+
+where the first (single) argument is the model variable to be bound to the DOM element HTML content, and the subsequent comma-separated pairs specify the binding of a DOM element attribute to a model variable, like so:
+
+    :::javascript
+    // Bind model 'content' to element's HTML content, and model 'myStyle' to element's style attribute
+    var msg = $$({content:'Greetings!', myStyle:'color:red'}, '<p data-bind="content, style myStyle"/>');
+    $$.document.append(msg);
+<div class="demo"></div>
+
 More complex bindings are also supported for other input elements:
 
     :::javascript
