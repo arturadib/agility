@@ -244,7 +244,7 @@
     // equals( t2, o2, '_noProxy obj.*' );
   });
   
-  test("Hierarchical controller inheritence from four arguments (prototype, model, view, controller object)", function() {
+  test("Extend controller syntax from four arguments (prototype, model, view, controller object)", function() {
     var lbl = $$({}, '<span data-bind="label"/>');
     var partial = $$({}, '<div/>', {
       'create': function() {
@@ -324,10 +324,10 @@
     });
     var fourth = $$(nakedExtend, {label:"fourthLabel"});
     validateObject(fourth);
-    equals(fourth.view.$('span').first().text(), 'fourthLabel', 'naked extend:create collapsed correctly to "create"');
+    equals(fourth.view.$('span').first().text(), 'fourthLabel', 'naked ~create collapsed correctly to "create"');
   });
   
-  test("Hierarchical controller inheritence from single object argument ({ ..., controller: ...})", function() {
+  test("Extend controller syntax from single object argument ({ ..., controller: ...})", function() {
     var lbl = $$({}, '<span data-bind="label"/>');
     var partial = $$({}, '<div/>', {
       'create': function() {
@@ -415,7 +415,22 @@
     });
     var fourth = $$(nakedExtend, {label:"fourthLabel"});
     validateObject(fourth);
-    equals(fourth.view.$('span').first().text(), 'fourthLabel', 'naked extend:create collapsed correctly to "create"');
+    equals(fourth.view.$('span').first().text(), 'fourthLabel', 'naked ~create collapsed correctly to "create"');
+        
+    var ran1 = false, ran2 = false;
+    var DOMextend1 = $$({}, '<button/>', {
+      'click &': function(){
+        ran1 = true;
+      }
+    });
+    var DOMextend2 = $$(DOMextend1, {}, {}, {
+      '~click &': function(){
+        ran2 = true;
+      }
+    });
+    DOMextend2.view.$().click();
+    ok(ran1, 'first DOM handler OK');
+    ok(ran2, 'second DOM handler OK');
   });
   
   test("Object inheritance", function(){

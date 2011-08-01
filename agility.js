@@ -82,8 +82,9 @@
   };
   
   // Scans object for functions (depth=2) and proxies their 'this' to dest.
-  // To ensure it works with previously proxied objects, we save the original function as 
-  // a '._preProxy' method and when available always use that as the proxy source.
+  // * To ensure it works with previously proxied objects, we save the original function as 
+  //   a '._preProxy' method and when available always use that as the proxy source.
+  // * To skip a given method, create a sub-method called '_noProxy'.
   util.proxyAll = function(obj, dest){
     if (!obj || !dest) {
       throw "agility.js: util.proxyAll needs two arguments";
@@ -118,6 +119,40 @@
       size++;
     }
     return size;
+  };
+  
+  // Find controllers to be extended (with syntax '~'), redefine those to encompass previously defined controllers
+  // Example:
+  //   var a = $$({}, '<button>A</button>', {'click &': function(){ alert('A'); }});
+  //   var b = $$(a, {}, '<button>B</button>', {'~click &': function(){ alert('B'); }});
+  // Clicking on button B will alert both 'A' and 'B'.
+  util.extendController = function(object) {
+    for (var controllerName in object.controller) {
+      (function(){ // new scope as we need one new function handler per controller
+        var matches, extend, eventName,
+            previousHandler, currentHandler, newHandler;
+
+        if (typeof object.controller[controllerName] === 'function') {
+          matches = controllerName.match(/^(\~)*(.+)/); // 'click button', '~click button', '_create', etc
+          extend = matches[1];
+          eventName = matches[2];
+        
+          if (!extend) return; // nothing to do
+
+          // Redefine controller:
+          // '~click button' ---> 'click button' = previousHandler + currentHandler
+          previousHandler = object.controller[eventName] ? (object.controller[eventName]._preProxy || object.controller[eventName]) : undefined;
+          currentHandler = object.controller[controllerName];
+          newHandler = function() {
+            previousHandler && previousHandler.apply(this, arguments);
+            currentHandler && currentHandler.apply(this, arguments);
+          };
+
+          object.controller[eventName] = newHandler;
+          delete object.controller[controllerName]; // delete '~click button'
+        } // if function
+      })();
+    } // for controllerName
   };
   
   // ------------------------------
@@ -256,47 +291,7 @@
         // Custom event
         else {
           $(this._events.data).trigger('_'+eventObj.type, params);
-          // See if we defined hierarchical inheritance instead of differential.
-          // Hierarchical inheritance will have ~event names, which means
-          // that it expects the 'parent' to be called first
-          if (this.controller['~'+eventObj.type]) {
-            // we defined hierarchical inheritance
-            // walk up the prototype chain until we DON'T find a name starting with '~'
-            // and build the trigger stack
-            var triggerStack = [],
-                protoObject = Object.getPrototypeOf(this),
-                self = this,
-                pushOnTriggerStack = function(protoObject, eventObj, extension) {
-                  var protoController = protoObject.controller, // capture controller in closure
-                      protoName = extension + eventObj.type; // capture name in closure
-                  util.proxyAll(protoController, self);
-                  triggerStack.push({controller: protoController, name: protoName});
-                };
-            while (protoObject !== null) {
-              if (protoObject.controller.hasOwnProperty('~'+eventObj.type)) {
-                // we found another hierarchical inheritance call, keep going
-                // capture in closure
-                pushOnTriggerStack(protoObject, eventObj, '~');
-                protoObject = Object.getPrototypeOf(protoObject); // keep going
-              } else if (protoObject.controller.hasOwnProperty(eventObj.type)) {
-                // found differentially inherited name, do not go further
-                pushOnTriggerStack(protoObject, eventObj, '');
-                break; // don't go further
-              } else { 
-                break; // found nothing, stop
-              }
-            }
-            // At this point, if we have to call anything from the inheritance chain
-            // we just pop it off the trigger stack
-            for (var i = 0; i < triggerStack.length; i++ ) {
-              protoObject = triggerStack.pop();
-              protoObject.controller[protoObject.name]();
-            }
-            // Finish by triggering the event
-            $(this._events.data).trigger('~'+eventObj.type, params);
-          } else { // we did not find hierarchical inheritance
-            $(this._events.data).trigger(eventObj.type, params);
-          } // if ('~'+eventObj.type)
+          $(this._events.data).trigger(eventObj.type, params);
         }
         return this; // for chainable calls
       } // trigger
@@ -765,7 +760,7 @@
 
     // Inherit object prototype
     if (typeof args[0] === "object" && util.isAgility(args[0])) {
-      prototype = args[0];
+      prototype = args[0];    
       args.shift(); // remaining args now work as though object wasn't specified
     } // build from agility object
     
@@ -802,13 +797,14 @@
     else if (args.length === 1 && typeof args[0] === 'object' && (args[0].model || args[0].view || args[0].controller) ) {
       for (var prop in args[0]) {
         if (prop === 'model') {
-          $.extend(object.model._data, args[0][prop]);
+          $.extend(object.model._data, args[0]['model']);
         }
         else if (prop === 'view') {
-          $.extend(object.view, args[0][prop]);
+          $.extend(object.view, args[0]['view']);
         }
         else if (prop === 'controller') {
-          $.extend(object.controller, args[0][prop]);
+          $.extend(object.controller, args[0]['controller']);
+          util.extendController(object);
         }
         // User-defined methods
         else {
@@ -852,6 +848,7 @@
       // Controller from object (..., ..., {method:function(){}})
       if (typeof args[2] === 'object') {
         $.extend(object.controller, args[2]);
+        util.extendController(object);
       }
       else if (args[2]) {
         throw "agility.js: unknown argument type (controller)";
@@ -864,7 +861,7 @@
     //  Bootstrap: Bindings, initializations, etc
     //
     // ----------------------------------------------
-  
+    
     // Save model's initial state (so it can be .reset() later)
     object.model._initData = $.extend({}, object.model._data);
 
@@ -874,12 +871,12 @@
     // Initialize $root, needed for DOM events binding below
     object.view.render();
   
-    // Binds all existing controller functions to corresponding events
+    // Bind all controllers to their events
     for (var ev in object.controller) {
       if (typeof object.controller[ev] === 'function') {
         object.bind(ev, object.controller[ev]);
       }
-    }
+    }  
   
     // Auto-triggers create event
     object.trigger('create');    
