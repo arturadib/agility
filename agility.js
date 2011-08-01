@@ -361,7 +361,7 @@
         //preprocess format
         if (!this.view.raw) {
           this.view.format, this.view.template_compiled = this.view.template(this.view.format, this.model.get());
-          this.raw = true;
+          this.view.raw = true;
         }
         if (typeof this.view.template_compiled === 'function') {
           this.view.format = this.view.template_compiled(this.model.get());
@@ -546,7 +546,6 @@
 
       // templating hooks
       template : function(data) {return data},
-      template_rerender : function() {},
       raw : true
       
     }, // view prototype
@@ -587,7 +586,7 @@
 
       // Triggered after model is changed
       '_change': function(event){
-        this.view.template_rerender();
+        this.view.render();
       }
       
     }, // controller prototype

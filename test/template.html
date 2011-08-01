@@ -9,12 +9,14 @@
   <script type="text/javascript">
     // enable doT templates in Agility.js
     $$.fn.view.template = function(temp) {return doT.template(temp);};
+    $$.fn.view.template_rerender = true;
     doT.templateSettings.varname = 'm';
     $$.fn.view.raw = false;
 
     //pure basic test
     var table = $$({project : "Agility.js", rank : "Cool!", type : "MVC", skill : "simple"}, '<table>{{for (var key in m) { }}<tr><th>{{=key}}</th><td>{{=m[key]}}</td></tr>{{ } }}</table>');
     $$.document.append(table);
+    table.model.set({rank : "10/10", skill : 1}); // test rerendering
   </script>
 </body>
 </html>
