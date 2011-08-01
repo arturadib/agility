@@ -324,6 +324,23 @@ Agility adopts prototype-based ([differential](http://en.wikipedia.org/wiki/Diff
     $$.document.append(obj);
 <div class="demo"></div>
 
+You can also bypass differential inheritance (which overrides existing methods) and extend controllers with the tilde (`~`) syntax:
+
+    :::javascript
+    var proto = $$({}, '<button>Click me</button>', {
+      'click &': function(){
+        alert('First controller');
+      }
+    });
+    var obj = $$(proto, {}, {}, {
+      '~click &': function(){
+        alert('Second controller');
+      }
+    });
+    $$.document.append(obj);
+<div class="demo"></div>
+
+
 Since derived objects reuse as much of their ancestors as possible, you can create large numbers of descendants from a prototype without worrying about memory bloat due to redundant storage:
 
     :::javascript

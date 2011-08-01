@@ -382,6 +382,22 @@
 
 
 <p><div class="demo"></div></p>
+<p>You can also bypass differential inheritance (which overrides existing methods) and extend controllers with the tilde (<code>~</code>) syntax:</p>
+<div class="codehilite"><pre><span class="kd">var</span> <span class="nx">proto</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;button&gt;Click me&lt;/button&gt;&#39;</span><span class="p">,</span> <span class="p">{</span>
+  <span class="s1">&#39;click &amp;&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;First controller&#39;</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span><span class="nx">proto</span><span class="p">,</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">{</span>
+  <span class="s1">&#39;~click &amp;&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;Second controller&#39;</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
 <p>Since derived objects reuse as much of their ancestors as possible, you can create large numbers of descendants from a prototype without worrying about memory bloat due to redundant storage:</p>
 <div class="codehilite"><pre><span class="c1">// Prototype of cell object with empty model</span>
 <span class="kd">var</span> <span class="nx">cell</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span>
