@@ -7,9 +7,14 @@
 </head>
 <body>
   <script type="text/javascript">
-    $$.renderer = doT.template;
-    var table = $$({}, '<table>{{for (var key in m) { }}<tr><th>{{=key}}</th><td>{{=m[key]}}</td></tr>{{ } }}</table>');
-    $$.document.append($$(table, {project : "Agility.js", rank : "Cool!", type : "MVC", simplicity : "simple"}));
+    // enable doT templates in Agility.js
+    $$.fn.view.template = function(temp) {return doT.template(temp);};
+    doT.templateSettings.varname = 'm';
+    $$.fn.view.raw = false;
+
+    //pure basic test
+    var table = $$({project : "Agility.js", rank : "Cool!", type : "MVC", skill : "simple"}, '<table>{{for (var key in m) { }}<tr><th>{{=key}}</th><td>{{=m[key]}}</td></tr>{{ } }}</table>');
+    $$.document.append(table);
   </script>
 </body>
 </html>
