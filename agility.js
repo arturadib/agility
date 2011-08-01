@@ -80,10 +80,11 @@
   util.isAgility = function(obj){
    return obj._agility === true;
   };
-
+  
   // Scans object for functions (depth=2) and proxies their 'this' to dest.
-  // To ensure it works with previously proxied objects, we save the original function as 
-  // a '._preProxy' method and when available always use that as the proxy source.
+  // * To ensure it works with previously proxied objects, we save the original function as 
+  //   a '._preProxy' method and when available always use that as the proxy source.
+  // * To skip a given method, create a sub-method called '_noProxy'.
   util.proxyAll = function(obj, dest){
     if (!obj || !dest) {
       throw "agility.js: util.proxyAll needs two arguments";
@@ -118,6 +119,40 @@
       size++;
     }
     return size;
+  };
+  
+  // Find controllers to be extended (with syntax '~'), redefine those to encompass previously defined controllers
+  // Example:
+  //   var a = $$({}, '<button>A</button>', {'click &': function(){ alert('A'); }});
+  //   var b = $$(a, {}, '<button>B</button>', {'~click &': function(){ alert('B'); }});
+  // Clicking on button B will alert both 'A' and 'B'.
+  util.extendController = function(object) {
+    for (var controllerName in object.controller) {
+      (function(){ // new scope as we need one new function handler per controller
+        var matches, extend, eventName,
+            previousHandler, currentHandler, newHandler;
+
+        if (typeof object.controller[controllerName] === 'function') {
+          matches = controllerName.match(/^(\~)*(.+)/); // 'click button', '~click button', '_create', etc
+          extend = matches[1];
+          eventName = matches[2];
+        
+          if (!extend) return; // nothing to do
+
+          // Redefine controller:
+          // '~click button' ---> 'click button' = previousHandler + currentHandler
+          previousHandler = object.controller[eventName] ? (object.controller[eventName]._preProxy || object.controller[eventName]) : undefined;
+          currentHandler = object.controller[controllerName];
+          newHandler = function() {
+            previousHandler && previousHandler.apply(this, arguments);
+            currentHandler && currentHandler.apply(this, arguments);
+          };
+
+          object.controller[eventName] = newHandler;
+          delete object.controller[controllerName]; // delete '~click button'
+        } // if function
+      })();
+    } // for controllerName
   };
   
   // ------------------------------
@@ -372,15 +407,42 @@
         return this;
       }, // render
   
-      // Parse data-bind string of the type '[attribute] variable'
-      // Returns { key:'model key' [, attr:'attribute'] }
+      // Parse data-bind string of the type '[attribute] variable[, attribute variable ]...'
+      // If the variable is not an attribute, it must be first in the list,
+      //   all following pairs in the list are assumed to be attributes
+      // Returns { key:'model key', attr: [ {attr : 'attribute', attrVar : 'variable' }... ] }
       _parseBindStr: function(str){
-        var obj = { key:str }, 
-            spacePos = str.search(/\s/);
-        if (spacePos > -1) {
-          obj.attr = str.substr(0, spacePos);
-          obj.key = str.substr(spacePos+1);
-        }
+        var obj = {key:null, attr:[]},
+            pairs = str.split(','),
+            regex = /(\w+)(?:\s+(\w+))?/,
+            matched;
+        
+        if (pairs.length > 0) {
+          matched = pairs[0].match(regex);
+          // [ "attribute variable", "attribute", "variable" ]
+          // or
+          // [ "variable", "variable", undefined ]
+          // or
+          // null
+          if (matched) {
+            if (typeof(matched[2]) === "undefined") {
+              obj.key = matched[1];
+            } else {
+              obj.attr.push({attr: matched[1], attrVar: matched[2]});
+            } 
+          } // if (matched )
+          if (pairs.length > 1) {
+            for (var i = 1; i < pairs.length; i++) {
+              matched = pairs[i].match(regex);
+              if (matched) {
+                if (typeof(matched[2]) !== "undefined") {
+                  obj.attr.push({attr: matched[1], attrVar: matched[2]});
+                }
+              } // if (matched)
+            } // for (pairs.length)
+          } // if (pairs.length > 1)
+        } // if (pairs.length > 0)
+        
         return obj;
       },
       
@@ -389,10 +451,26 @@
         var self = this;
         var $rootNode = this.view.$().filter('[data-bind]');
         var $childNodes = this.view.$('[data-bind]');
+        var createAttributePairClosure = function(bindData, node, i) {
+          var attrPair = bindData.attr[i]; // capture the attribute pair in closure
+          return function() {
+            node.attr(attrPair.attr, self.model.get(attrPair.attrVar));
+          };
+        };
         $rootNode.add($childNodes).each(function(){
           var $node = $(this);
           var bindData = self.view._parseBindStr( $node.data('bind') );
 
+          var bindAttributesOneWay = function() {
+            // 1-way attribute binding
+            if (bindData.attr) {
+              for (var i = 0; i < bindData.attr.length; i++) {
+                self.bind('_change:'+bindData.attr[i].attrVar,
+                  createAttributePairClosure(bindData, $node, i));
+              } // for (bindData.attr)
+            } // if (bindData.attr)
+          }; // bindAttributesOneWay()
+          
           // <input type="checkbox">: 2-way binding
           if ($node.is('input[type="checkbox"]')) {
             // Model --> DOM
@@ -405,6 +483,8 @@
               obj[bindData.key] = $(this).prop("checked");
               self.model.set(obj); // not silent as user might be listening to change events
             });
+            // 1-way attribute binding
+            bindAttributesOneWay();
           }
           
           // <select>: 2-way binding
@@ -421,6 +501,8 @@
               obj[bindData.key] = $node.val();
               self.model.set(obj); // not silent as user might be listening to change events
             });
+            // 1-way attribute binding
+            bindAttributesOneWay();
           }
           
           // <input type="radio">: 2-way binding
@@ -438,6 +520,8 @@
               obj[bindData.key] = $node.val();
               self.model.set(obj); // not silent as user might be listening to change events
             });
+            // 1-way attribute binding
+            bindAttributesOneWay();
           }
           
           // <input type="search"> (model is updated after every keypress event)
@@ -455,6 +539,8 @@
                 self.model.set(obj); // not silent as user might be listening to change events
               }, 50);
             });
+            // 1-way attribute binding
+            bindAttributesOneWay();
           }
 
           // <input type="text"> and <textarea>: 2-way binding
@@ -469,20 +555,18 @@
               obj[bindData.key] = $(this).val();
               self.model.set(obj); // not silent as user might be listening to change events
             });
+            // 1-way attribute binding
+            bindAttributesOneWay();
           }
           
           // all other <tag>s: 1-way binding
           else {
-            if (bindData.attr) {
-              self.bind('_change:'+bindData.key, function(){
-                $node.attr(bindData.attr, self.model.get(bindData.key));
-              });
-            }
-            else {
+            if (bindData.key) {
               self.bind('_change:'+bindData.key, function(){
                 $node.text(self.model.get(bindData.key).toString());
               });
             }
+            bindAttributesOneWay();
           }
         }); // nodes.each()
         return this;
@@ -676,7 +760,7 @@
 
     // Inherit object prototype
     if (typeof args[0] === "object" && util.isAgility(args[0])) {
-      prototype = args[0];
+      prototype = args[0];    
       args.shift(); // remaining args now work as though object wasn't specified
     } // build from agility object
     
@@ -713,13 +797,14 @@
     else if (args.length === 1 && typeof args[0] === 'object' && (args[0].model || args[0].view || args[0].controller) ) {
       for (var prop in args[0]) {
         if (prop === 'model') {
-          $.extend(object.model._data, args[0][prop]);
+          $.extend(object.model._data, args[0]['model']);
         }
         else if (prop === 'view') {
-          $.extend(object.view, args[0][prop]);
+          $.extend(object.view, args[0]['view']);
         }
         else if (prop === 'controller') {
-          $.extend(object.controller, args[0][prop]);
+          $.extend(object.controller, args[0]['controller']);
+          util.extendController(object);
         }
         // User-defined methods
         else {
@@ -763,6 +848,7 @@
       // Controller from object (..., ..., {method:function(){}})
       if (typeof args[2] === 'object') {
         $.extend(object.controller, args[2]);
+        util.extendController(object);
       }
       else if (args[2]) {
         throw "agility.js: unknown argument type (controller)";
@@ -775,7 +861,7 @@
     //  Bootstrap: Bindings, initializations, etc
     //
     // ----------------------------------------------
-  
+    
     // Save model's initial state (so it can be .reset() later)
     object.model._initData = $.extend({}, object.model._data);
 
@@ -785,12 +871,12 @@
     // Initialize $root, needed for DOM events binding below
     object.view.render();
   
-    // Binds all existing controller functions to corresponding events
+    // Bind all controllers to their events
     for (var ev in object.controller) {
       if (typeof object.controller[ev] === 'function') {
         object.bind(ev, object.controller[ev]);
       }
-    }
+    }  
   
     // Auto-triggers create event
     object.trigger('create');    
