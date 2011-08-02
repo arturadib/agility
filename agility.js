@@ -589,9 +589,11 @@
       stylize: function(){
         var objClass,
             regex = new RegExp(ROOT_SELECTOR, 'g');
+            
         if (this.view.style.length === 0 || this.view.$().size() === 0) {
-          return;
+          return; // no style up the proto chain, or no view?
         }
+        
         // Own style
         // Object gets own class name ".agility_123", and <head> gets a corresponding <style>
         if (this.view.hasOwnProperty('style')) {
@@ -600,23 +602,17 @@
           $('head', window.document).append('<style type="text/css">'+styleStr+'</style>');
           this.view.$().addClass(objClass);
         }
-        // Inherited style
-        // Object inherits CSS class name from first ancestor to have own view.style
-        else {
-          // Returns id of first ancestor to have 'own' view.style
-          var ancestorWithStyle = function(object) {
-            while (object !== null) {
-              object = Object.getPrototypeOf(object);
-              if (object.view.hasOwnProperty('style'))
-                return object._id;
-            }
-            return undefined;
-          }; // ancestorWithStyle
+        
+        // Inherited styles
+        // Object inherits CSS class name from all ancestors to have own view.style
+        var object = this;
+        while (object !== null) {
+          object = Object.getPrototypeOf(object);
+          if (object && object._id && object.view.hasOwnProperty('style')) {
+            this.view.$().addClass('agility_' + object._id);
+          }
+        } // while
 
-          var ancestorId = ancestorWithStyle(this);
-          objClass = 'agility_' + ancestorId;
-          this.view.$().addClass(objClass);
-        }
         return this;
       }
       

@@ -1,5 +1,9 @@
 (function($, $$){
 
+  // Cross-browser colors
+  var redColor = $('<div/>').css('color', 'red').css('color');
+  var blueColor = $('<div/>').css('color', 'blue').css('color');
+  var greenColor = $('<div/>').css('color', 'green').css('color');
 
   // --------------------------------
   //
@@ -20,33 +24,33 @@
   //  Builder
   //
   // --------------------------------
-
+  
   module("Object builder");
-
+  
   var validateObject = function(o){
     ok( !$.isEmptyObject(o.model), "obj.model defined");
     ok( !$.isEmptyObject(o.view), "obj.view defined");    
     ok( !$.isEmptyObject(o.controller), "obj.controller defined");    
   };
-
+  
   test("No arguments", function(){
     var obj = $$(); // default object
     validateObject( obj );
     ok($.isEmptyObject(obj.model.get()), "model is empty");
   });
-
+  
   test("Dummy arguments", function(){
     var obj = $$({}, {}, {}); // default object
     validateObject( obj );
     ok($.isEmptyObject(obj.model.get()), "model is empty");
   });
-
+  
   test("One argument (model string)", function(){
     var obj = $$('Joe Doe');
     validateObject( obj );
     equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
   });
-
+  
   test("One argument (model object)", function(){
     var obj = $$({
       first: 'Joe',
@@ -55,13 +59,13 @@
     validateObject( obj );
     equals( obj.view.$().text(), '', 'format as expected'); // lib doesn't have a default format for an arbitrary model
   });
-
+  
   test("Two arguments (model, view string)", function(){
     var obj = $$('Joe Doe', '<div data-bind="text"></div>');
     validateObject( obj );
     equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
   });
-
+  
   test("Two arguments (model object, view string)", function(){
     var obj = $$({
       first: 'Joe',
@@ -87,7 +91,7 @@
     equals( obj.view.$( 'span' ).last().attr( 'name' ), 'Joe Doe', 'format as expected');
     equals( obj.view.$( 'span' ).last().attr( 'lastColor' ), 'Blue', 'format as expected');
   });
-
+  
   test("Three arguments (model string, view string, controller object)", function(){
     var obj = $$('Joe Doe', '<div data-bind="text"></div>', {
       init: function(){
@@ -97,13 +101,13 @@
     validateObject( obj );
     equals( obj.view.$().text(), 'Joe Doe', 'format as expected');
   });
-
+  
   test("Three arguments (model object, view string, controller object)", function(){
     var obj = $$({first:'Joe', last:'Doe'}, '<div><span data-bind="first"/><span data-bind="last"/></div>', {});
     validateObject( obj );
     equals( obj.view.$().text(), 'JoeDoe', 'format as expected');
   });
-
+  
   test("Three arguments (model object, view string, controller object) with multiple attribute bindings", function(){
     var obj = $$({
       first: 'Joe',
@@ -226,7 +230,7 @@
     // obj.fn('test2', function(){ t2 = this; });
     // obj.test2.call({});
     // equals( t2, obj, 'auto-proxying obj.*' );
-
+  
     t = {}; t2 = {};
     obj = $$({}, {}, {
       test: (function(){
@@ -451,56 +455,78 @@
     equals(objBase.model.size(), 0, 'model is empty');
     objNew = $$(objBase, {path:'http://google.com/favicon.ico'});
     equals(objNew.view.$('img').attr('src'), 'http://google.com/favicon.ico', 'img src correctly set');
+  
+    // // CSS inheritance
+    // var obj1 = $$({}, {format:'<p>I should be red and small</p>', style:'& {color:red; display:none;}'});
+    // var obj2 = $$(obj1, {}, {format:'<p>I should be red and big</p>', style:'& {font-size:30px;}'});
+    // var obj3 = $$(obj1, {}, {format:'<p>I should be blue and small</p>', style:'& {color:blue;}'});
+    // var obj4 = $$(obj2, {}, {format:'<p>I should be red, big, and underlined</p>', style:'& {text-decoration:underline;}'});
+    // $$.document.append(obj1);
+    // $$.document.append(obj2);
+    // $$.document.append(obj3);
+    // $$.document.append(obj4);
+    // 
+    // // obj1
+    // equals(obj1.view.$().css('color'), redColor, "obj1 color OK");
+    // // obj2
+    // equals(obj2.view.$().css('color'), redColor, "obj2 color OK");
+    // equals(obj2.view.$().css('fontSize'), '30px', "obj2 font-size OK");
+    // // obj3
+    // equals(obj3.view.$().css('color'), blueColor, "obj3 color OK");
+    // // obj4
+    // equals(obj4.view.$().css('color'), redColor, "obj4 color OK");
+    // equals(obj4.view.$().css('fontSize'), '20px', "obj4 font-size OK");
+    // equals(obj4.view.$().css('textDecoration'), 'underlie', "obj4 text-decoration OK");    
   });
-
-
+  
+  
   // ----------------------------------------------
   //
   //  Post-builder - Overriding default controller
   //
   // ----------------------------------------------
-
+  
   module("Post-builder - Overriding default controller methods");
-
+  
   // ------------------------------------
   //
   //  Post-builder - Default controller
   //
   // ------------------------------------
-
+  
   module("Post-builder - Default controller");
-
+  
   test("Container calls", function(){
     var obj1 = $$({}, '<div><span class="here"></span></div>');
     var obj2 = $$('hello');
     obj1.append(obj2, '.here');
     equals(obj1.view.$('.here div').html(), 'hello', 'append() appends at given selector');
-
+  
     obj1 = $$({}, '<div><span></span></div>');
     obj2 = $$('hello'); // default format should have a <div> root
     obj1.append(obj2);
     equals(obj1.view.$('span').next().html(), 'hello', 'append() appends at root element');        
-
+  
     obj1 = $$({}, '<div><ul/></div>');
     obj2 = $$('hello'); // default format should have a <div> root
     obj1.prepend(obj2);
     equals(obj1.view.$('ul').prev().html(), 'hello', 'prepend() prepends at root element');        
-
+  
     obj1 = $$({}, '<div><ul><span/></ul></div>');
     obj2 = $$('hello'); // default format should have a <div> root
     obj1.prepend(obj2, 'ul');
     equals(obj1.view.$('ul span').prev().html(), 'hello', 'prepend() prepends at given selector');        
-
+  
     obj1 = $$({}, '<div><ul><li id="a"/> <li id="b"/></ul></div>');
     obj2 = $$('hello'); // default format should have a <div> root
     obj1.before(obj2, '#b');
     equals(obj1.view.$('ul li#a').next().html(), 'hello', 'before() inserts correctly');
-
+  
     obj1 = $$({}, '<div><ul><li id="a"/> <li id="b"/></ul></div>');
     obj2 = $$('hello'); // default format should have a <div> root
     obj1.after(obj2, '#a');
     equals(obj1.view.$('ul li#a').next().html(), 'hello', 'after() inserts correctly');
-
+  
     obj1 = $$({}, '<div><span></span></div>');
     for (var i=0;i<10;i++) {
       obj2 = $$('hello', '<div class="test"></div>'); // default format should have a <div> root
@@ -508,7 +534,7 @@
     }
     equals(obj1.size(), 10, 'correct container size()');
     equals(obj1.view.$('.test').size(), 10, 'correct DOM size');
-
+  
     var flag = false;
     var count = 0;
     obj1.each(function(){
@@ -521,7 +547,7 @@
     obj1.empty();
     equals(obj1.size(), 0, 'empty() works');
   });
-
+  
   test("Model calls", function(){
     var t = false;
     var obj1 = $$({a:1}, '<div data-bind="text"></div>', {
@@ -540,13 +566,13 @@
     equals(obj1.model.get('a'), 1, 'obj.model.reset() brings back original attribute');
     equals(obj1.model.get('text'), undefined, 'obj.model.reset() erases non-original attributes');
   });
-
+  
   test("Chainable calls", function(){
     t = false;
     var obj = $$().model.set({text:'Joe Doe'}).bind('click &', function(){ t = true; }).trigger('click &');
     equals(t, true, 'chaining set(), bind(), and trigger()');
   });
-
+  
   test("Two-way bindings", function(){
     var obj = $$({name:'Mary'}, "<input type='text' data-bind='name' />");
     equals(obj.view.$().val(), 'Mary', 'text input: binding properly initialized');
@@ -554,7 +580,7 @@
     equals(obj.view.$().val(), 'Joe Doe', 'text input: Model --> DOM binding OK');
     obj.view.$().val('Art Blakey').change();
     equals(obj.model.get('name'), 'Art Blakey', 'text input: DOM --> Model binding OK');
-
+  
     var obj = $$({name:'Mary'}, "<input type='search' data-bind='name' />");
     equals(obj.view.$().val(), 'Mary', 'search input: binding properly initialized');
     obj.model.set({name:'Joe Doe'});
@@ -562,21 +588,21 @@
     // can't test these synchronously as current implementation uses a 50ms timeout
     // obj.view.$().val('Joe Doee').keypress();
     // equals(obj.model.get('name'), 'Joe Doee', 'search input: DOM --> Model binding OK');
-
+  
     obj = $$({a:true}, "<input type='checkbox' data-bind='a' />");
     equals(obj.view.$().prop('checked'), true, 'checkbox input: binding properly initialized');
     obj.model.set({a:false});
     equals(obj.view.$().prop("checked"), false, 'checkbox input: Model --> DOM binding OK');
     obj.view.$().prop('checked', true).change();
     equals(obj.model.get('a'), true, 'checkbox input: DOM --> Model binding OK');
-
+  
     obj = $$({opt:'opt-b'}, "<div><input type='radio' name='test' data-bind='opt' value='opt-a' id='a'/> a<br/> <input type='radio' name='test' data-bind='opt' value='opt-b' id='b'/> b</div>");
     equals(obj.view.$('input#b').prop("checked"), true, 'radio input: binding properly initialized');
     obj.model.set({opt:'opt-a'});
     equals(obj.view.$('input#a').prop("checked"), true, 'radio input: Model --> DOM binding OK');
     obj.view.$('input#b').prop('checked', true).change();
     equals(obj.model.get('opt'), 'opt-b', 'radio input: DOM --> Model binding OK');
-
+  
     obj = $$({opt:'opt-b'}, "<select data-bind='opt'> <option value='opt-a'/> <br/> <option value='opt-b'/> </select>");
     equals(obj.view.$().val(), 'opt-b', 'select input: binding properly initialized');
     obj.model.set({opt:'opt-a'});
@@ -594,7 +620,7 @@
     equals(obj.view.$().attr('myAttr'), 'myAttr', 'extra attribute set');
     obj.view.$().val('Art Blakey').change();
     equals(obj.model.get('name'), 'Art Blakey', 'text input: DOM --> Model binding OK');
-
+  
     var obj = $$({name:'Mary',myAttr:'myAttr'}, "<input type='search' data-bind='name, myAttr myAttr' />");
     equals(obj.view.$().val(), 'Mary', 'search input: binding properly initialized');
     equals(obj.view.$().attr('myAttr'), 'myAttr', 'extra attribute set');
@@ -604,7 +630,7 @@
     // can't test these synchronously as current implementation uses a 50ms timeout
     // obj.view.$().val('Joe Doee').keypress();
     // equals(obj.model.get('name'), 'Joe Doee', 'search input: DOM --> Model binding OK');
-
+  
     obj = $$({a:true,myAttr:'myAttr'}, "<input type='checkbox' data-bind='a, myAttr myAttr' />");
     equals(obj.view.$().prop('checked'), true, 'checkbox input: binding properly initialized');
     equals(obj.view.$().attr('myAttr'), 'myAttr', 'extra attribute set');
@@ -613,7 +639,7 @@
     equals(obj.view.$().attr('myAttr'), 'myAttr', 'extra attribute set');
     obj.view.$().prop('checked', true).change();
     equals(obj.model.get('a'), true, 'checkbox input: DOM --> Model binding OK');
-
+  
     obj = $$({opt:'opt-b',myAttr:'myAttr'}, "<div><input type='radio' name='test' data-bind='opt, myAttr myAttr' value='opt-a' id='a'/> a<br/> <input type='radio' name='test' data-bind='opt' value='opt-b' id='b'/> b</div>");
     equals(obj.view.$('input#b').prop("checked"), true, 'radio input: binding properly initialized');
     equals(obj.view.$('input#a').attr('myAttr'), 'myAttr', 'extra attribute set');
@@ -624,7 +650,7 @@
     equals(obj.view.$('input#b').attr('myAttr'), null, 'no extra attribute set');
     obj.view.$('input#b').prop('checked', true).change();
     equals(obj.model.get('opt'), 'opt-b', 'radio input: DOM --> Model binding OK');
-
+  
     obj = $$({opt:'opt-b',myAttr:'myAttr'}, "<select data-bind='opt, myAttr myAttr'> <option value='opt-a'/> <br/> <option value='opt-b'/> </select>");
     equals(obj.view.$().val(), 'opt-b', 'select input: binding properly initialized');
     equals(obj.view.$().attr('myAttr'), 'myAttr', 'extra attribute set');
@@ -634,15 +660,15 @@
     obj.view.$().val('opt-b').change();
     equals(obj.model.get('opt'), 'opt-b', 'select input: DOM --> Model binding OK');
   });
-
+  
   // ----------------------------------------------
   //
   //  Post-builder - Custom controller methods
   //
   // ----------------------------------------------
-
+  
   module("Post-builder - Custom controller methods");
-
+  
   test("Container events", function(){
     var o = {};
     var s = '';
@@ -658,7 +684,7 @@
     obj2.append(obj1, 'sel');
     ok(o===obj1 && s==='sel', "append() called");
   });
-
+  
   test("Model events", function(){
     var t = false;
     var obj = $$({}, {}, {
@@ -669,7 +695,7 @@
     obj.model.set({a:'hello'});
     ok(t===true, "change fired");
   });
-
+  
   test("DOM events", function(){
     var t = false;
     var obj = $$('hello', '<div><button>${text}</button></div>', {
@@ -683,7 +709,7 @@
     t = false;
     obj.view.$('span').trigger('click');
     ok(t===false, "click event properly filtered selector");
-
+  
     t = false;
     obj = $$('hello', '<button>${text}</button>', {
       'click &': function(event){

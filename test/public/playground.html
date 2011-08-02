@@ -18,85 +18,30 @@
 
   <script src="agility.js" type="text/javascript" charset="utf-8"></script>
 
+
+<!-- html template -->
+
+  <script id="t" type="text/html" charset="utf-8">
+    <div>
+      Hello World
+    </div>
+  </script>
+
+
+  <div id="root"/>
+
+
   <script>
-
-      //
-      // Modify freely here, then click "Render" to see result
-      //
-
-    // var a = $$({}, '<button>A</button>', {'click &': function(){ alert('A'); }});
-    // var b = $$(a, {}, '<button>B</button>', {'~click &': function(){ alert('B'); }});
-    // var c = $$(b, {}, '<button>C</button>', {'click &': function(){ alert('C'); }});
-    // $$.document.append(a);
-    // $$.document.append(b);
-    // $$.document.append(c);
-
-
-    // var a = $$({}, '<button>A</button>', {
-    //   'create': function(){ 
-    //     console.log('A:', this._id);
-    //   }
-    // });
-    // var b = $$(a, {
-    //   controller:{
-    //     '~create': function(){ 
-    //       console.log('B:', this._id);
-    //     }
-    //   }
-    // });    
-    // $$.document.append(a);
-    // $$.document.append(b);
-
-
-    var a = $$({msg:'hello A'}, '<button>button</button>', {
-      'create': function(){ 
-        console.log('create A called. model:', this.model.get('msg'));
-      },
-      'myEvent': function(){ console.log('myEvent!') }
-    });
-    var b = $$(a, {
-      model:{msg:'hello B'},
-      controller:{
-        '~create': function(){ 
-          console.log('create B called. model:', this.model.get('msg'));
-        },
-        '~myEvent': function(){ console.log('~myEvent!') }
-      }
-    });    
-    $$.document.append(a);
-    $$.document.append(b);
-
-
-//     var lbl = $$({}, '<span data-bind="label"/>');
-//     var partial = $$({}, '<div/>', {
-//       'create': function() {
-// console.log('creating l with:', this.model.get('label'));
-//         var l = $$(lbl, {label: this.model.get('label')});
-//         this.append(l);
-//       },
-//       'myEvent': function() {
-//         var l = $$(lbl, {label: this.model.get('myEventLabel')});
-//         this.append(l);
-//       }
-//     });
-//     var complete = $$(partial, {
-//       controller:{
-//         '~create': function() {
-// console.log('creating value with:', this.model.get('value'));
-//           var value = $$(lbl, {label: this.model.get('value')});
-//           this.append(value);
-//         },
-//         '~myEvent': function() {
-//           var value = $$(lbl, {label: this.model.get('myEventValue')});
-//           this.append(value);
-//         }
-//       }
-//     });
-//     var first = $$(complete, {label:"firstLabel", value:"firstValue"});
-//     var second = $$(complete, {label:"secondLabel", value:"secondValue"});
-//     
-//     console.log(first.view.$());
-
+    
+    var obj1 = $$({}, {format:'<p>I should be red and small</p>', style:'& {color:red;}'});
+    var obj2 = $$(obj1, {}, {format:'<p>I should be red and big</p>', style:'& {font-size:150%;}'});
+    var obj3 = $$(obj1, {}, {format:'<p>I should be blue and small</p>', style:'& {color:blue;}'});
+    var obj4 = $$(obj2, {}, {format:'<p>I should be red, big, and underlined</p>', style:'& {text-decoration:underline;}'});
+    $$.document.append(obj1);
+    $$.document.append(obj2);
+    $$.document.append(obj3);
+    $$.document.append(obj4);
+    
   </script>
 </body>
 
