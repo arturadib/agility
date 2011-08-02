@@ -144,8 +144,8 @@
           previousHandler = object.controller[eventName] ? (object.controller[eventName]._preProxy || object.controller[eventName]) : undefined;
           currentHandler = object.controller[controllerName];
           newHandler = function() {
-            previousHandler && previousHandler.apply(this, arguments);
-            currentHandler && currentHandler.apply(this, arguments);
+            if (previousHandler) previousHandler.apply(this, arguments);
+            if (currentHandler) currentHandler.apply(this, arguments);
           };
 
           object.controller[eventName] = newHandler;
@@ -797,13 +797,13 @@
     else if (args.length === 1 && typeof args[0] === 'object' && (args[0].model || args[0].view || args[0].controller) ) {
       for (var prop in args[0]) {
         if (prop === 'model') {
-          $.extend(object.model._data, args[0]['model']);
+          $.extend(object.model._data, args[0].model);
         }
         else if (prop === 'view') {
-          $.extend(object.view, args[0]['view']);
+          $.extend(object.view, args[0].view);
         }
         else if (prop === 'controller') {
-          $.extend(object.controller, args[0]['controller']);
+          $.extend(object.controller, args[0].controller);
           util.extendController(object);
         }
         // User-defined methods
