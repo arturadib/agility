@@ -389,7 +389,16 @@
         // Without format there is no view
         if (this.view.format.length === 0) {
           throw "agility.js: empty format in view.render()";
-        }                
+        }
+        //preprocess format
+        if (!this.view.raw) {
+          this.view.format, this.view.template_compiled = this.view.template(this.view.format, this.model.get());
+          this.view.raw = true;
+        }
+        if (typeof this.view.template_compiled === 'function') {
+          this.view.format = this.view.template_compiled(this.model.get());
+        }
+              
         if (this.view.$root.size() === 0) {
           this.view.$root = $(this.view.format);
         }
@@ -614,7 +623,11 @@
           this.view.$().addClass(objClass);
         }
         return this;
-      }
+      },
+
+      // templating hooks
+      template : function(data) {return data},
+      raw : true
       
     }, // view prototype
   

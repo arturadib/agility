@@ -1,0 +1,22 @@
+<html>
+<head>
+  <title>Agility.js templating test - doT</title>
+  <script type="text/javascript" src="https://raw.github.com/olado/doT/master/doT.js"></script>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.2.js"></script>
+  <script type="text/javascript" src="../agility.js"></script>
+</head>
+<body>
+  <script type="text/javascript">
+    // enable doT templates in Agility.js
+    $$.fn.view.template = function(temp) {return doT.template(temp);};
+    $$.fn.controller._change = function() {this.view.render();};
+    doT.templateSettings.varname = 'm';
+    $$.fn.view.raw = false;
+
+    //pure basic test
+    var table = $$({project : "Agility.js", rank : "Cool!", type : "MVC", skill : "simple"}, '<table>{{for (var key in m) { }}<tr><th>{{=key}}</th><td>{{=m[key]}}</td></tr>{{ } }}</table>');
+    $$.document.append(table);
+    table.model.set({rank : "10/10", skill : 1}); // test rerendering
+  </script>
+</body>
+</html>
