@@ -67,7 +67,35 @@
         return object.constructor.prototype;
       };
     }
-  }  
+  }
+
+  // Modified from  eligrey's Object.watch() shim
+  // Object.unwatch is not included since I'll watch model for the 
+  if (!Object.prototype.watch || Object.getPrototypeOf.toString().search(/native code/i)<0) {
+    Object.prototype.watch = function (prop, handler) {
+      var oldval = this[prop], newval = oldval,
+        getter = function () {
+          return newval;
+      },
+      setter = function (val) {
+        oldval = newval;
+        return newval = handler.call(this, prop, oldval, val);
+      };
+      if (delete this[prop]) { // can't watch constants
+        if (Object.defineProperty) { // ECMAScript 5
+          Object.defineProperty(this, prop, {
+                get: getter,
+                set: setter,
+                enumerable: true,
+                configurable: true
+        });
+        } else if (Object.prototype.__defineGetter__ && Object.prototype.__defineSetter__) { // legacy
+          Object.prototype.__defineGetter__.call(this, prop, getter);
+          Object.prototype.__defineSetter__.call(this, prop, setter);
+        }
+      }
+    };
+  }
 
 
   // --------------------------
@@ -268,71 +296,7 @@
     //
     // -------------
        
-    model: {
-
-      // Setter
-      set: function(arg, params) {
-        var self = this;
-        var modified = []; // list of modified model attributes
-        if (typeof arg === 'string') {
-          this.model._data.text = arg; // default model attribute
-          modified.push('text');
-        }
-        else if (typeof arg === 'object') {
-          if (params && params.reset) {
-            this.model._data = $.extend({}, arg); // erases previous model attributes without pointing to object
-          }
-          else {
-            $.extend(this.model._data, arg); // default is extend
-          }
-          for (var key in arg) {
-            modified.push(key);
-          }
-        }
-        else {
-          throw "agility.js: unknown argument type in model.set()";
-        }
-
-        // Events
-        if (params && params.silent===true) return this; // do not fire events
-        this.trigger('change');
-        $.each(modified, function(index, val){
-          self.trigger('change:'+val);
-        });
-        return this; // for chainable calls
-      },
-      
-      // Getter
-      get: function(arg){
-        // Full model getter
-        if (arg === undefined) {
-          return this.model._data;
-        }
-        // Attribute getter
-        if (typeof arg === 'string') {            
-          return this.model._data[arg];
-        }
-        throw 'agility.js: unknown argument for getter';
-      },
-      
-      // Resetter (to initial model upon object initialization)
-      reset: function(){
-        this.model.set(this.model._initData, {reset:true});
-        return this; // for chainable calls
-      },
-      
-      // Number of model properties
-      size: function(){
-        return util.size(this.model._data);
-      },
-      
-      // Convenience function - loops over each model property
-      each: function(fn){
-        $.each(this.model._data, fn);
-        return this; // for chainable calls
-      }
-      
-    }, // model prototype
+    model: {}, // model prototype, empty now that watch is used, if brought back to root, backwords compatibility will need to be added
   
     // -------------
     //
@@ -357,7 +321,16 @@
         // Without format there is no view
         if (this.view.format.length === 0) {
           throw "agility.js: empty format in view.render()";
-        }                
+        }
+        //preprocess format
+        if (!this.view.raw) {
+          this.view.format, this.view.template_compiled = this.view.template(this.view.format, this.model);
+          this.view.raw = true;
+        }
+        if (typeof this.view.template_compiled === 'function') {
+          this.view.format = this.view.template_compiled(this.model);
+        }
+              
         if (this.view.$root.size() === 0) {
           this.view.$root = $(this.view.format);
         }
@@ -396,13 +369,11 @@
           if ($node.is('input[type="checkbox"]')) {
             // Model --> DOM
             self.bind('_change:'+bindData.key, function(){
-              $node.prop("checked", self.model.get(bindData.key)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
+              $node.prop("checked", self.model[bindData.key]); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
             });            
             // DOM --> Model
             $node.change(function(){
-              var obj = {};
-              obj[bindData.key] = $(this).prop("checked");
-              self.model.set(obj); // not silent as user might be listening to change events
+              self.model[bindData.key] = $(this).prop("checked"); // not silent as user might be listening to change events
             });
           }
           
@@ -411,14 +382,12 @@
             // Model --> DOM
             self.bind('_change:'+bindData.key, function(){
               var nodeName = $node.attr('name');
-              var modelValue = self.model.get(bindData.key);
+              var modelValue = self.model[bindData.key];
               $node.val(modelValue);
             });            
             // DOM --> Model
             $node.change(function(){
-              var obj = {};
-              obj[bindData.key] = $node.val();
-              self.model.set(obj); // not silent as user might be listening to change events
+              self.model[bindData.key] = $node.val(); // not silent as user might be listening to change events
             });
           }
           
@@ -427,15 +396,13 @@
             // Model --> DOM
             self.bind('_change:'+bindData.key, function(){
               var nodeName = $node.attr('name');
-              var modelValue = self.model.get(bindData.key);
+              var modelValue = self.model[bindData.key];
               $node.siblings('input[name="'+nodeName+'"]').filter('[value="'+modelValue+'"]').prop("checked", true); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
             });            
             // DOM --> Model
             $node.change(function(){
               if (!$node.prop("checked")) return; // only handles check=true events
-              var obj = {};
-              obj[bindData.key] = $node.val();
-              self.model.set(obj); // not silent as user might be listening to change events
+              self.model[bindData.key] = $node.val(); // not silent as user might be listening to change events
             });
           }
           
@@ -443,15 +410,13 @@
           else if ($node.is('input[type="search"]')) {
             // Model --> DOM
             self.bind('_change:'+bindData.key, function(){
-              $node.val(self.model.get(bindData.key)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
+              $node.val(self.model[bindData.key]); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
             });
             // Model <-- DOM
             $node.keypress(function(){
               // Without timeout $node.val() misses the last entered character
               setTimeout(function(){
-                var obj = {};
-                obj[bindData.key] = $node.val();
-                self.model.set(obj); // not silent as user might be listening to change events
+                self.model[bindData.key] = $node.val(); // not silent as user might be listening to change events
               }, 50);
             });
           }
@@ -460,13 +425,11 @@
           else if ($node.is('input[type="text"], textarea')) {
             // Model --> DOM
             self.bind('_change:'+bindData.key, function(){
-              $node.val(self.model.get(bindData.key)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
+              $node.val(self.model[bindData.key]); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
             });            
             // Model <-- DOM
             $node.change(function(){
-              var obj = {};
-              obj[bindData.key] = $(this).val();
-              self.model.set(obj); // not silent as user might be listening to change events
+              self.model[bindData.key] = $(this).val(); // not silent as user might be listening to change events
             });
           }
           
@@ -474,31 +437,18 @@
           else {
             if (bindData.attr) {
               self.bind('_change:'+bindData.key, function(){
-                $node.attr(bindData.attr, self.model.get(bindData.key));
+                $node.attr(bindData.attr, self.model[bindData.key]);
               });
             }
             else {
               self.bind('_change:'+bindData.key, function(){
-                $node.text(self.model.get(bindData.key).toString());
+                $node.text(self.model[bindData.key].toString());
               });
             }
           }
         }); // nodes.each()
         return this;
       }, // bindings()
-      
-      // Triggers _change and _change:* events so that view is updated as per view.bindings()
-      sync: function(){
-        var self = this;
-        // Trigger change events so that view is updated according to model
-        this.model.each(function(key, val){
-          self.trigger('_change:'+key);
-        });
-        if (this.model.size() > 0) {
-          this.trigger('_change');
-        }
-        return this;
-      },
 
       // Applies style dynamically
       stylize: function(){
@@ -533,7 +483,11 @@
           this.view.$().addClass(objClass);
         }
         return this;
-      }
+      },
+
+      // templating hooks
+      template : function(data) {return data},
+      raw : true
       
     }, // view prototype
   
@@ -549,7 +503,12 @@
       _create: function(event){
         this.view.stylize();
         this.view.bindings(); // Model-View bindings
-        this.view.sync(); // syncs View with Model
+
+        Object.watch(this.model, function(attr, value) {
+          this.trigger('change:'+attr);
+          this.trigger('change');
+          return value;
+        });
       },
   
       // Triggered upon removing self
@@ -675,9 +634,6 @@
     object._container.children = {};
     object.view.$root = $(); // empty jQuery object
 
-    // Cloned own properties (i.e. properties that are inherited by direct copy instead of by prototype chain)
-    object.model._data = object.model._data ? $.extend({}, object.model._data) : {};
-
     // -----------------------------------------
     //
     //  Extend model, view, controller
@@ -692,7 +648,7 @@
     else if (args.length === 1 && typeof args[0] === 'object' && (args[0].model || args[0].view || args[0].controller) ) {
       for (var prop in args[0]) {
         if (prop === 'model') {
-          $.extend(object.model._data, args[0][prop]);
+          $.extend(object.model, args[0][prop]);
         }
         else if (prop === 'view') {
           $.extend(object.view, args[0][prop]);
@@ -709,13 +665,8 @@
     
     // Prototype differential from separate {model}, {view}, {controller} arguments
     else {
-      
-      // Model from string
-      if (typeof args[0] === 'string') {
-        $.extend(object.model._data, {text: args[0]});
-      }
-      else if (typeof args[0] === 'object') {
-        $.extend(object.model._data, args[0]);
+      if (typeof args[0] === 'object') {
+        $.extend(object.model, args[0]);
       }
       else if (args[0]) {
         throw "agility.js: unknown argument type (model)";
@@ -754,9 +705,6 @@
     //  Bootstrap: Bindings, initializations, etc
     //
     // ----------------------------------------------
-  
-    // Save model's initial state (so it can be .reset() later)
-    object.model._initData = $.extend({}, object.model._data);
 
     // object.* will have their 'this' === object. This should come before call to object.* below.
     util.proxyAll(object, object);
@@ -830,9 +778,9 @@
       }
       self._data.persist.openRequests++;
       self._data.persist.adapter.call(self, {
-        type: self.model.get(id) ? 'PUT' : 'POST', // update vs. create
-        id: self.model.get(id),
-        data: self.model.get(),
+        type: self.model[id] ? 'PUT' : 'POST', // update vs. create
+        id: self.model[id],
+        data: self.model,
         complete: function(){
           self._data.persist.openRequests--;
           if (self._data.persist.openRequests === 0) {
@@ -842,11 +790,11 @@
         success: function(data, textStatus, jqXHR){
           if (data[id]) {
             // id in body
-            self.model.set({id:data[id]}, {silent:true});
+            self.model[id] = data[id]; self.model.silent = true;
           }
           else if (jqXHR.getResponseHeader('Location')) {
             // parse id from Location
-            self.model.set({ id: jqXHR.getResponseHeader('Location').match(/\/([0-9]+)$/)[1] }, {silent:true});
+            self.model[id] = jqXHR.getResponseHeader('Location').match(/\/([0-9]+)$/)[1]; this.model.silent = true;
           }
           self.trigger('persist:save:success');
         },
@@ -862,7 +810,7 @@
     // .load()
     // Loads model with given id
     this.load = function(){
-      if (this.model.get(id) === undefined) throw 'agility.js: load() needs model id';
+      if (this.model[id] === undefined) throw 'agility.js: load() needs model id';
     
       if (self._data.persist.openRequests === 0) {
         self.trigger('persist:start');
@@ -870,7 +818,7 @@
       self._data.persist.openRequests++;
       self._data.persist.adapter.call(self, {
         type: 'GET',
-        id: this.model.get(id),
+        id: this.model[id],
         complete: function(){
           self._data.persist.openRequests--;
           if (self._data.persist.openRequests === 0) {
@@ -878,7 +826,7 @@
           }
         },
         success: function(data, textStatus, jqXHR){
-          self.model.set(data);
+          $.extend(self.model, data);
           self.trigger('persist:load:success');
         },      
         error: function(){
@@ -893,7 +841,7 @@
     // .erase()
     // Erases model with given id
     this.erase = function(){
-      if (this.model.get(id) === undefined) throw 'agility.js: erase() needs model id';
+      if (this.model[id] === undefined) throw 'agility.js: erase() needs model id';
     
       if (self._data.persist.openRequests === 0) {
         self.trigger('persist:start');
@@ -901,7 +849,7 @@
       self._data.persist.openRequests++;
       self._data.persist.adapter.call(self, {
         type: 'DELETE',
-        id: this.model.get(id),
+        id: this.model[id],
         complete: function(){
           self._data.persist.openRequests--;
           if (self._data.persist.openRequests === 0) {

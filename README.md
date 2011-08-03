@@ -15,4 +15,22 @@ Features include:
 + Pure prototypal inheritance;
 + Strict MVC: core has no additional concepts other than M, V, and C.
 
-Curious to learn more? Visit http://agilityjs.com or fork the project and commit away - contributors are always welcome!
+
+## Agility 2.0: My plans in this branch
+
+For my own project, I want Agility.js to have templating and model bindings, and with discussion with arturadib, I have decided to work on a new archetecture for templating.
+
+These contributions will add these additional features:
+
++ Templates with speedy rerendering (does not recreate HTML);
++ Inclusion of other "components" inside the format;
++ Flexible binding mechanism (text & multiple fields in the same attribute or tag);
++ External models;
++ Model binding;
++ Full backwords compatibility;
+
+How do I plan to do this? Well, it's simple:
+
+1. Move the model methods into their own class and extend with .observe(), .unobserve(), .bind(), & .prop() methods. Agility objects will observe their models (which would be a feature not a necessity with additional contributions).
+2. Reimplement bindings to be instances of the model class.
+3. Implement a templating system to wrap the new binding system.
