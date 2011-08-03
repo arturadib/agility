@@ -36,7 +36,10 @@ How do I plan to do this? Well, it's simple:
 3. Implement a templating system to wrap the new binding system.
 
 This results in the following architecture:
+
 + A seperate model composite observer system which directs changes to the roots' callbacks.
+
   * Translates to change events.
   * Repopulates sections with changed content.
+
 + Templates provide easy access to the extended binding system.
