@@ -67,35 +67,7 @@
         return object.constructor.prototype;
       };
     }
-  }
-
-  // Modified from  eligrey's Object.watch() shim
-  // Object.unwatch is not included since I'll watch model for the 
-  if (!Object.prototype.watch || Object.getPrototypeOf.toString().search(/native code/i)<0) {
-    Object.prototype.watch = function (prop, handler) {
-      var oldval = this[prop], newval = oldval,
-        getter = function () {
-          return newval;
-      },
-      setter = function (val) {
-        oldval = newval;
-        return newval = handler.call(this, prop, oldval, val);
-      };
-      if (delete this[prop]) { // can't watch constants
-        if (Object.defineProperty) { // ECMAScript 5
-          Object.defineProperty(this, prop, {
-                get: getter,
-                set: setter,
-                enumerable: true,
-                configurable: true
-        });
-        } else if (Object.prototype.__defineGetter__ && Object.prototype.__defineSetter__) { // legacy
-          Object.prototype.__defineGetter__.call(this, prop, getter);
-          Object.prototype.__defineSetter__.call(this, prop, setter);
-        }
-      }
-    };
-  }
+  }  
 
 
   // --------------------------
@@ -108,10 +80,11 @@
   util.isAgility = function(obj){
    return obj._agility === true;
   };
-
+  
   // Scans object for functions (depth=2) and proxies their 'this' to dest.
-  // To ensure it works with previously proxied objects, we save the original function as 
-  // a '._preProxy' method and when available always use that as the proxy source.
+  // * To ensure it works with previously proxied objects, we save the original function as 
+  //   a '._preProxy' method and when available always use that as the proxy source.
+  // * To skip a given method, create a sub-method called '_noProxy'.
   util.proxyAll = function(obj, dest){
     if (!obj || !dest) {
       throw "agility.js: util.proxyAll needs two arguments";
@@ -148,6 +121,40 @@
     return size;
   };
   
+  // Find controllers to be extended (with syntax '~'), redefine those to encompass previously defined controllers
+  // Example:
+  //   var a = $$({}, '<button>A</button>', {'click &': function(){ alert('A'); }});
+  //   var b = $$(a, {}, '<button>B</button>', {'~click &': function(){ alert('B'); }});
+  // Clicking on button B will alert both 'A' and 'B'.
+  util.extendController = function(object) {
+    for (var controllerName in object.controller) {
+      (function(){ // new scope as we need one new function handler per controller
+        var matches, extend, eventName,
+            previousHandler, currentHandler, newHandler;
+
+        if (typeof object.controller[controllerName] === 'function') {
+          matches = controllerName.match(/^(\~)*(.+)/); // 'click button', '~click button', '_create', etc
+          extend = matches[1];
+          eventName = matches[2];
+        
+          if (!extend) return; // nothing to do
+
+          // Redefine controller:
+          // '~click button' ---> 'click button' = previousHandler + currentHandler
+          previousHandler = object.controller[eventName] ? (object.controller[eventName]._preProxy || object.controller[eventName]) : undefined;
+          currentHandler = object.controller[controllerName];
+          newHandler = function() {
+            if (previousHandler) previousHandler.apply(this, arguments);
+            if (currentHandler) currentHandler.apply(this, arguments);
+          };
+
+          object.controller[eventName] = newHandler;
+          delete object.controller[controllerName]; // delete '~click button'
+        } // if function
+      })();
+    } // for controllerName
+  };
+  
   // ------------------------------
   //
   //  Default object prototype
@@ -166,14 +173,14 @@
     
     _container: {
 
-      // Adds child object to container, appends view, listens for child removal
-      append: function(obj, selector){
+      // Adds child object to container, appends/prepends/etc view, listens for child removal
+      _insertObject: function(obj, selector, method){
         var self = this;
         if (!util.isAgility(obj)) {
           throw "agility.js: append argument is not an agility object";
         }
         this._container.children[obj._id] = obj; // children is *not* an array; this is for simpler lookups by global object id
-        this.trigger('append', [obj, selector]);
+        this.trigger(method, [obj, selector]);
         // ensures object is removed from container when destroyed:
         obj.bind('destroy', function(event, id){ 
           self._container.remove(id);
@@ -181,19 +188,20 @@
         return this;
       },
 
-      // Adds child object to container, prepends view, listens for child removal
-      prepend: function(obj, selector){
-        var self = this;
-        if (!util.isAgility(obj)) {
-          throw "agility.js: prepend argument is not an agility object";
-        }
-        this._container.children[obj._id] = obj; // children is *not* an array; this is for simpler lookups by global object id
-        this.trigger('prepend', [obj, selector]);
-        // ensures object is removed from container when destroyed:
-        obj.bind('destroy', function(event, id){ 
-          self._container.remove(id);
-        });
-        return this;
+      append: function(obj, selector) { 
+          return this._container._insertObject.call(this, obj, selector, 'append'); 
+      },
+
+      prepend: function(obj, selector) { 
+          return this._container._insertObject.call(this, obj, selector, 'prepend'); 
+      },
+
+      after: function(obj, selector) { 
+          return this._container._insertObject.call(this, obj, selector, 'after'); 
+      },
+
+      before: function(obj, selector) { 
+          return this._container._insertObject.call(this, obj, selector, 'before'); 
       },
       
       // Removes child object from container
@@ -296,7 +304,67 @@
     //
     // -------------
        
-    model: {}, // model prototype, empty now that watch is used, if brought back to root, backwords compatibility will need to be added
+    model: {
+
+      // Setter
+      set: function(arg, params) {
+        var self = this;
+        var modified = []; // list of modified model attributes
+        if (typeof arg === 'object') {
+          if (params && params.reset) {
+            this.model._data = $.extend({}, arg); // erases previous model attributes without pointing to object
+          }
+          else {
+            $.extend(this.model._data, arg); // default is extend
+          }
+          for (var key in arg) {
+            modified.push(key);
+          }
+        }
+        else {
+          throw "agility.js: unknown argument type in model.set()";
+        }
+
+        // Events
+        if (params && params.silent===true) return this; // do not fire events
+        this.trigger('change');
+        $.each(modified, function(index, val){
+          self.trigger('change:'+val);
+        });
+        return this; // for chainable calls
+      },
+      
+      // Getter
+      get: function(arg){
+        // Full model getter
+        if (arg === undefined) {
+          return this.model._data;
+        }
+        // Attribute getter
+        if (typeof arg === 'string') {            
+          return this.model._data[arg];
+        }
+        throw 'agility.js: unknown argument for getter';
+      },
+      
+      // Resetter (to initial model upon object initialization)
+      reset: function(){
+        this.model.set(this.model._initData, {reset:true});
+        return this; // for chainable calls
+      },
+      
+      // Number of model properties
+      size: function(){
+        return util.size(this.model._data);
+      },
+      
+      // Convenience function - loops over each model property
+      each: function(fn){
+        $.each(this.model._data, fn);
+        return this; // for chainable calls
+      }
+      
+    }, // model prototype
   
     // -------------
     //
@@ -307,7 +375,7 @@
     view: {
         
       // Defaults
-      format: '<div data-bind="text"></div>',
+      format: '<div/>',
       style: '',
       
       // Shortcut to view.$root or view.$root.find(), depending on selector presence
@@ -321,16 +389,7 @@
         // Without format there is no view
         if (this.view.format.length === 0) {
           throw "agility.js: empty format in view.render()";
-        }
-        //preprocess format
-        if (!this.view.raw) {
-          this.view.format, this.view.template_compiled = this.view.template(this.view.format, this.model);
-          this.view.raw = true;
-        }
-        if (typeof this.view.template_compiled === 'function') {
-          this.view.format = this.view.template_compiled(this.model);
-        }
-              
+        }                
         if (this.view.$root.size() === 0) {
           this.view.$root = $(this.view.format);
         }
@@ -344,15 +403,42 @@
         return this;
       }, // render
   
-      // Parse data-bind string of the type '[attribute] variable'
-      // Returns { key:'model key' [, attr:'attribute'] }
+      // Parse data-bind string of the type '[attribute] variable[, attribute variable ]...'
+      // If the variable is not an attribute, it must be first in the list,
+      //   all following pairs in the list are assumed to be attributes
+      // Returns { key:'model key', attr: [ {attr : 'attribute', attrVar : 'variable' }... ] }
       _parseBindStr: function(str){
-        var obj = { key:str }, 
-            spacePos = str.search(/\s/);
-        if (spacePos > -1) {
-          obj.attr = str.substr(0, spacePos);
-          obj.key = str.substr(spacePos+1);
-        }
+        var obj = {key:null, attr:[]},
+            pairs = str.split(','),
+            regex = /(\w+)(?:\s+(\w+))?/,
+            matched;
+        
+        if (pairs.length > 0) {
+          matched = pairs[0].match(regex);
+          // [ "attribute variable", "attribute", "variable" ]
+          // or
+          // [ "variable", "variable", undefined ]
+          // or
+          // null
+          if (matched) {
+            if (typeof(matched[2]) === "undefined") {
+              obj.key = matched[1];
+            } else {
+              obj.attr.push({attr: matched[1], attrVar: matched[2]});
+            } 
+          } // if (matched )
+          if (pairs.length > 1) {
+            for (var i = 1; i < pairs.length; i++) {
+              matched = pairs[i].match(regex);
+              if (matched) {
+                if (typeof(matched[2]) !== "undefined") {
+                  obj.attr.push({attr: matched[1], attrVar: matched[2]});
+                }
+              } // if (matched)
+            } // for (pairs.length)
+          } // if (pairs.length > 1)
+        } // if (pairs.length > 0)
+        
         return obj;
       },
       
@@ -361,20 +447,40 @@
         var self = this;
         var $rootNode = this.view.$().filter('[data-bind]');
         var $childNodes = this.view.$('[data-bind]');
+        var createAttributePairClosure = function(bindData, node, i) {
+          var attrPair = bindData.attr[i]; // capture the attribute pair in closure
+          return function() {
+            node.attr(attrPair.attr, self.model.get(attrPair.attrVar));
+          };
+        };
         $rootNode.add($childNodes).each(function(){
           var $node = $(this);
           var bindData = self.view._parseBindStr( $node.data('bind') );
 
+          var bindAttributesOneWay = function() {
+            // 1-way attribute binding
+            if (bindData.attr) {
+              for (var i = 0; i < bindData.attr.length; i++) {
+                self.bind('_change:'+bindData.attr[i].attrVar,
+                  createAttributePairClosure(bindData, $node, i));
+              } // for (bindData.attr)
+            } // if (bindData.attr)
+          }; // bindAttributesOneWay()
+          
           // <input type="checkbox">: 2-way binding
           if ($node.is('input[type="checkbox"]')) {
             // Model --> DOM
             self.bind('_change:'+bindData.key, function(){
-              $node.prop("checked", self.model[bindData.key]); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
+              $node.prop("checked", self.model.get(bindData.key)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
             });            
             // DOM --> Model
             $node.change(function(){
-              self.model[bindData.key] = $(this).prop("checked"); // not silent as user might be listening to change events
+              var obj = {};
+              obj[bindData.key] = $(this).prop("checked");
+              self.model.set(obj); // not silent as user might be listening to change events
             });
+            // 1-way attribute binding
+            bindAttributesOneWay();
           }
           
           // <select>: 2-way binding
@@ -382,13 +488,17 @@
             // Model --> DOM
             self.bind('_change:'+bindData.key, function(){
               var nodeName = $node.attr('name');
-              var modelValue = self.model[bindData.key];
+              var modelValue = self.model.get(bindData.key);
               $node.val(modelValue);
             });            
             // DOM --> Model
             $node.change(function(){
-              self.model[bindData.key] = $node.val(); // not silent as user might be listening to change events
+              var obj = {};
+              obj[bindData.key] = $node.val();
+              self.model.set(obj); // not silent as user might be listening to change events
             });
+            // 1-way attribute binding
+            bindAttributesOneWay();
           }
           
           // <input type="radio">: 2-way binding
@@ -396,59 +506,80 @@
             // Model --> DOM
             self.bind('_change:'+bindData.key, function(){
               var nodeName = $node.attr('name');
-              var modelValue = self.model[bindData.key];
+              var modelValue = self.model.get(bindData.key);
               $node.siblings('input[name="'+nodeName+'"]').filter('[value="'+modelValue+'"]').prop("checked", true); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
             });            
             // DOM --> Model
             $node.change(function(){
               if (!$node.prop("checked")) return; // only handles check=true events
-              self.model[bindData.key] = $node.val(); // not silent as user might be listening to change events
+              var obj = {};
+              obj[bindData.key] = $node.val();
+              self.model.set(obj); // not silent as user might be listening to change events
             });
+            // 1-way attribute binding
+            bindAttributesOneWay();
           }
           
           // <input type="search"> (model is updated after every keypress event)
           else if ($node.is('input[type="search"]')) {
             // Model --> DOM
             self.bind('_change:'+bindData.key, function(){
-              $node.val(self.model[bindData.key]); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
+              $node.val(self.model.get(bindData.key)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
             });
             // Model <-- DOM
             $node.keypress(function(){
               // Without timeout $node.val() misses the last entered character
               setTimeout(function(){
-                self.model[bindData.key] = $node.val(); // not silent as user might be listening to change events
+                var obj = {};
+                obj[bindData.key] = $node.val();
+                self.model.set(obj); // not silent as user might be listening to change events
               }, 50);
             });
+            // 1-way attribute binding
+            bindAttributesOneWay();
           }
 
           // <input type="text"> and <textarea>: 2-way binding
           else if ($node.is('input[type="text"], textarea')) {
             // Model --> DOM
             self.bind('_change:'+bindData.key, function(){
-              $node.val(self.model[bindData.key]); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
+              $node.val(self.model.get(bindData.key)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
             });            
             // Model <-- DOM
             $node.change(function(){
-              self.model[bindData.key] = $(this).val(); // not silent as user might be listening to change events
+              var obj = {};
+              obj[bindData.key] = $(this).val();
+              self.model.set(obj); // not silent as user might be listening to change events
             });
+            // 1-way attribute binding
+            bindAttributesOneWay();
           }
           
           // all other <tag>s: 1-way binding
           else {
-            if (bindData.attr) {
+            if (bindData.key) {
               self.bind('_change:'+bindData.key, function(){
-                $node.attr(bindData.attr, self.model[bindData.key]);
+                $node.text(self.model.get(bindData.key).toString());
               });
             }
-            else {
-              self.bind('_change:'+bindData.key, function(){
-                $node.text(self.model[bindData.key].toString());
-              });
-            }
+            bindAttributesOneWay();
           }
         }); // nodes.each()
         return this;
       }, // bindings()
+      
+      // Triggers _change and _change:* events so that view is updated as per view.bindings()
+      sync: function(){
+        var self = this;
+        // Trigger change events so that view is updated according to model
+        this.model.each(function(key, val){
+          self.trigger('_change:'+key);
+        });
+        if (this.model.size() > 0) {
+          this.trigger('_change');
+        }
+        return this;
+      },
 
       // Applies style dynamically
       stylize: function(){
@@ -483,11 +614,7 @@
           this.view.$().addClass(objClass);
         }
         return this;
-      },
-
-      // templating hooks
-      template : function(data) {return data},
-      raw : true
+      }
       
     }, // view prototype
   
@@ -503,12 +630,7 @@
       _create: function(event){
         this.view.stylize();
         this.view.bindings(); // Model-View bindings
-
-        Object.watch(this.model, function(attr, value) {
-          this.trigger('change:'+attr);
-          this.trigger('change');
-          return value;
-        });
+        this.view.sync(); // syncs View with Model
       },
   
       // Triggered upon removing self
@@ -525,7 +647,19 @@
       _prepend: function(event, obj, selector){
         this.view.$(selector).prepend(obj.view.$());
       },
-                  
+
+      // Triggered after child obj is inserted in the container
+      _before: function(event, obj, selector){
+        if (!selector) throw 'agility.js: _before needs a selector';
+        this.view.$(selector).before(obj.view.$());
+      },
+
+      // Triggered after child obj is inserted in the container
+      _after: function(event, obj, selector){
+        if (!selector) throw 'agility.js: _after needs a selector';
+        this.view.$(selector).after(obj.view.$());
+      },
+
       // Triggered after a child obj is removed from container (or self-removed)
       _remove: function(event, id){        
       },
@@ -559,6 +693,14 @@
     },
     prepend: function(){
       this._container.prepend.apply(this, arguments);
+      return this; // for chainable calls
+    },
+    after: function(){
+      this._container.after.apply(this, arguments);
+      return this; // for chainable calls
+    },
+    before: function(){
+      this._container.before.apply(this, arguments);
       return this; // for chainable calls
     },
     remove: function(){
@@ -614,7 +756,7 @@
 
     // Inherit object prototype
     if (typeof args[0] === "object" && util.isAgility(args[0])) {
-      prototype = args[0];
+      prototype = args[0];    
       args.shift(); // remaining args now work as though object wasn't specified
     } // build from agility object
     
@@ -634,6 +776,9 @@
     object._container.children = {};
     object.view.$root = $(); // empty jQuery object
 
+    // Cloned own properties (i.e. properties that are inherited by direct copy instead of by prototype chain)
+    object.model._data = object.model._data ? $.extend({}, object.model._data) : {};
+
     // -----------------------------------------
     //
     //  Extend model, view, controller
@@ -648,13 +793,14 @@
     else if (args.length === 1 && typeof args[0] === 'object' && (args[0].model || args[0].view || args[0].controller) ) {
       for (var prop in args[0]) {
         if (prop === 'model') {
-          $.extend(object.model, args[0][prop]);
+          $.extend(object.model._data, args[0].model);
         }
         else if (prop === 'view') {
-          $.extend(object.view, args[0][prop]);
+          $.extend(object.view, args[0].view);
         }
         else if (prop === 'controller') {
-          $.extend(object.controller, args[0][prop]);
+          $.extend(object.controller, args[0].controller);
+          util.extendController(object);
         }
         // User-defined methods
         else {
@@ -665,8 +811,10 @@
     
     // Prototype differential from separate {model}, {view}, {controller} arguments
     else {
+      
+      // Model from string
       if (typeof args[0] === 'object') {
-        $.extend(object.model, args[0]);
+        $.extend(object.model._data, args[0]);
       }
       else if (args[0]) {
         throw "agility.js: unknown argument type (model)";
@@ -693,6 +841,7 @@
       // Controller from object (..., ..., {method:function(){}})
       if (typeof args[2] === 'object') {
         $.extend(object.controller, args[2]);
+        util.extendController(object);
       }
       else if (args[2]) {
         throw "agility.js: unknown argument type (controller)";
@@ -705,6 +854,9 @@
     //  Bootstrap: Bindings, initializations, etc
     //
     // ----------------------------------------------
+    
+    // Save model's initial state (so it can be .reset() later)
+    object.model._initData = $.extend({}, object.model._data);
 
     // object.* will have their 'this' === object. This should come before call to object.* below.
     util.proxyAll(object, object);
@@ -712,12 +864,12 @@
     // Initialize $root, needed for DOM events binding below
     object.view.render();
   
-    // Binds all existing controller functions to corresponding events
+    // Bind all controllers to their events
     for (var ev in object.controller) {
       if (typeof object.controller[ev] === 'function') {
         object.bind(ev, object.controller[ev]);
       }
-    }
+    }  
   
     // Auto-triggers create event
     object.trigger('create');    
@@ -778,9 +930,9 @@
       }
       self._data.persist.openRequests++;
       self._data.persist.adapter.call(self, {
-        type: self.model[id] ? 'PUT' : 'POST', // update vs. create
-        id: self.model[id],
-        data: self.model,
+        type: self.model.get(id) ? 'PUT' : 'POST', // update vs. create
+        id: self.model.get(id),
+        data: self.model.get(),
         complete: function(){
           self._data.persist.openRequests--;
           if (self._data.persist.openRequests === 0) {
@@ -790,11 +942,11 @@
         success: function(data, textStatus, jqXHR){
           if (data[id]) {
             // id in body
-            self.model[id] = data[id]; self.model.silent = true;
+            self.model.set({id:data[id]}, {silent:true});
           }
           else if (jqXHR.getResponseHeader('Location')) {
             // parse id from Location
-            self.model[id] = jqXHR.getResponseHeader('Location').match(/\/([0-9]+)$/)[1]; this.model.silent = true;
+            self.model.set({ id: jqXHR.getResponseHeader('Location').match(/\/([0-9]+)$/)[1] }, {silent:true});
           }
           self.trigger('persist:save:success');
         },
@@ -810,7 +962,7 @@
     // .load()
     // Loads model with given id
     this.load = function(){
-      if (this.model[id] === undefined) throw 'agility.js: load() needs model id';
+      if (this.model.get(id) === undefined) throw 'agility.js: load() needs model id';
     
       if (self._data.persist.openRequests === 0) {
         self.trigger('persist:start');
@@ -818,7 +970,7 @@
       self._data.persist.openRequests++;
       self._data.persist.adapter.call(self, {
         type: 'GET',
-        id: this.model[id],
+        id: this.model.get(id),
         complete: function(){
           self._data.persist.openRequests--;
           if (self._data.persist.openRequests === 0) {
@@ -826,7 +978,7 @@
           }
         },
         success: function(data, textStatus, jqXHR){
-          $.extend(self.model, data);
+          self.model.set(data);
           self.trigger('persist:load:success');
         },      
         error: function(){
@@ -841,7 +993,7 @@
     // .erase()
     // Erases model with given id
     this.erase = function(){
-      if (this.model[id] === undefined) throw 'agility.js: erase() needs model id';
+      if (this.model.get(id) === undefined) throw 'agility.js: erase() needs model id';
     
       if (self._data.persist.openRequests === 0) {
         self.trigger('persist:start');
@@ -849,7 +1001,7 @@
       self._data.persist.openRequests++;
       self._data.persist.adapter.call(self, {
         type: 'DELETE',
-        id: this.model[id],
+        id: this.model.get(id),
         complete: function(){
           self._data.persist.openRequests--;
           if (self._data.persist.openRequests === 0) {
