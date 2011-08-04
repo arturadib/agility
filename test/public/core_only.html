@@ -26,10 +26,7 @@
     $.getScript('agility.js', function(data, status){
       window.agilitySource = data;
       
-      $.getScript('core.js', function(){
-        // core runs first
-        $.getScript('persist.js');
-      });
+      $.getScript('core.js');
     });
   </script>
 </body>
