@@ -120,11 +120,6 @@
     }
     return size;
   };
-
-  // Determine if a string is purely numeric
-  util.numIfNumeric = function(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n) ? parseFloat(n) : n;
-  }
   
   // Find controllers to be extended (with syntax '~'), redefine those to encompass previously defined controllers
   // Example:
@@ -159,158 +154,6 @@
       })();
     } // for controllerName
   };
-
-  // ------------------------------
-  //
-  // Binding Class
-  // 
-  // ------------------------------
-
-  var Binding = function(data, callback) {
-    this._data = data || {};
-    this._initData = $.extend({}, data);
-    this._bindings = {}; this._observers = [];
-    if (typeof callback === 'function') this._observers.push(callback);
-  } // Binding initializer
-  Binding.prototype = {
-    _live : true, // distinguish from the dummy.
-
-    // Setter
-    set: function(arg, params) {
-      var modified = []; // list of modified model attributes
-      if (typeof arg === 'object') {
-        if (params && params.reset) {
-          this._data = {}; // erases previous model attributes without pointing to object
-        }
-        for (var key in arg) {
-          modified.push(key);
-          this.p(key, arg[key]);
-        }
-      }
-      else {
-        throw "agility.js: unknown argument type in model.set()";
-      }
-
-      // Events
-      if (params && params.silent===true) return this; // do not fire events
-      return this; // for chainable calls
-    },
-      
-    // Getter
-    get: function(arg){
-      // Full model getter
-      if (arg === undefined) {
-        return this._data;
-      }
-      // Attribute getter
-      if (typeof arg === 'string' || typeof arg === 'number') {            
-        return this._data[arg];
-      }
-      throw 'agility.js: unknown argument for getter';
-    },
-      
-    // Resetter (to initial model upon object initialization)
-    reset: function(){
-      this.set(this.model._initData, {reset:true});
-      return this; // for chainable calls
-    },
-    
-    // Number of model properties
-    size: function(){
-      return util.size(this.model._data);
-    },
-    
-    // Convenience function - loops over each model property
-    each: function(fn){
-      $.each(this.model._data, fn);
-      return this; // for chainable calls
-    },
-
-    // Alternative getter/setter for nested data
-    p : function(prop, value, silent) {
-      if (prop instanceof Array) {
-        prop = prop.split('.');
-      }
-      if (value === undefined) {
-        var thisProp = util.numIfNumeric(prop.shift());
-        return Binding.proxy(this._data[thisProp]).p(prop);
-      }
-      else {
-        var data = this._data;
-        var path = prop.join('.'); // incase of handling bindings
-        var thisProp = prop[0]; // incase of observing a binding
-        var lastProp = prop.pop();
-        // Lookup as object & hand off to any Bindings encountered.
-        while (prop) {
-          data = data[prop.shift()];
-          if (data instanceof Binding) {
-            return data.p(prop.push(lastProp), value, silent);
-          }
-        }
-        // handle bindings.
-        if (data[lastProp] instanceof Binding) {
-          data[lastProp]._observers.slice(this._bindings[path], 1);
-        }
-        if (value instanceof Binding) {
-          this._bindings[path] = value._observers.push(function() {
-            this._notify(thisProp);
-          });
-        }
-        // set & return
-        data[lastProp] = value;
-        return value;
-      }
-    },
-
-    // Either returns or wraps a live binding
-    bind : function(prop) {
-      var rep = this.p(prop);
-      if (!rep.live) {
-        rep = rep.clone();
-        this.p(prop, rep);
-      }
-      return rep;
-    },
-
-    // clone method returns Binding with duplicate data
-    clone : function() {
-      return new Binding($.extend({}, this._data);
-    },
-
-    // notify routine
-    _notify : function(prop) {
-      var self = this;
-      if (prop instanceof Array) {
-        $.each(prop, function() {
-          self._notify(this);
-        });
-        return;
-      }
-      $.each(this._observers, function() {
-        this(prop, this);
-      });
-    },
-
-    // Wrap toString
-    toString : function() {
-      return this._data.toString();
-    },
-
-    // In operators & conditionals, give way to wrapped data
-    valueOf : function() {
-      return this._data;
-    }
-  };
-
-  // Proxy system, helps us treat Bindings & objects the same.
-  Binding.dummy = new Binding();
-  Binding.proxy = function(data) {
-    if (data instanceof Binding) {
-      return data;
-    }
-    Binding.dummy._data = data;
-    return Binding.dummy;
-  }
   
   // ------------------------------
   //
@@ -461,7 +304,94 @@
     //
     // -------------
        
-    model: new Binding(), // model prototype
+    model: {
+
+      // Setter
+      set: function(arg, params) {
+        var self = this;
+        var modified = []; // list of modified model attributes
+        if (typeof arg === 'object') {
+          if (params && params.reset) {
+            this.model._data = $.extend({}, arg); // erases previous model attributes without pointing to object
+          }
+          else {
+            $.extend(this.model._data, arg); // default is extend
+          }
+          for (var key in arg) {
+            modified.push(key);
+          }
+        }
+        else {
+          throw "agility.js: unknown argument type in model.set()";
+        }
+
+        // Events
+        if (params && params.silent===true) return this; // do not fire events
+        this.trigger('change');
+        $.each(modified, function(index, val){
+          self.trigger('change:'+val);
+        });
+        return this; // for chainable calls
+      },
+      
+      // Getter
+      get: function(arg){
+        // Full model getter
+        if (arg === undefined) {
+          return this.model._data;
+        }
+        // Attribute getter
+        if (typeof arg === 'string') {            
+          return this.model._data[arg];
+        }
+        throw 'agility.js: unknown argument for getter';
+      },
+      
+      // Resetter (to initial model upon object initialization)
+      reset: function(){
+        this.model.set(this.model._initData, {reset:true});
+        return this; // for chainable calls
+      },
+      
+      // Number of model properties
+      size: function(){
+        return util.size(this.model._data);
+      },
+      
+      // Convenience function - loops over each model property
+      each: function(fn){
+        $.each(this.model._data, fn);
+        return this; // for chainable calls
+      },
+
+      // Alternative setter/getter, best for the common case of one property set/get, use set() to set multiple properties.
+      prop: function(prop, value) {
+        if (value == undefined) {
+          return this.model.get(prop); // wrap get.
+        }
+        this.model._data[prop] = value;
+        this.trigger('change');
+        this.trigger('change:'+prop);
+        return value;
+      },
+
+      // Bind routine
+      bind: function(prop, other, otherProp, rev) {
+        var self = this;
+        var skip = false;
+        this.bind('change:'+prop, function() {
+          if (!skip) {
+            other.model.prop(otherProp, self.model.prop(prop));
+          }
+          skip = !skip;
+        });
+        if (rev) {
+          other.model.bind(otherProp, this, prop, true);
+        }
+        return this;
+      },
+      
+    }, // model prototype
   
     // -------------
     //
@@ -728,11 +658,6 @@
         this.view.stylize();
         this.view.bindings(); // Model-View bindings
         this.view.sync(); // syncs View with Model
-
-        this.model._observers.push(function(prop) {
-          this.trigger('change');
-          this.trigger('change:'+prop);
-        });
       },
   
       // Triggered upon removing self
@@ -865,7 +790,7 @@
     // Build object from prototype as well as the individual prototype parts
     // This enables differential inheritance at the sub-object level, e.g. object.view.format
     object = Object.create(prototype);
-    object.model = obect.model.clone(); // handle as a Binding.
+    object.model = Object.create(prototype.model);
     object.view = Object.create(prototype.view);
     object.controller = Object.create(prototype.controller);
     object._container = Object.create(prototype._container);
@@ -877,6 +802,9 @@
     object._events.data = {}; // event bindings will happen below
     object._container.children = {};
     object.view.$root = $(); // empty jQuery object
+
+    // Cloned own properties (i.e. properties that are inherited by direct copy instead of by prototype chain)
+    object.model._data = object.model._data ? $.extend({}, object.model._data) : {};
 
     // -----------------------------------------
     //
@@ -892,7 +820,7 @@
     else if (args.length === 1 && typeof args[0] === 'object' && (args[0].model || args[0].view || args[0].controller) ) {
       for (var prop in args[0]) {
         if (prop === 'model') {
-          object.model.set(args[0].model);
+          $.extend(object.model._data, args[0].model);
         }
         else if (prop === 'view') {
           $.extend(object.view, args[0].view);
@@ -913,7 +841,7 @@
       
       // Model from string
       if (typeof args[0] === 'object') {
-        object.model.set(args[0]);
+        $.extend(object.model._data, args[0]);
       }
       else if (args[0]) {
         throw "agility.js: unknown argument type (model)";
@@ -953,6 +881,9 @@
     //  Bootstrap: Bindings, initializations, etc
     //
     // ----------------------------------------------
+    
+    // Save model's initial state (so it can be .reset() later)
+    object.model._initData = $.extend({}, object.model._data);
 
     // object.* will have their 'this' === object. This should come before call to object.* below.
     util.proxyAll(object, object);
@@ -996,7 +927,7 @@
 
   // Globals
   window.agility = window.$$ = agility;
-  agility.Binding = Binding; // To include external bindings.
+
 
 
   // -----------------------------------------

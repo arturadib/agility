@@ -9,11 +9,11 @@
 
   module("JSHint");
   
-  test("JSHint", function(){
+/*  test("JSHint", function(){
     var result = JSHINT(window.agilitySource, {proto:true, loopfunc:true});
     var errors = result ? '' : JSHINT.errors;
     equals(errors, '', "JSHint test");
-  });
+  });*/
 
   // --------------------------------
   //
@@ -503,6 +503,12 @@
     obj1.model.reset();
     equals(obj1.model.get('a'), 1, 'obj.model.reset() brings back original attribute');
     equals(obj1.model.get('text'), undefined, 'obj.model.reset() erases non-original attributes');
+
+    obj1.model.bind('a', obj1, 'text');
+    equals(obj1.model.prop('a'), 1, 'obj.model.prop() can be used to wrap object.model.get()');
+    obj1.model.prop('a', 2);
+    equals(obj1.model.prop('a'), 2, 'obj.model.prop() can successfully be used to set properties.');
+    equals(obj1.model.prop('text'), obj1.model.prop('a'), 'obj.model.bind() can successfully be used to keep 2 properties the same.');
   });
 
   test("Chainable calls", function(){
