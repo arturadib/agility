@@ -9,11 +9,11 @@
 
   module("JSHint");
   
-/*  test("JSHint", function(){
+  test("JSHint", function(){
     var result = JSHINT(window.agilitySource, {proto:true, loopfunc:true});
     var errors = result ? '' : JSHINT.errors;
     equals(errors, '', "JSHint test");
-  });*/
+  });
 
   // --------------------------------
   //
