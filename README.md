@@ -25,21 +25,21 @@ These contributions will add these additional features:
 + Templates with speedy rerendering (does not recreate HTML);
 + Inclusion of other "components" inside the format;
 + Flexible binding mechanism (text & multiple fields in the same attribute or tag);
-+ External models;
 + Model binding;
 + Full backwords compatibility;
 
 How do I plan to do this? Well, it's simple:
 
-1. Move the model methods into their own class and extend with .bind() & .prop() methods. Agility objects will observe their models (which would be a feature not a necessity with additional contributions).
+1. Add .bind() method to $$().model. (I have decided to not use external model as $$ would be sufficient).
 2. Reimplement bindings to be instances of the model class.
 3. Implement a templating system to wrap the new binding system.
 
 This results in the following architecture:
 
-+ A seperate model composite observer system which directs changes to the roots' callbacks.
++ model.bind() and model.prop() added.
 
-  * Translates to change events.
-  * Repopulates sections with changed content.
++ The view will use Agility objects' models to represent bindings to the jQuery DOM.
+
+  * _container will also use this new system.
 
 + Templates provide easy access to the extended binding system.
