@@ -375,7 +375,7 @@
         return value;
       },
 
-      // Bind routine
+      // Bind routine, keeps values from 2 Agility objects ==
       bind: function(prop, other, otherProp, rev) {
         var self = this;
         var skip = false;
@@ -383,7 +383,7 @@
           if (!skip) {
             other.model.prop(otherProp, self.model.prop(prop));
           }
-          skip = !skip;
+          skip = !skip; // Skip the next one, will be recursive.
         });
         if (rev) {
           other.model.bind(otherProp, this, prop, true);
