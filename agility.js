@@ -112,6 +112,19 @@
     } // for attr1
   }; // proxyAll
   
+  // Reverses the order of events attached to an object
+  util.reverseEvents = function(obj, eventType){
+    var events = $(obj).data('events');
+    if (events !== undefined && events[eventType] !== undefined){
+      // can't reverse what's not there
+      var reverseEvents = [];
+      for (var e in events[eventType]){
+        reverseEvents.unshift(events[eventType][e]);
+      }
+      events[eventType] = reverseEvents;
+    }
+  }; //reverseEvents
+  
   // Determines # of attributes of given object (prototype inclusive)
   util.size = function(obj){
     var size = 0, key;
@@ -291,7 +304,13 @@
         // Custom event
         else {
           $(this._events.data).trigger('_'+eventObj.type, params);
+          // fire 'pre' hooks in reverse attachment order ( last first )
+          util.reverseEvents(this._events.data, 'pre:' + eventObj.type);
+          $(this._events.data).trigger('pre:' + eventObj.type, params);
+          // put the order of events back
+          util.reverseEvents(this._events.data, 'pre:' + eventObj.type);
           $(this._events.data).trigger(eventObj.type, params);
+          $(this._events.data).trigger('post:' + eventObj.type, params);
         }
         return this; // for chainable calls
       } // trigger
