@@ -208,6 +208,92 @@
     // equals( t2, o2, '_noProxy obj.*' );
   });
   
+  test("Bind to a controller custom event pre hook", function() {
+    var obj = $$({}, '<div/>', {
+      'myEvent': function() {
+        var l = $$({label: 'myEventLabel'}, '<span data-bind="label"/>');
+        this.append(l);
+      }
+    });
+    var ob = $$(obj);
+    validateObject(ob);
+    ob.bind('pre:myEvent', function() {
+      var l = $$({label: 'preHookEvent'}, '<span data-bind="label"/>');
+      ob.append(l);
+    });
+    //$$.document.append( ob );
+    ob.trigger('myEvent');
+    equals( ob.view.$( 'span' ).first().html(), 'preHookEvent', 'preHook event fired');
+    equals( ob.view.$( 'span' ).last().html(), 'myEventLabel', 'original event fired');
+  });
+  
+  test("Bind to a controller custom event pre hook twice", function() {
+    var obj = $$({}, '<div/>', {
+      'myEvent': function() {
+        var l = $$({label: 'myEventLabel'}, '<span data-bind="label"/>');
+        this.append(l);
+      }
+    });
+    var ob = $$(obj);
+    validateObject(ob);
+    ob.bind('pre:myEvent', function() {
+      var l = $$({label: 'preHookEvent'}, '<span data-bind="label"/>');
+      ob.append(l);
+    });
+    ob.bind('pre:myEvent', function() {
+      var l = $$({label: 'preHookEventLastFirst'}, '<span data-bind="label"/>');
+      ob.append(l);
+    });
+    //$$.document.append( ob );
+    ob.trigger('myEvent');
+    equals( ob.view.$( 'span' ).first().html(), 'preHookEventLastFirst', 'last preHook event fired first');
+    equals( ob.view.$( 'span' ).eq(1).html(), 'preHookEvent', 'preHook event fired');
+    equals( ob.view.$( 'span' ).last().html(), 'myEventLabel', 'original event fired');
+  });
+  
+  test("Bind to a controller custom event post hook", function() {
+    var obj = $$({}, '<div/>', {
+      'myEvent': function() {
+        var l = $$({label: 'myEventLabel'}, '<span data-bind="label"/>');
+        this.append(l);
+      }
+    });
+    var ob = $$(obj);
+    validateObject(ob);
+    ob.bind('post:myEvent', function() {
+      var l = $$({label: 'postHookEvent'}, '<span data-bind="label"/>');
+      ob.append(l);
+    });
+    //$$.document.append( ob );
+    ob.trigger('myEvent');
+    equals( ob.view.$( 'span' ).first().html(), 'myEventLabel', 'original event fired');
+    equals( ob.view.$( 'span' ).last().html(), 'postHookEvent', 'postHook event fired');
+  });
+  
+  test("Bind to a controller custom event post hook twice", function() {
+    var obj = $$({}, '<div/>', {
+      'myEvent': function() {
+        var l = $$({label: 'myEventLabel'}, '<span data-bind="label"/>');
+        this.append(l);
+      }
+    });
+    var ob = $$(obj);
+    validateObject(ob);
+    ob.bind('post:myEvent', function() {
+      var l = $$({label: 'postHookEvent'}, '<span data-bind="label"/>');
+      ob.append(l);
+    });
+    ob.bind('post:myEvent', function() {
+      var l = $$({label: 'postHookEventLastLast'}, '<span data-bind="label"/>');
+      ob.append(l);
+    });
+    //$$.document.append( ob );
+    ob.trigger('myEvent');
+    equals( ob.view.$( 'span' ).first().html(), 'myEventLabel', 'original event fired');
+    equals( ob.view.$( 'span' ).eq(1).html(), 'postHookEvent', 'postHook event fired');
+    equals( ob.view.$( 'span' ).last().html(), 'postHookEventLastLast', 'last postHook event fired last');
+  });
+  
   test("Extend controller syntax from four arguments (prototype, model, view, controller object)", function() {
     var lbl = $$({}, '<span data-bind="label"/>');
     var partial = $$({}, '<div/>', {
