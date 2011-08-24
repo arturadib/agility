@@ -418,10 +418,11 @@
           // [ "attribute variable", "attribute", "variable" ]
           // or
           // [ "variable", "variable", undefined ]
+          // in some IE it will be [ "variable, "variable", "" ]
           // or
           // null
           if (matched) {
-            if (typeof(matched[2]) === "undefined") {
+            if (typeof(matched[2]) === "undefined" || matched[2] === "") {
               obj.key = matched[1];
             } else {
               obj.attr.push({attr: matched[1], attrVar: matched[2]});
@@ -559,7 +560,11 @@
           else {
             if (bindData.key) {
               self.bind('_change:'+bindData.key, function(){
-                $node.text(self.model.get(bindData.key).toString());
+                if (self.model.get(bindData.key)) {
+                  $node.text(self.model.get(bindData.key).toString());
+                } else {
+                  $node.text( null );
+                }
               });
             }
             bindAttributesOneWay();

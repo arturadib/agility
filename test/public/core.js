@@ -416,6 +416,13 @@
     objNew = $$(objBase, {path:'http://google.com/favicon.ico'});
     equals(objNew.view.$('img').attr('src'), 'http://google.com/favicon.ico', 'img src correctly set');
   });
+  
+  test("Null one-way binding", function(){
+    var obj = $$({content: null}, {format:'<div data-bind="content"></div>'});
+    $$.document.append(obj);
+    
+    equals(obj.view.$().text(), '', "null data-bind OK");
+  });
 
 
   // ----------------------------------------------
