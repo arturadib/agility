@@ -437,7 +437,7 @@
           // [ "attribute variable", "attribute", "variable" ]
           // or
           // [ "variable", "variable", undefined ]
-          // in some IE it will be [ "variable, "variable", "" ]
+          // in some IE it will be [ "variable", "variable", "" ]
           // or
           // null
           if (matched) {
