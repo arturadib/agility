@@ -419,119 +419,119 @@
   
   test("Agility prototype model string property immutability", function() {
     var obj = $$({}, '<div></div>');
-    obj.model.set( { immutableValue: 'immutable' } );
-    var extendedObj = $$( obj, {
+    obj.model.set({immutableValue:'immutable'});
+    var extendedObj = $$(obj, {
       controller: {
         'create': function() {
-          var iV = this.model.get( 'immutableValue' );
+          var iV = this.model.get('immutableValue');
           iV = 'mutable';
-        }
-      }
-    } );
-    deepEqual( obj.model.get( 'immutableValue' ), 'immutable', 'prototype model should be immutable' );
+        } // create
+      } // controller
+    }); // extendedObj
+    deepEqual(obj.model.get('immutableValue'), 'immutable', 'prototype model should be immutable');
     
-    extendedObj.model.set( { immutableValue: 'mutable' } );
+    extendedObj.model.set({immutableValue:'mutable'});
     
-    $$.document.append( extendedObj );
+    $$.document.append(extendedObj);
     
-    deepEqual( obj.model.get( 'immutableValue' ), 'immutable', 'prototype model should be immutable' );
+    deepEqual(obj.model.get('immutableValue'), 'immutable', 'prototype model should be immutable');
     
     var obj2 = $$({}, '<div></div>');
-    obj2.model.set( { immutableValue: 'immutable' } );
-    var extendedObj2 = $$( obj2, {
-      model: { immutableValue: 'not immutable' },
+    obj2.model.set({immutableValue:'immutable'});
+    var extendedObj2 = $$(obj2,{
+      model: {immutableValue: 'not immutable'},
       controller: {
         'create': function() {
-          var iV = this.model.get( 'immutableValue' );
+          var iV = this.model.get('immutableValue');
           iV = 'mutable';
-        }
-      }
-    } );
-    deepEqual( obj2.model.get( 'immutableValue' ), 'immutable', 'prototype model should be immutable' );
+        } // create
+      } // controller 
+    }); // extendedObj2
+    deepEqual(obj2.model.get('immutableValue'), 'immutable', 'prototype model should be immutable');
     
-    extendedObj2.model.set( { immutableValue: 'mutable' } );
+    extendedObj2.model.set({immutableValue: 'mutable'});
     
-    $$.document.append( extendedObj2 );
+    $$.document.append(extendedObj2);
     
-    deepEqual( obj2.model.get( 'immutableValue' ), 'immutable', 'prototype model should be immutable' );
+    deepEqual(obj2.model.get('immutableValue'), 'immutable', 'prototype model should be immutable');
   });
   
   test("Agility prototype model array property immutability", function() {
     var obj = $$({}, '<div></div>');
-    obj.model.set( { immutableValue: [ 'immutable' ] } );
-    var extendedObj = $$( obj, {
+    obj.model.set({immutableValue: ['immutable']});
+    var extendedObj = $$(obj, {
       controller: {
         'create': function() {
-          var iV = this.model.get( 'immutableValue' );
-          iV.push( 'mutability' );
-        }
-      }
-    } );
-    deepEqual( obj.model.get( 'immutableValue' ), [ 'immutable' ], 'prototype model should be immutable' );
+          var iV = this.model.get('immutableValue');
+          iV.push('mutability');
+        } // create
+      } // controller
+    }); // extendedObj
+    deepEqual(obj.model.get('immutableValue'), ['immutable'], 'prototype model should be immutable');
     
-    extendedObj.model.set( { immutableValue: [ 'not immutable' ] } );
+    extendedObj.model.set({immutableValue: ['not immutable']});
     
-    $$.document.append( extendedObj );
+    $$.document.append(extendedObj);
     
-    deepEqual( obj.model.get( 'immutableValue' ), [ 'immutable' ], 'prototype model should be immutable' );
+    deepEqual(obj.model.get('immutableValue'), ['immutable'], 'prototype model should be immutable');
     
     var obj2 = $$({}, '<div></div>');
-    obj2.model.set( { immutableValue: [ 'immutable' ] } );
-    var extendedObj2 = $$( obj2, {
-      model: { immutableValue: [ 'not immutable' ] },
+    obj2.model.set({immutableValue: ['immutable']});
+    var extendedObj2 = $$(obj2, {
+      model: {immutableValue: ['not immutable']},
       controller: {
         'create': function() {
-          var iV = this.model.get( 'immutableValue' );
-          iV.push( 'mutability' );
-        }
-      }
-    } );
-    deepEqual( obj2.model.get( 'immutableValue' ), [ 'immutable' ], 'prototype model should be immutable' );
+          var iV = this.model.get('immutableValue');
+          iV.push('mutability');
+        } // create
+      } // controller
+    }); // extendedObj2
+    deepEqual(obj2.model.get('immutableValue'), ['immutable'], 'prototype model should be immutable');
     
-    extendedObj2.model.set( { immutableValue: [ 'not immutable' ] } );
+    extendedObj2.model.set({immutableValue: ['not immutable']});
     
-    $$.document.append( extendedObj2 );
+    $$.document.append(extendedObj2);
     
-    deepEqual( obj2.model.get( 'immutableValue' ), [ 'immutable' ], 'prototype model should be immutable' );
+    deepEqual(obj2.model.get('immutableValue'), ['immutable'], 'prototype model should be immutable');
   });
   
   test("Agility prototype model object property immutability", function() {
     var obj = $$({}, '<div></div>');
-    obj.model.set( { immutableValue: { i: 'immutable' } } );
-    var extendedObj = $$( obj, {
+    obj.model.set({immutableValue: {i: 'immutable'}});
+    var extendedObj = $$(obj, {
       controller: {
         'create': function() {
-          var iV = this.model.get( 'immutableValue' );
+          var iV = this.model.get('immutableValue');
           iV.i = 'mutable' ;
-        }
-      }
-    } );
-    deepEqual( obj.model.get( 'immutableValue' ), { i: 'immutable' }, 'prototype model should be immutable' );
+        } // create
+      } // controller
+    }); // extendedObj
+    deepEqual(obj.model.get('immutableValue'), {i: 'immutable'}, 'prototype model should be immutable');
     
-    extendedObj.model.set( { immutableValue: { i: 'mutable' } } );
+    extendedObj.model.set({immutableValue: {i: 'mutable'}});
     
-    $$.document.append( extendedObj );
+    $$.document.append(extendedObj);
     
-    deepEqual( obj.model.get( 'immutableValue' ), { i: 'immutable' }, 'prototype model should be immutable' );
+    deepEqual(obj.model.get('immutableValue'), {i: 'immutable'}, 'prototype model should be immutable');
     
     var obj2 = $$({}, '<div></div>');
-    obj2.model.set( { immutableValue: { i: 'immutable' } } );
-    var extendedObj2 = $$( obj2, {
-      model: { immutableValue: { i: 'not immutable' } },
+    obj2.model.set({immutableValue: {i: 'immutable'}});
+    var extendedObj2 = $$(obj2, {
+      model: {immutableValue: {i: 'not immutable'}},
       controller: {
         'create': function() {
-          var iV = this.model.get( 'immutableValue' );
+          var iV = this.model.get('immutableValue');
           iV.i = 'mutable' ;
-        }
-      }
-    } );
-    deepEqual( obj2.model.get( 'immutableValue' ), { i: 'immutable' }, 'prototype model should be immutable' );
+        } // create
+      } // controller
+    }); // extendedObj2
+    deepEqual(obj2.model.get('immutableValue'), {i: 'immutable'}, 'prototype model should be immutable');
     
-    extendedObj2.model.set( { immutableValue: { i: 'mutable' } } );
+    extendedObj2.model.set({immutableValue: {i: 'mutable'}});
     
-    $$.document.append( extendedObj2 );
+    $$.document.append(extendedObj2);
     
-    deepEqual( obj2.model.get( 'immutableValue' ), { i: 'immutable' }, 'prototype model should be immutable' );
+    deepEqual(obj2.model.get('immutableValue'), {i: 'immutable'}, 'prototype model should be immutable');
   });
 
   // ----------------------------------------------
