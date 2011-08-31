@@ -897,11 +897,15 @@
   
   // For plugins
   agility.fn = defaultPrototype;
+  
+  // isAgility test
+  agility.isAgility = function(obj) {
+    if (typeof obj !== 'object') return false;
+    return util.isAgility(obj);
+  };
 
   // Globals
   window.agility = window.$$ = agility;
-
-
 
   // -----------------------------------------
   //

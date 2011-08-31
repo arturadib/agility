@@ -657,6 +657,20 @@
     obj.view.$().trigger('click');
     ok(t===true, "root click event caught");
   });
+  
+  test("isAgility utility method", function() {
+    var obj = { some: 'object' };
+    equals($$.isAgility(obj), false, 'non-agility object should return false');
+    
+    obj = 'some string';
+    equals($$.isAgility(obj), false, 'string should return false');
+    
+    obj = 17;
+    equals($$.isAgility(obj), false, 'number should return false');
+    
+    obj = $$( {}, '<div/>' );
+    equals($$.isAgility(obj), true, 'agility object should return true');
+  });
 
 })(jQuery, agility);
 
