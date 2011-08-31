@@ -640,24 +640,32 @@
 
       // Triggered after child obj is appended to container
       _append: function(event, obj, selector){
+        obj.trigger('pre:appended');
         this.view.$(selector).append(obj.view.$());
+        obj.trigger('post:appended');
       },
 
       // Triggered after child obj is prepended to container
       _prepend: function(event, obj, selector){
+        obj.trigger('pre:appended');
         this.view.$(selector).prepend(obj.view.$());
+        obj.trigger('post:appended');
       },
 
       // Triggered after child obj is inserted in the container
       _before: function(event, obj, selector){
         if (!selector) throw 'agility.js: _before needs a selector';
+        obj.trigger('pre:appended');
         this.view.$(selector).before(obj.view.$());
+        obj.trigger('post:appended');
       },
 
       // Triggered after child obj is inserted in the container
       _after: function(event, obj, selector){
         if (!selector) throw 'agility.js: _after needs a selector';
+        obj.trigger('pre:appended');
         this.view.$(selector).after(obj.view.$());
+        obj.trigger('post:appended');
       },
 
       // Triggered after a child obj is removed from container (or self-removed)
