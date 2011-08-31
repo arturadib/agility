@@ -694,6 +694,52 @@
     obj1.empty();
     equals(obj1.size(), 0, 'empty() works');
   });
+  
+  test("Container calls pre and post 'appended' hooks on object being appended", function() {
+    var obj1 = $$({}, '<div><span class="here"></span></div>');
+    var obj2 = $$({ text: 'hello' }, '<div data-bind="text"/>');
+    var obj3 = $$(obj2, { 
+      controller: {
+        'pre:appended': function() {
+          var hello = this.model.get( 'text' );
+          hello += '-pre';
+          this.model.set({text: hello});
+        },
+        'post:appended': function() {
+          var hello = this.model.get( 'text' );
+          hello += '-post';
+          this.model.set({text: hello});
+        }
+      }
+    });
+    obj1.append(obj3, '.here');
+    equals(obj1.view.$('.here div').html(), 'hello-pre-post', 'append() triggered appended hooks');
+    
+    obj1 = $$({}, '<div><ul/></div>');
+    obj3.model.set({text: 'hello'});
+    obj1.prepend(obj3);
+    equals(obj1.view.$('ul').prev().html(), 'hello-pre-post', 'prepend() triggered appended hooks');
+    
+    obj1 = $$({}, '<div><ul><li id="a"/> <li id="b"/></ul></div>');
+    obj3.model.set({text: 'hello'});
+    obj1.before(obj3, '#b');
+    equals(obj1.view.$('ul li#a').next().html(), 'hello-pre-post', 'before() triggered appended hooks');
+    
+    obj1 = $$({}, '<div><ul><li id="a"/> <li id="b"/></ul></div>');
+    obj3.model.set({text: 'hello'});
+    obj1.after(obj3, '#a');
+    equals(obj1.view.$('ul li#a').next().html(), 'hello-pre-post', 'after() triggered appended hooks');
+    
+    var obj4 = $$(obj3, {
+      view: {
+        format: '<div id="obj4" data-bind="text"/>'
+      }
+    });
+    obj4.model.set({text: 'hello'});
+    $$.document.append(obj4);
+    equals($$.document.view.$('#obj4').html(), 'hello-pre-post', 'appended hooks triggered appended to document');
+    $$.document.view.$('#obj4').remove();
+  });
 
   test("Model calls", function(){
     var t = false;
