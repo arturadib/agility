@@ -291,6 +291,65 @@
     equals(fourth.view.$('span').first().text(), 'fourthLabel', 'naked ~create collapsed correctly to "create"');
   });
   
+  test("Extend controller syntax for change events from four arguments (prototype, model, view, controller object)", function() {
+    var lbl = $$({}, '<span data-bind="label"/>');
+    var partial = $$({}, '<div/>', {
+      'change:label': function() {
+        var l = $$(lbl, {label: this.model.get('label')});
+        this.append(l);
+      }
+    });
+    var complete = $$(partial, {}, {}, {
+      '~change:label': function() {
+        var value = $$(lbl, {label: this.model.get('value')});
+        this.append(value);
+      }
+    });
+    var first = $$(complete, {label:"firstLabel", value:"firstValue"});
+    validateObject(first);
+    first.model.set({label: "newLabel"});
+    equals(first.view.$('span').length, 2, 'appened label and value');
+    equals(first.view.$('span').first().text(), 'newLabel', 'executed partial change:label');
+    equals(first.view.$('span').last().text(), 'firstValue', 'executed extended change:label');
+    
+    var doubleExtend = $$(complete, {}, {}, {
+      '~change:label': function() {
+        var doub = $$(lbl, {label: this.model.get('doubleExtension')});
+        this.append(doub);
+      }
+    });
+    var dExtend = $$(doubleExtend, {label:"firstLabel",value:"extendedOnce",doubleExtension:"extendedTwice"});
+    validateObject(dExtend);
+    dExtend.model.set({label: "newLabel"});
+    equals(dExtend.view.$('span').length, 3, 'appended labels from three chained change:label events');
+    equals(dExtend.view.$('span').first().text(), 'newLabel', 'executed first change:label');
+    equals(dExtend.view.$('span').eq(1).text(), 'extendedOnce', 'executed second change:label');
+    equals(dExtend.view.$('span').last().text(), 'extendedTwice', 'executed third change:label');
+    
+    var differential = $$(partial, {}, {}, {
+      'change:label': function() {
+        var value = $$(lbl, {label: this.model.get('value')});
+        this.append(value);
+      }
+    });
+    var third = $$(differential, {label:"thirdLabel",value:"thirdValue"});
+    validateObject(third);
+    third.model.set({label: "newLabel"});
+    equals(third.view.$('span').length, 1, 'only one child');
+    equals(third.view.$('span').first().text(), 'thirdValue', 'initialized from overriden change:label');
+    
+    var nakedExtend = $$({}, '<div/>', {
+      '~change:label': function(){
+        var l = $$(lbl, {label: this.model.get('label')});
+        this.append(l);
+      }
+    });
+    var fourth = $$(nakedExtend, {label:"fourthLabel"});
+    validateObject(fourth);
+    fourth.model.set({label: "newLabel"});
+    equals(fourth.view.$('span').first().text(), 'newLabel', 'naked ~change:label collapsed correctly to "change:label"');
+  });
+  
   test("Extend controller syntax from single object argument ({ ..., controller: ...})", function() {
     var lbl = $$({}, '<span data-bind="label"/>');
     var partial = $$({}, '<div/>', {
@@ -395,6 +454,73 @@
     DOMextend2.view.$().click();
     ok(ran1, 'first DOM handler OK');
     ok(ran2, 'second DOM handler OK');
+  });
+  
+  test("Extend controller syntax for change events from single object argument ({ ..., controller: ...})", function() {
+    var lbl = $$({}, '<span data-bind="label"/>');
+    var partial = $$({}, '<div/>', {
+      'change:label': function() {
+        var l = $$(lbl, {label: this.model.get('label')});
+        this.append(l);
+      }
+    });
+    var complete = $$(partial, {
+      controller: {
+        '~change:label': function() {
+          var value = $$(lbl, {label: this.model.get('value')});
+          this.append(value);
+        }
+      }
+    });
+    var first = $$(complete, {label:"firstLabel", value:"firstValue"});
+    validateObject(first);
+    first.model.set({label: "newLabel"});
+    equals(first.view.$('span').length, 2, 'appened label and value');
+    equals(first.view.$('span').first().text(), 'newLabel', 'executed partial change:label');
+    equals(first.view.$('span').last().text(), 'firstValue', 'executed extended change:label');
+    
+    var doubleExtend = $$(complete, {
+      controller: {
+        '~change:label': function() {
+          var doub = $$(lbl, {label: this.model.get('doubleExtension')});
+          this.append(doub);
+        }
+      }
+    });
+    var dExtend = $$(doubleExtend, {label:"firstLabel",value:"extendedOnce",doubleExtension:"extendedTwice"});
+    validateObject(dExtend);
+    dExtend.model.set({label: "newLabel"});
+    equals(dExtend.view.$('span').length, 3, 'appended labels from three chained change:label events');
+    equals(dExtend.view.$('span').first().text(), 'newLabel', 'executed first change:label');
+    equals(dExtend.view.$('span').eq(1).text(), 'extendedOnce', 'executed second change:label');
+    equals(dExtend.view.$('span').last().text(), 'extendedTwice', 'executed third change:label');
+    
+    var differential = $$(partial, {
+      controller: {
+        'change:label': function() {
+          var value = $$(lbl, {label: this.model.get('value')});
+          this.append(value);
+        }
+      }
+    });
+    var third = $$(differential, {label:"thirdLabel",value:"thirdValue"});
+    validateObject(third);
+    third.model.set({label: "newLabel"});
+    equals(third.view.$('span').length, 1, 'only one child');
+    equals(third.view.$('span').first().text(), 'thirdValue', 'initialized from overriden change:label');
+    
+    var nakedExtend = $$({
+      controller: {
+        '~change:label': function(){
+          var l = $$(lbl, {label: this.model.get('label')});
+          this.append(l);
+        }
+      }
+    });
+    var fourth = $$(nakedExtend, {label:"fourthLabel"});
+    validateObject(fourth);
+    fourth.model.set({label: "newLabel"});
+    equals(fourth.view.$('span').first().text(), 'newLabel', 'naked ~change:label collapsed correctly to "change:label"');
   });
   
   test("Object inheritance", function(){
