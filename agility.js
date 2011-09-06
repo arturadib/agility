@@ -763,12 +763,7 @@
     // Build object from prototype as well as the individual prototype parts
     // This enables differential inheritance at the sub-object level, e.g. object.view.format
     object = Object.create(prototype);
-    // need to use $.extend for the model because non-trivial data like
-    //  arrays or objects are passed by reference from the prototype;
-    //  when a new object is then created but the child model property not
-    //  specified, the child will pull in prototype model property by reference 
-    //  resulting in side effects because prototype is being modified by children
-    object.model = $.extend( true, {}, prototype.model);
+    object.model = Object.create(prototype.model);
     object.view = Object.create(prototype.view);
     object.controller = Object.create(prototype.controller);
     object._container = Object.create(prototype._container);
@@ -782,7 +777,8 @@
     object.view.$root = $(); // empty jQuery object
 
     // Cloned own properties (i.e. properties that are inherited by direct copy instead of by prototype chain)
-    object.model._data = object.model._data ? $.extend({}, object.model._data) : {};
+    // This prevents children from altering parents models
+    object.model._data = prototype.model._data ? $.extend(true, {}, prototype.model._data) : {};
 
     // -----------------------------------------
     //
