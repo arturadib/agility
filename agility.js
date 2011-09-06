@@ -801,7 +801,8 @@
     object.view.$root = $(); // empty jQuery object
 
     // Cloned own properties (i.e. properties that are inherited by direct copy instead of by prototype chain)
-    object.model._data = object.model._data ? $.extend({}, object.model._data) : {};
+    // This prevents children from altering parents models
+    object.model._data = prototype.model._data ? $.extend(true, {}, prototype.model._data) : {};
 
     // -----------------------------------------
     //
