@@ -6,8 +6,8 @@ To test core components _without_ persistence (which requires Node.js), point yo
 
 To run the full test including persistence you will need `node` and `npm`. From the command line:
 
-    npm install
-    node server.js
+    $ npm install
+    $ node server.js
 
 Then point your browser to:
 
