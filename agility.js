@@ -582,7 +582,7 @@
                 if (self.model.get(bindData.key)) {
                   $node.text(self.model.get(bindData.key).toString());
                 } else {
-                  $node.text( null );
+                  $node.text('');
                 }
               });
             }
