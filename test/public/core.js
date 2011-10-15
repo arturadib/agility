@@ -635,6 +635,14 @@
     
     equals(obj.view.$().text(), '', "null data-bind OK");
   });
+  
+  test("Empty string one-way binding", function(){
+    var obj = $$({txt:"I'm text from a model"}, '<div data-bind="txt"/>');
+    $$.document.append(obj);
+    obj.model.set({'txt':''});
+    
+    equals(obj.view.$().text(), '', "empty string data-bind OK");
+  });
 
   test("Agility prototype model string property immutability", function() {
     var obj = $$({}, '<div></div>');
