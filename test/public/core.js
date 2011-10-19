@@ -221,10 +221,32 @@
       var l = $$({label: 'preHookEvent'}, '<span data-bind="label"/>');
       ob.append(l);
     });
-    //$$.document.append( ob );
     ob.trigger('myEvent');
     equals( ob.view.$( 'span' ).first().html(), 'preHookEvent', 'preHook event fired');
     equals( ob.view.$( 'span' ).last().html(), 'myEventLabel', 'original event fired');
+  });
+  
+  test("Bind to a controller custom event pre hook event reversal 'has own property bug' regression test", function () {
+    var obj = $$({}, '<div/>', {
+      'myEvent': function() {
+        var l = $$({label: 'myEventLabel'}, '<span data-bind="label"/>');
+        this.append(l);
+      }
+    });
+    var ob = $$(obj);
+    validateObject(ob);
+    ob.bind('pre:myEvent', function() {
+      var l = $$({label: 'preHookEvent'}, '<span data-bind="label"/>');
+      ob.append(l);
+    });
+    Array.prototype.__myRandomFunction = function() {
+      return 'not own property that will exists on events array';
+    };
+    ob.trigger('myEvent');
+    equals(ob.view.$('span').first().html(), 'preHookEvent', 'preHook event fired');
+    equals(ob.view.$('span').last().html(), 'myEventLabel', 'original event fired');
+    delete Array.prototype.__myRandomFunction;
+    ok(typeof Array.prototype.__myRandomFunction === 'undefined', 'reverted to original Array prototype');
   });
   
   test("Bind to a controller custom event pre hook twice", function() {

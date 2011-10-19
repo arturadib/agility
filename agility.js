@@ -119,6 +119,7 @@
       // can't reverse what's not there
       var reverseEvents = [];
       for (var e in events[eventType]){
+        if (!events[eventType].hasOwnProperty(e)) continue;
         reverseEvents.unshift(events[eventType][e]);
       }
       events[eventType] = reverseEvents;
