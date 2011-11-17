@@ -660,6 +660,11 @@
   
       // Triggered upon removing self
       _destroy: function(event){
+        // destroy all the children prior to destroying self
+        this._container.each(function(){
+          this.destroy();
+        });
+        // destroy self
         this.view.$().remove();
       },
 
