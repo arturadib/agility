@@ -660,6 +660,9 @@
   
       // Triggered upon removing self
       _destroy: function(event){
+        // destroy any appended agility objects
+        this._container.empty();
+        // destroy self
         this.view.$().remove();
       },
 

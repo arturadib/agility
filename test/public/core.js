@@ -316,6 +316,41 @@
     equals( ob.view.$( 'span' ).last().html(), 'postHookEventLastLast', 'last postHook event fired last');
   });
   
+  test("Destroy propagates to children", function() {
+    var destroyTriggered = false;
+    var childDestroyTriggered = false;
+    var grandchildDestroyTriggered = false;
+    var greatgrandchildDestroyTriggered = false;
+    var obj = $$({}, '<div/>', {
+      'destroy': function() {
+        destroyTriggered = true; 
+      }
+    });
+    var child = $$({}, '<div/>', {
+      'destroy': function() {
+        childDestroyTriggered = true;
+      }
+    });
+    var grandchild = $$({}, '<div/>', {
+      'destroy': function() {
+        grandchildDestroyTriggered = true;
+      }
+    });
+    var greatgrandchild = $$({}, '<div/>', {
+      'destroy': function() {
+        greatgrandchildDestroyTriggered = true;
+      }
+    });
+    obj.append( child );
+    child.append( grandchild );
+    grandchild.append( greatgrandchild );
+    obj.destroy();
+    ok(destroyTriggered, "destroy triggered");
+    ok(childDestroyTriggered, "child destroy triggered");
+    ok(grandchildDestroyTriggered, "grandchild destroy triggered");
+    ok(greatgrandchildDestroyTriggered, "great grandchild destroy triggered");
+  });
+  
   test("Extend controller syntax from four arguments (prototype, model, view, controller object)", function() {
     var lbl = $$({}, '<span data-bind="label"/>');
     var partial = $$({}, '<div/>', {
