@@ -660,10 +660,8 @@
   
       // Triggered upon removing self
       _destroy: function(event){
-        // destroy all the children prior to destroying self
-        this._container.each(function(){
-          this.destroy();
-        });
+        // destroy any appended agility objects
+        this._container.empty();
         // destroy self
         this.view.$().remove();
       },
