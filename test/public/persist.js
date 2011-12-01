@@ -3,8 +3,8 @@
   module("Persistence");
   
   asyncTest("Server check", function(){
-    expect(13);
-    
+    expect(16);
+
     // server check
     $.get('/api/', function(res){
       equals(res, 'agility is the way of the future', 'server online');
@@ -59,7 +59,14 @@
     obj.load();
 
     // container - gather, first syntax
-    var proto = $$({}, '<li data-bind="name"></li>').persist($$.adapter.restful, {collection:'people'});
+    var proto = $$({}, '<li data-bind="name"></li>',{
+      'create': function(){
+        if (!this._createCalled) {
+          ok(true, "proto 'create' called");
+          this._createCalled = true;
+        }
+      }
+    }).persist($$.adapter.restful, {collection:'people'});
     var obj = $$({}, '<ul></ul>', {
       'persist:gather:success': function(event, res){
         equals(this.size(), res.data.length, "container size matches data size");
@@ -69,7 +76,14 @@
     obj.gather(proto, 'append'); // gather
 
     // container - gather, second syntax
-    var proto = $$({}, '<li data-bind="name"></li>').persist($$.adapter.restful, {collection:'people'});
+    var proto = $$({}, '<li data-bind="name"></li>', {
+      'create': function(){
+        if (!this._createCalled) {
+          ok(true, "proto 'create' called");
+          this._createCalled = true;
+        }
+      }
+    }).persist($$.adapter.restful, {collection:'people'});
     var obj = $$({}, '<div><ul></ul></div>', {
       'persist:gather:success': function(event, res){
         equals(this.size(), res.data.length, "container size matches data size");
@@ -79,7 +93,14 @@
     obj.gather(proto, 'append', 'ul'); // gather
 
     // container - gather, third syntax
-    var proto = $$({}, '<li data-bind="name"></li>').persist($$.adapter.restful, {collection:'people'});
+    var proto = $$({}, '<li data-bind="name"></li>', {
+      'create': function(){
+        if (!this._createCalled) {
+          ok(true, "proto 'create' called");
+          this._createCalled = true;
+        }
+      }
+    }).persist($$.adapter.restful, {collection:'people'});
     var obj = $$({}, '<ul></ul>', {
       'persist:gather:success': function(event, res){
         equals(this.size(), res.data.length, "container size matches data size");
