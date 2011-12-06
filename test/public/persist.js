@@ -2,8 +2,8 @@
 
   module("Persistence");
   
-  asyncTest("Server check", function(){
-    expect(16);
+  asyncTest("Server check", function() {
+    expect(28);
 
     // server check
     $.get('/api/', function(res){
@@ -61,10 +61,7 @@
     // container - gather, first syntax
     var proto = $$({}, '<li data-bind="name"></li>',{
       'create': function(){
-        if (!this._createCalled) {
-          ok(true, "proto 'create' called");
-          this._createCalled = true;
-        }
+        ok(true, "proto 'create' called");
       }
     }).persist($$.adapter.restful, {collection:'people'});
     var obj = $$({}, '<ul></ul>', {
@@ -74,14 +71,11 @@
       }
     }).persist();
     obj.gather(proto, 'append'); // gather
-
+    
     // container - gather, second syntax
     var proto = $$({}, '<li data-bind="name"></li>', {
       'create': function(){
-        if (!this._createCalled) {
-          ok(true, "proto 'create' called");
-          this._createCalled = true;
-        }
+        ok(true, "proto 'create' called");
       }
     }).persist($$.adapter.restful, {collection:'people'});
     var obj = $$({}, '<div><ul></ul></div>', {
@@ -95,10 +89,7 @@
     // container - gather, third syntax
     var proto = $$({}, '<li data-bind="name"></li>', {
       'create': function(){
-        if (!this._createCalled) {
-          ok(true, "proto 'create' called");
-          this._createCalled = true;
-        }
+        ok(true, "proto 'create' called");
       }
     }).persist($$.adapter.restful, {collection:'people'});
     var obj = $$({}, '<ul></ul>', {
@@ -108,6 +99,22 @@
       }
     }).persist();
     obj.gather(proto, 'append', {some:'parameter'}); // gather
+
+    // test gather-modify-save consistency
+    var proto = $$({}, '<li data-bind="name"></li>', {
+      'persist:save:success': function(){
+        equals(this.model.get('name'), 'NEW NAME', 'saved modified model');
+      }
+    }).persist($$.adapter.restful, {collection:'people'});
+    var obj = $$({}, '<ul></ul>', {
+      'persist:gather:success': function(event, res){
+        this.each(function() {
+          this.model.set({'name': 'NEW NAME'});
+          this.save();
+        });
+      }
+    }).persist();
+    obj.gather(proto, 'append'); // gather
 
     setTimeout(function(){
       start();
