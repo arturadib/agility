@@ -3,7 +3,7 @@
   module("Persistence");
   
   asyncTest("Server check", function() {
-    expect(28);
+    expect(29);
 
     // server check
     $.get('/api/', function(res){
@@ -57,6 +57,15 @@
       }
     }).persist($$.adapter.restful, {collection:'NONSENSE'});
     obj.load();
+
+    // model - save from proto
+    var proto = $$({}, {}, {
+      'persist:save:success': function(){
+        equals(this.model.get('name'), 'Joe Doe', "model created");          
+      }
+    }).persist($$.adapter.restful, {collection:'people'});
+    var obj = $$(proto, {name: 'Joe Doe'})
+    obj.save();
 
     // container - gather, first syntax
     var proto = $$({}, '<li data-bind="name"></li>',{

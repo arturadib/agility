@@ -20,83 +20,13 @@
 
   <script>
 
-      //
-      // Modify freely here, then click "Render" to see result
-      //
+  //
+  // Modify freely here
+  //
 
-    // var a = $$({}, '<button>A</button>', {'click &': function(){ alert('A'); }});
-    // var b = $$(a, {}, '<button>B</button>', {'~click &': function(){ alert('B'); }});
-    // var c = $$(b, {}, '<button>C</button>', {'click &': function(){ alert('C'); }});
-    // $$.document.append(a);
-    // $$.document.append(b);
-    // $$.document.append(c);
-
-
-    // var a = $$({}, '<button>A</button>', {
-    //   'create': function(){ 
-    //     console.log('A:', this._id);
-    //   }
-    // });
-    // var b = $$(a, {
-    //   controller:{
-    //     '~create': function(){ 
-    //       console.log('B:', this._id);
-    //     }
-    //   }
-    // });    
-    // $$.document.append(a);
-    // $$.document.append(b);
-
-
-    var a = $$({msg:'hello A'}, '<button>button</button>', {
-      'create': function(){ 
-        console.log('create A called. model:', this.model.get('msg'));
-      },
-      'myEvent': function(){ console.log('myEvent!') }
-    });
-    var b = $$(a, {
-      model:{msg:'hello B'},
-      controller:{
-        '~create': function(){ 
-          console.log('create B called. model:', this.model.get('msg'));
-        },
-        '~myEvent': function(){ console.log('~myEvent!') }
-      }
-    });    
-    $$.document.append(a);
-    $$.document.append(b);
-
-
-//     var lbl = $$({}, '<span data-bind="label"/>');
-//     var partial = $$({}, '<div/>', {
-//       'create': function() {
-// console.log('creating l with:', this.model.get('label'));
-//         var l = $$(lbl, {label: this.model.get('label')});
-//         this.append(l);
-//       },
-//       'myEvent': function() {
-//         var l = $$(lbl, {label: this.model.get('myEventLabel')});
-//         this.append(l);
-//       }
-//     });
-//     var complete = $$(partial, {
-//       controller:{
-//         '~create': function() {
-// console.log('creating value with:', this.model.get('value'));
-//           var value = $$(lbl, {label: this.model.get('value')});
-//           this.append(value);
-//         },
-//         '~myEvent': function() {
-//           var value = $$(lbl, {label: this.model.get('myEventValue')});
-//           this.append(value);
-//         }
-//       }
-//     });
-//     var first = $$(complete, {label:"firstLabel", value:"firstValue"});
-//     var second = $$(complete, {label:"secondLabel", value:"secondValue"});
-//     
-//     console.log(first.view.$());
-
+  var obj = $$({msg: 'Hello World'}, '<div data-bind="msg"/>');
+  $$.document.append(obj);
+  
   </script>
 </body>
 
