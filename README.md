@@ -6,10 +6,6 @@ Agility is an MVC library for browser-side Javascript that lets you write **main
 
 + http://agilityjs.com
 
-#### Documentation
-
-+ http://agilityjs.com/docs.html
-
 #### Features overview
 
 + Painless two-way model-view bindings;
