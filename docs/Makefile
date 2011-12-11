@@ -1,4 +1,4 @@
-VER = `cat VERSION` (`date '+%b %d %Y'`)
+VER = `cat VERSION` (`date '+%b %d, %Y'`)
 
 all:
 	@echo "Making version $(VER)..."
