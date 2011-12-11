@@ -212,6 +212,20 @@
 
 
 <p><div class="demo"></div></p>
+<p>You can also bind models to DOM element attributes in addition to the element HTML content using the following syntax for <code>data-bind</code>:</p>
+<div class="codehilite"><pre><span class="c1">// data-bind syntax</span>
+<span class="p">[</span><span class="nx">model_var</span><span class="p">]</span> <span class="p">[,</span> <span class="nx">attribute1</span> <span class="nx">model_var1</span> <span class="p">[,</span> <span class="nx">attribute2</span> <span class="nx">model_var2</span><span class="p">]</span> <span class="p">...</span> <span class="p">]</span>
+</pre></div>
+
+
+<p>where the first (single) argument is the model variable to be bound to the DOM element HTML content, and the subsequent comma-separated pairs specify the binding of a DOM element attribute to a model variable, like so:</p>
+<div class="codehilite"><pre><span class="c1">// Bind model &#39;content&#39; to element&#39;s HTML content, and model &#39;myStyle&#39; to element&#39;s style attribute</span>
+<span class="kd">var</span> <span class="nx">msg</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">content</span><span class="o">:</span><span class="s1">&#39;Greetings!&#39;</span><span class="p">,</span> <span class="nx">myStyle</span><span class="o">:</span><span class="s1">&#39;color:red&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;p data-bind=&quot;content, style myStyle&quot;/&gt;&#39;</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
 <p>More complex bindings are also supported for other input elements:</p>
 <div class="codehilite"><pre><span class="c1">// Two-way input binding (radio)</span>
 <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span>
@@ -378,6 +392,22 @@
 <p>Agility adopts prototype-based (<a href="http://en.wikipedia.org/wiki/Differential_inheritance">differential</a>) inheritance. To create a new Agility object from an existing one, pass the latter as the prototype argument to the <a href="#factory">factory function</a>; additional model, view, controller initializers are passed as usual:</p>
 <div class="codehilite"><pre><span class="kd">var</span> <span class="nx">proto</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;p data-bind=&quot;msg&quot;/&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&amp; {color:red}&#39;</span><span class="p">);</span>
 <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span><span class="nx">proto</span><span class="p">,</span> <span class="p">{</span><span class="nx">msg</span><span class="o">:</span><span class="s1">&#39;Hey there!&#39;</span><span class="p">});</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<p>You can also bypass differential inheritance (which overrides existing methods) and instead extend controllers with the tilde (<code>~</code>) syntax:</p>
+<div class="codehilite"><pre><span class="kd">var</span> <span class="nx">proto</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;button&gt;Click me&lt;/button&gt;&#39;</span><span class="p">,</span> <span class="p">{</span>
+  <span class="s1">&#39;click &amp;&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;First controller&#39;</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span><span class="nx">proto</span><span class="p">,</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">{</span>
+  <span class="s1">&#39;~click &amp;&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;Second controller&#39;</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">});</span>
 <span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
 </pre></div>
 
@@ -551,7 +581,7 @@
 <h3><a href="#container">&mdash;</a></h3>
 <p>The methods below are specific to the object container.</p>
 <h3><a href="#core-append">.append()</a></h3>
-<p><em>Adds an Agility object to the object's container, and appends its view to object's view.</em></p>
+<p><em>Adds an Agility object to the object's container, and appends its view to containing object's view.</em></p>
 <p><strong>Syntax:</strong> </p>
 <div class="codehilite"><pre><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">object</span> <span class="p">[,</span><span class="nx">selector</span><span class="p">])</span>
 </pre></div>
@@ -564,7 +594,7 @@
 <p><strong>Returns:</strong></p>
 <p>Owner Agility object (for chainable calls).</p>
 <h3><a href="#core-prepend">.prepend()</a></h3>
-<p><em>Adds an Agility object to the object's container, and prepends its view to object's view.</em></p>
+<p><em>Adds an Agility object to the object's container, and prepends its view to containing object's view.</em></p>
 <p><strong>Syntax:</strong> </p>
 <div class="codehilite"><pre><span class="p">.</span><span class="nx">prepend</span><span class="p">(</span><span class="nx">object</span> <span class="p">[,</span><span class="nx">selector</span><span class="p">])</span>
 </pre></div>
@@ -573,6 +603,32 @@
 <ul>
 <li><code>object</code>: The Agility object to be added;</li>
 <li><code>selector</code>: A jQuery selector specifying where the object's root element should be prepended in the object's view. Will prepend to root element if undefined.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Owner Agility object (for chainable calls).</p>
+<h3><a href="#core-before">.before()</a></h3>
+<p><em>Adds an Agility object to the object's container, and inserts its view before given selector of containing object's view.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">before</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">selector</span><span class="p">)</span>
+</pre></div>
+
+
+<ul>
+<li><code>object</code>: The Agility object to be added;</li>
+<li><code>selector</code>: jQuery selector before which the object's root element should be inserted.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>Owner Agility object (for chainable calls).</p>
+<h3><a href="#core-after">.after()</a></h3>
+<p><em>Adds an Agility object to the object's container, and inserts its view after given selector of containing object's view.</em></p>
+<p><strong>Syntax:</strong> </p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">after</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">selector</span><span class="p">)</span>
+</pre></div>
+
+
+<ul>
+<li><code>object</code>: The Agility object to be added;</li>
+<li><code>selector</code>: jQuery selector after which the object's root element should be inserted.</li>
 </ul>
 <p><strong>Returns:</strong></p>
 <p>Owner Agility object (for chainable calls).</p>
@@ -746,7 +802,7 @@
 <p>where:</p>
 <ul>
 <li><code>adapter</code>: Function containing the implementation of the persistence algorithms.</li>
-<li><code>params</code>: Parameters to be passed to adapter. Requires at least <code>{collection:'collection_name'}</code>.</li>
+<li><code>params</code>: Parameters to be passed to adapter: The id property name on the server side, <code>{id:'id_name'}</code> (default is simply <code>{id:'id'}</code>), and the collection name <code>{collection:'collection_name'}</code> (required).</li>
 </ul>
 <p>If the adapter-params pair is not given, the only method that can be invoked is <a href="#persist-gather">gather</a>.</p>
 <p><strong>Returns:</strong></p>
@@ -827,7 +883,7 @@
 <p>where:</p>
 <ul>
 <li><code>proto</code>: Prototypal Agility object with <code>persist</code> already initialized.</li>
-<li><code>method</code>: String containing name of method to be invoked with each new Agility object to be added. Typically <code>'append'</code> or <code>'prepend'</code>.</li>
+<li><code>method</code>: String containing name of method to be invoked with each new Agility object to be added (e.g. <code>'append'</code>, <code>'prepend'</code>, <code>'before'</code>, <code>'after'</code>).</li>
 <li><code>selector</code>: jQuery selector indicating where the view of <code>proto</code> should be appended. Will append to root element if omitted.</li>
 <li><code>query</code>: Javascript object containing parameters to be passed to the adapter for e.g. HTTP queries, like <code>{orderBy:'name'}</code>.</li>
 </ul>

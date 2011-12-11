@@ -128,6 +128,20 @@ Agility offers painless two-way bindings to keep Models and Views in sync. Bindi
     $$.document.append(obj);
 <div class="demo"></div>
 
+You can also bind models to DOM element attributes in addition to the element HTML content using the following syntax for `data-bind`:
+
+    :::javascript
+    // data-bind syntax
+    [model_var] [, attribute1 model_var1 [, attribute2 model_var2] ... ]
+
+where the first (single) argument is the model variable to be bound to the DOM element HTML content, and the subsequent comma-separated pairs specify the binding of a DOM element attribute to a model variable, like so:
+
+    :::javascript
+    // Bind model 'content' to element's HTML content, and model 'myStyle' to element's style attribute
+    var msg = $$({content:'Greetings!', myStyle:'color:red'}, '<p data-bind="content, style myStyle"/>');
+    $$.document.append(msg);
+<div class="demo"></div>
+
 More complex bindings are also supported for other input elements:
 
     :::javascript
@@ -307,6 +321,22 @@ Agility adopts prototype-based ([differential](http://en.wikipedia.org/wiki/Diff
     :::javascript
     var proto = $$({}, '<p data-bind="msg"/>', '& {color:red}');
     var obj = $$(proto, {msg:'Hey there!'});
+    $$.document.append(obj);
+<div class="demo"></div>
+
+You can also bypass differential inheritance (which overrides existing methods) and instead extend controllers with the tilde (`~`) syntax:
+
+    :::javascript
+    var proto = $$({}, '<button>Click me</button>', {
+      'click &': function(){
+        alert('First controller');
+      }
+    });
+    var obj = $$(proto, {}, {}, {
+      '~click &': function(){
+        alert('Second controller');
+      }
+    });
     $$.document.append(obj);
 <div class="demo"></div>
 
@@ -514,7 +544,7 @@ The methods below are specific to the object container.
 
 ### [.append()](#core-append)
 
-_Adds an Agility object to the object's container, and appends its view to object's view._
+_Adds an Agility object to the object's container, and appends its view to containing object's view._
 
 **Syntax:** 
 
@@ -530,7 +560,7 @@ Owner Agility object (for chainable calls).
 
 ### [.prepend()](#core-prepend)
 
-_Adds an Agility object to the object's container, and prepends its view to object's view._
+_Adds an Agility object to the object's container, and prepends its view to containing object's view._
 
 **Syntax:** 
 
@@ -544,6 +574,37 @@ _Adds an Agility object to the object's container, and prepends its view to obje
 
 Owner Agility object (for chainable calls).
 
+### [.before()](#core-before)
+
+_Adds an Agility object to the object's container, and inserts its view before given selector of containing object's view._
+
+**Syntax:** 
+
+    :::javascript
+    .before(object, selector)
+
++ `object`: The Agility object to be added;
++ `selector`: jQuery selector before which the object's root element should be inserted.
+
+**Returns:**
+
+Owner Agility object (for chainable calls).
+
+### [.after()](#core-after)
+
+_Adds an Agility object to the object's container, and inserts its view after given selector of containing object's view._
+
+**Syntax:** 
+
+    :::javascript
+    .after(object, selector)
+
++ `object`: The Agility object to be added;
++ `selector`: jQuery selector after which the object's root element should be inserted.
+
+**Returns:**
+
+Owner Agility object (for chainable calls).
 
 ### [.remove()](#core-remove)
 
@@ -782,7 +843,7 @@ _Initializes persistence plugin, creates persistence methods for owner object._
 where:
 
 + `adapter`: Function containing the implementation of the persistence algorithms.
-+ `params`: Parameters to be passed to adapter. Requires at least `{collection:'collection_name'}`.
++ `params`: Parameters to be passed to adapter: The id property name on the server side, `{id:'id_name'}` (default is simply `{id:'id'}`), and the collection name `{collection:'collection_name'}` (required).
 
 If the adapter-params pair is not given, the only method that can be invoked is [gather](#persist-gather).
 
@@ -884,7 +945,7 @@ Each gathered MVC object will be added to the container, appended/prepended to t
 where:
 
 + `proto`: Prototypal Agility object with `persist` already initialized.
-+ `method`: String containing name of method to be invoked with each new Agility object to be added. Typically `'append'` or `'prepend'`.
++ `method`: String containing name of method to be invoked with each new Agility object to be added (e.g. `'append'`, `'prepend'`, `'before'`, `'after'`).
 + `selector`: jQuery selector indicating where the view of `proto` should be appended. Will append to root element if omitted.
 + `query`: Javascript object containing parameters to be passed to the adapter for e.g. HTTP queries, like `{orderBy:'name'}`.
 
