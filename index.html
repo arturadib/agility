@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+
+<!-- 
+
+**********************************************************************
+*
+* DO NOT MODIFY THIS FILE IF ITS NAME DOES NOT START WITH '_' !
+*
+* Instead change the corresponding _file.md or _file.html in docs/
+* and follow the build instructions in docs/README.md
+*
+**********************************************************************
+
+-->
+
+
+<html>
+<head>
+  <title>
+    Agility.js Javascript MVC library
+  </title>
+  <base href="docs/" target="_self" />
+  
+  <meta charset="utf-8" />
+	<meta name="description" content="Agility.js is an MVC library for Javascript that lets you write maintainable and reusable browser code without the verbose or infrastructural overhead found in other MVC libraries."/>
+	<meta name="author" content="Artur Adib"/>
+
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link type="text/css" href="highlight.css" rel="stylesheet" />	  
+      
+  <style type="text/css">
+    html,body { background:#ebebeb; margin:0; padding:0; padding-bottom:15px; font-family:'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif; font-size:16px; line-height:150%; }
+    pre { line-height:125%; }
+    div.center { width:850px; margin-left:auto; margin-right:auto; margin-top:30px; }
+    a { color:#0000A0; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    div#decor { height:8px; background:#0000A0; }
+    div#top { font-size:19px; color:#333; }
+    div#menu { text-align:center; }
+    div#menu li { display:inline; margin-right:40px; }
+    div#box {
+      margin-top:0; 
+      background:white;
+      -moz-border-radius: 3px;
+      -webkit-border-radius: 3px;
+      border-radius: 3px;
+      -moz-box-shadow: 0px 0px 8px #999;
+      -webkit-box-shadow: 0px 0px 8px #999;
+      box-shadow: 0px 0px 8px #999;
+    }
+    div#box-wrapper { padding:10px 20px; background:white; }
+    div#box-wrapper .download { background:#FFFFCC; padding:5px 10px; text-align:center;}
+
+    .demo { margin-top:-10px; margin-left:10px; font-size:80%; }
+    div#demo-wrapper { font-size:90%; font-family:Arial, sans; }
+    div#demo-wrapper #msg { margin-bottom:10px; }
+    iframe { width:600px; height:400px; border:1px solid #333; }
+    #simplemodal-overlay { background-color:#000; }
+    #simplemodal-container { background-color:white; border:8px solid #555; padding:12px; }
+  </style>
+
+  <script type="text/javascript">
+    if (window.location.href.search(/\?x/) < 0) {
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-924459-9']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    }
+  </script>
+
+</head>
+
+<body>
+
+  <div id="decor"></div>
+  
+  <a href="http://github.com/arturadib/agility"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/30f550e0d38ceb6ef5b81500c64d970b7fb0f028/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67" alt="Fork me on GitHub"></a>
+
+  <div id="top" class='center'>
+    <div><img src="logo.png"/></div>
+    <div>Ship more. Code and maintain less.</div>
+  </div>
+
+  <div id="menu" class='center'>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="docs.html">Docs</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="http://jsbin.com/agility/edit" target="_blank">Try it now!</a></li>
+      <li><a href="https://github.com/arturadib/agility" target="_blank"><b>Contribute</b></a></li>
+    </ul>
+  </div>
+  
+  <div id="box" class='center'>
+    <div id='box-wrapper'>
+
+<!-- __INSERT_POINT__ -->
+<p>Agility.js is an <a href="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC</a> library for Javascript that lets you write maintainable and reusable browser code without the verbose or infrastructural overhead found in <a href="http://documentcloud.github.com/backbone/">other</a> <a href="http://www.sproutcore.com/">MVC</a> <a href="http://knockoutjs.com/">libraries</a>. The goal is to enable developers to write web apps at least as quickly as with jQuery, while simplifying long-term maintainability through MVC objects.</p>
+<div class='download'>
+  <div><b>Latest version: 0.1.1 (Dec 11 2011)</b> | Compatible with IE7-8, Firefox, Chrome, Safari</div>
+  <div><a href="agility.min.js">Download minified js</a> (~4K packed + gzipped)</div>
+</div>
+
+<p>The library itself is a small Javascript file (goal is to remain under 10K), and its only dependency is a recent version of jQuery (Zepto support coming soon). The project is licensed under the liberal <a href="https://github.com/arturadib/agility/blob/master/LICENSE">MIT license</a>.</p>
+<p>See the documentation for a more complete <a href="docs.html#intro-features">list of features</a>.</p>
+<h2>Quick tour</h2>
+<p>Agility encourages (but does not require) writing your entire code in Javascript, that is, content (HTML), style (CSS), and behavior (JS) can all be contained within Javascript objects. The examples in this tour consist of such code. See <a href="docs.html#getting-started">Getting started</a> in the docs for the HTML template adopted.</p>
+<h3>Object initialization</h3>
+<p>Agility works with a single object type that contains a full model-view-controller stack. These MVC objects are built by passing initializers to the <a href="docs.html#factory">factory function</a> <code>$$()</code>, which takes care of setting up default bindings, auto-proxying, etc. The example below initializes an MVC object with empty model, a simple view, and default controllers:</p>
+<div class="codehilite"><pre><span class="c1">// Hello World</span>
+<span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span>
+  <span class="nx">model</span><span class="o">:</span> <span class="p">{},</span> 
+  <span class="nx">view</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">format</span><span class="o">:</span> <span class="s1">&#39;&lt;div&gt;Hello World&lt;/div&gt;&#39;</span>
+  <span class="p">},</span> 
+  <span class="nx">controller</span><span class="o">:</span> <span class="p">{}</span>
+<span class="p">});</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<p>A more compact syntax is also supported. It's handy when dealing with simple objects:</p>
+<div class="codehilite"><pre><span class="c1">// Hello World</span>
+<span class="c1">// Compact syntax: initializers are passed in the order M, V, C:</span>
+<span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;div&gt;Hello World&lt;/div&gt;&#39;</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<h3>Model-view bindings</h3>
+<p>The framework comes with a powerful model-view binder, so that views are always in sync with models and vice-versa. Establishing bindings is as simple as introducing a <code>data-bind</code> attribute in the desired DOM element; the factory function takes care of creating the necessary controllers:</p>
+<div class="codehilite"><pre><span class="c1">// Bind model to element&#39;s HTML content</span>
+<span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">txt</span><span class="o">:</span><span class="s2">&quot;I&#39;m text from a model&quot;</span><span class="p">},</span> <span class="s1">&#39;&lt;div data-bind=&quot;txt&quot;/&gt;&#39;</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+
+<span class="c1">// Bind model to element&#39;s attribute</span>
+<span class="kd">var</span> <span class="nx">url</span> <span class="o">=</span> <span class="s1">&#39;http://google.com/favicon.ico&#39;</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">icon</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">path</span><span class="o">:</span><span class="nx">url</span><span class="p">},</span> <span class="s1">&#39;&lt;p&gt;Image src from model: &lt;img data-bind=&quot;src path&quot;/&gt;&lt;/p&gt;&#39;</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">icon</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<p>Bindings are always two-way (instant updates in both directions), and work with most input types:</p>
+<div class="codehilite"><pre><span class="c1">// Two-way binding (checkbox)</span>
+<span class="kd">var</span> <span class="nx">check</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span>
+  <span class="p">{</span><span class="nx">a</span><span class="o">:</span><span class="kc">false</span><span class="p">,</span> <span class="nx">b</span><span class="o">:</span><span class="kc">true</span><span class="p">},</span>
+  <span class="s2">&quot;&lt;div&gt; \</span>
+<span class="s2">      &lt;input type=&#39;checkbox&#39; name=&#39;test&#39; data-bind=&#39;a&#39;/&gt; checked: &lt;span data-bind=&#39;a&#39;/&gt;&lt;br/&gt; \</span>
+<span class="s2">      &lt;input type=&#39;checkbox&#39; name=&#39;test&#39; data-bind=&#39;b&#39;/&gt; checked: &lt;span data-bind=&#39;b&#39;/&gt;&lt;br/&gt; \</span>
+<span class="s2">   &lt;/div&gt;&quot;</span>
+<span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">check</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<h3>Controller-event bindings</h3>
+<p>User-defined controllers are bound to events by automatically matching function and event names. To handle DOM events, start with the event name followed by a DOM selector. Agility events (e.g. object creation, model change, etc) are never followed by a selector:</p>
+<div class="codehilite"><pre><span class="kd">var</span> <span class="nx">person</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;p&gt;&lt;input type=&quot;text&quot; data-bind=&quot;name&quot;/&gt; &lt;span id=&quot;msg&quot;/&gt;&lt;/p&gt;&#39;</span><span class="p">,</span> <span class="p">{</span>
+  <span class="s1">&#39;create&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="c1">// Fired upon object creation</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#msg&#39;</span><span class="p">).</span><span class="nx">text</span><span class="p">(</span><span class="s1">&#39;Enter name&#39;</span><span class="p">);</span>
+  <span class="p">},</span>
+  <span class="s1">&#39;change&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="c1">// Fired upon model change</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#msg&#39;</span><span class="p">).</span><span class="nx">text</span><span class="p">(</span><span class="s1">&#39;Name changed to: &#39;</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">));</span>
+  <span class="p">},</span>
+  <span class="s1">&#39;focus input&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="c1">// Fired upon DOM event &#39;focus&#39; on element input</span>
+    <span class="c1">// &#39;this&#39; is always auto-proxied to the owner MVC object</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#msg&#39;</span><span class="p">).</span><span class="nx">text</span><span class="p">(</span><span class="s1">&#39;Focused on input!&#39;</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<h3>Inheritance and containers</h3>
+<p>Agility adopts a simple object hierarchy model. Objects can serve as the prototype of other objects (<a href="http://en.wikipedia.org/wiki/Differential_inheritance">differential inheritance</a>):</p>
+<div class="codehilite"><pre><span class="c1">// Base object with empty model:</span>
+<span class="kd">var</span> <span class="nx">proto</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;p data-bind=&quot;name&quot; style=&quot;color:red&quot;/&gt;&#39;</span><span class="p">);</span>
+<span class="c1">// Derived objects with specified models:</span>
+<span class="kd">var</span> <span class="nx">obj1</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span><span class="nx">proto</span><span class="p">,</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span><span class="s1">&#39;Joe Doe&#39;</span><span class="p">});</span>
+<span class="kd">var</span> <span class="nx">obj2</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span><span class="nx">proto</span><span class="p">,</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span><span class="s1">&#39;Foo Bar&#39;</span><span class="p">});</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">obj1</span><span class="p">);</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">obj2</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<p>as well as containers for other Agility objects:</p>
+<div class="codehilite"><pre><span class="kd">var</span> <span class="nx">counter</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">item</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;li&gt;I\&#39;m item #&lt;span data-bind=&quot;id&quot;/&gt;&lt;/li&gt;&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">list</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;div&gt; &lt;button&gt;Click me&lt;/button&gt; &lt;ul&gt;&lt;/ul&gt; &lt;/div&gt;&#39;</span><span class="p">,</span> <span class="p">{</span>
+  <span class="s1">&#39;click button&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="kd">var</span> <span class="nx">newItem</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span> <span class="p">{</span><span class="nx">id</span><span class="o">:</span><span class="nx">counter</span><span class="p">});</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">prepend</span><span class="p">(</span><span class="nx">newItem</span><span class="p">,</span> <span class="s1">&#39;ul&#39;</span><span class="p">);</span> <span class="c1">// add object to container, prepend view at &lt;ul&gt;</span>
+    <span class="nx">counter</span><span class="o">++</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">})</span>    
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">list</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<h3>In-object content, style, and behavior</h3>
+<p>Views don't require styles (CSS) to be declared in-object, but doing so leads to fully reusable objects and eliminates the need to maintain HTML and CSS files. For example, the object <code>clock</code> below can be copied-and-pasted into any Agility project - its content, style, and behavior are preserved without having to fish out HTML and CSS elements/selectors from different files:</p>
+<div class="codehilite"><pre><span class="kd">var</span> <span class="nx">clock</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span>
+  <span class="nx">model</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">time</span><span class="o">:</span> <span class="s1">&#39;12:00:00&#39;</span>
+  <span class="p">},</span>
+  <span class="nx">view</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">format</span><span class="o">:</span> <span class="s1">&#39;&lt;span data-bind=&quot;time&quot;/&gt;&#39;</span><span class="p">,</span>
+    <span class="nx">style</span><span class="o">:</span> <span class="s1">&#39;&amp; { color:white; background:#88f; padding:4px 8px; }&#39;</span>
+  <span class="p">},</span>
+  <span class="nx">controller</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s1">&#39;create&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>          
+      <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+      <span class="nx">setInterval</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span><span class="nx">time</span><span class="o">:</span> <span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">()).</span><span class="nx">toLocaleTimeString</span><span class="p">()});</span>
+      <span class="p">},</span> <span class="mi">1000</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">clock</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<h3>Persistence</h3>
+<p>Server- and client-side persistence can be implemented through the built-in plugin <a href="docs.html#persist">persist</a>. You can setup and <code>load</code> a model from a RESTful service in one line (the view is automatically updated via model-view binding):</p>
+<div class="codehilite"><pre><span class="kd">var</span> <span class="nx">person</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">id</span><span class="o">:</span><span class="mi">123</span><span class="p">},</span> <span class="s1">&#39;&lt;p&gt;Name: &lt;span data-bind=&quot;name&quot;/&gt;&lt;/p&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&amp; span {background:blue; color:white; padding:3px 6px;}&#39;</span><span class="p">);</span>
+
+<span class="c1">// Initialize plugin with RESTful adapter, load model with above id:</span>
+<span class="nx">person</span><span class="p">.</span><span class="nx">persist</span><span class="p">(</span><span class="nx">$$</span><span class="p">.</span><span class="nx">adapter</span><span class="p">.</span><span class="nx">restful</span><span class="p">,</span> <span class="p">{</span><span class="nx">collection</span><span class="o">:</span><span class="s1">&#39;people&#39;</span><span class="p">}).</span><span class="nx">load</span><span class="p">();</span>
+
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<p>(View JSON server response used in the request above: <a href="api/people/123">GET api/people/123</a>).</p>
+<p>You can also <code>gather</code> an entire collection of models and insert them as MVC objects (derived from a prototype) into an object's container, as illustrated below. This example also shows how Ajax "loading" icons/messages are implemented through two simple controllers:</p>
+<div class="codehilite"><pre><span class="c1">//</span>
+<span class="c1">// person: prototype (will be &#39;gathered&#39; below)</span>
+<span class="c1">//</span>
+<span class="kd">var</span> <span class="nx">person</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;li data-bind=&quot;name&quot;/&gt;&#39;</span><span class="p">).</span><span class="nx">persist</span><span class="p">(</span><span class="nx">$$</span><span class="p">.</span><span class="nx">adapter</span><span class="p">.</span><span class="nx">restful</span><span class="p">,</span> <span class="p">{</span><span class="nx">collection</span><span class="o">:</span><span class="s1">&#39;people&#39;</span><span class="p">});</span>
+
+<span class="c1">//</span>
+<span class="c1">// people: persons container</span>
+<span class="c1">//</span>
+<span class="kd">var</span> <span class="nx">people</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span>
+  <span class="nx">model</span><span class="o">:</span> <span class="p">{},</span>
+  <span class="nx">view</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">format</span><span class="o">:</span> 
+      <span class="s1">&#39;&lt;div&gt;\</span>
+<span class="s1">        &lt;span&gt;Loading ...&lt;/span&gt;\</span>
+<span class="s1">        &lt;button&gt;Load people&lt;/button&gt;&lt;br/&gt;&lt;br/&gt;\</span>
+<span class="s1">        People: &lt;ul/&gt;\</span>
+<span class="s1">      &lt;/div&gt;&#39;</span><span class="p">,</span>
+    <span class="nx">style</span><span class="o">:</span>
+      <span class="s1">&#39;&amp; {position:relative}\</span>
+<span class="s1">       &amp; span {position:absolute; top:0; right:0; padding:3px 6px; background:red; color:white; display:none; }&#39;</span>
+  <span class="p">},</span> 
+  <span class="nx">controller</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s1">&#39;click button&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">empty</span><span class="p">();</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">gather</span><span class="p">(</span><span class="nx">person</span><span class="p">,</span> <span class="s1">&#39;append&#39;</span><span class="p">,</span> <span class="s1">&#39;ul&#39;</span><span class="p">);</span>
+    <span class="p">},</span>
+    <span class="c1">// Ajax loading message - start</span>
+    <span class="s1">&#39;persist:start&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;span&#39;</span><span class="p">).</span><span class="nx">show</span><span class="p">();</span>
+    <span class="p">},</span>
+    <span class="c1">// Ajax loading message - stop</span>
+    <span class="s1">&#39;persist:stop&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;span&#39;</span><span class="p">).</span><span class="nx">hide</span><span class="p">();</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}).</span><span class="nx">persist</span><span class="p">();</span> <span class="c1">// this makes .gather() available</span>
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">people</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+<p>(View JSON server response used in the request above: <a href="api/people/">GET api/people/</a>).</p>
+<h3>The infamous To-Do example</h3>
+<p>Last but not least, no modern MVC library is complete without a simple To-Do list example. The fully functional example below has 17 lines of code:</p>
+<div class="codehilite"><pre><span class="c1">//</span>
+<span class="c1">// Item prototype</span>
+<span class="c1">//</span>
+<span class="kd">var</span> <span class="nx">item</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;li&gt;&lt;span data-bind=&quot;content&quot;/&gt; &lt;button&gt;x&lt;/button&gt;&lt;/li&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&amp; span { cursor:pointer; }&#39;</span><span class="p">,</span> <span class="p">{</span>
+  <span class="s1">&#39;click span&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="kd">var</span> <span class="nx">input</span> <span class="o">=</span> <span class="nx">prompt</span><span class="p">(</span><span class="s1">&#39;Edit to-do item:&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">));</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">input</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span><span class="nx">content</span><span class="o">:</span><span class="nx">input</span><span class="p">});</span>
+  <span class="p">},</span>
+  <span class="s1">&#39;click button&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="c1">//</span>
+<span class="c1">// List of items</span>
+<span class="c1">//</span>
+<span class="kd">var</span> <span class="nx">list</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({},</span> <span class="s1">&#39;&lt;div&gt; &lt;button id=&quot;new&quot;&gt;New item&lt;/button&gt; &lt;ul&gt;&lt;/ul&gt; &lt;/div&gt;&#39;</span><span class="p">,</span> <span class="p">{</span>
+  <span class="s1">&#39;click #new&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="kd">var</span> <span class="nx">newItem</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span> <span class="p">{</span><span class="nx">content</span><span class="o">:</span><span class="s1">&#39;Click to edit&#39;</span><span class="p">});</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">newItem</span><span class="p">,</span> <span class="s1">&#39;ul&#39;</span><span class="p">);</span> <span class="c1">// add to container, appending at &lt;ul&gt;</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">list</span><span class="p">);</span>
+</pre></div>
+
+
+<p><div class="demo"></div></p>
+
+
+    </div>
+  </div>
+
+
+  <p style="text-align:center; margin-top:30px; font-size:90%;">Agility.js is a project of <a href="http://arturadib.com">Artur Adib</a></p>
+
+  <div id="demo-wrapper" style="display:none"></div>
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="jquery.simplemodal.1.4.1.min.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript">
+    (function($){
+      //
+      // Each "Run demo"
+      //
+      $('div.demo').each(function(){
+        var code = $(this).prevAll('.codehilite:first').text();
+        //
+        // On demo click
+        //
+        var $link = $("<button>Run demo</button>").click(function(){
+          var $frame = $('<iframe \/>').attr('src', '_demo.html');
+          $('div#demo-wrapper')
+            .hide()
+            .empty()
+            .append('<div id="msg">Loading ...</div>')
+            .append($frame)
+            .modal({overlayClose: true});            
+          //
+          // Insert dynamic frame content (pure jQuery doesn't work with script tags)
+          //
+          $frame.load(function(){
+            $('div#demo-wrapper #msg').html('Press <b>esc</b> or click outside box to close')
+            var frameWindow = this.contentWindow ? this.contentWindow : this.contentDocument.defaultView;
+            var script = frameWindow.document.createElement("script");
+            script.type = "text/javascript";
+            script.text = '\n'+code+'\n';
+            frameWindow.document.body.appendChild(script);          
+          });
+          return false;
+        }); // demo click
+        $(this).append($link);
+      }); // each demo
+    })(jQuery);
+  </script>
+
+</body>
+
+</html>
