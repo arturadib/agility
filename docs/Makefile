@@ -21,3 +21,7 @@ all:
 	@echo "Minifying"...
 	@cat LICENSE_HEADER > agility.min.js
 	@jsmin < ../agility.js >> agility.min.js
+
+	@echo "Updating agility-start.zip"...
+	@cp -f agility.min.js agility-start/
+	@zip agility-start.zip agility-start/*
