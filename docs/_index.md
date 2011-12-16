@@ -51,7 +51,7 @@ The framework comes with a powerful model-view binder, so that views are always 
 
     // Bind model to element's attribute
     var url = 'http://google.com/favicon.ico';
-    var icon = $$({path:url}, '<p>Image src from model: <img data-bind="src path"/></p>');
+    var icon = $$({path:url}, '<p>Image src from model: <img data-bind="src=path"/></p>');
     $$.document.append(icon);
 <div class="demo"></div>
 

@@ -214,13 +214,13 @@
 <p><div class="demo"></div></p>
 <p>You can also bind models to DOM element attributes in addition to the element HTML content using the following syntax for <code>data-bind</code>:</p>
 <div class="codehilite"><pre><span class="c1">// data-bind syntax</span>
-<span class="p">[</span><span class="nx">model_var</span><span class="p">]</span> <span class="p">[,</span> <span class="nx">attribute1</span> <span class="nx">model_var1</span> <span class="p">[,</span> <span class="nx">attribute2</span> <span class="nx">model_var2</span><span class="p">]</span> <span class="p">...</span> <span class="p">]</span>
+<span class="p">[</span><span class="nx">model_var</span><span class="p">]</span> <span class="p">[,</span> <span class="nx">attribute1</span><span class="o">=</span><span class="nx">model_var1</span> <span class="p">[,</span> <span class="nx">attribute2</span><span class="o">=</span><span class="nx">model_var2</span><span class="p">]</span> <span class="p">...</span> <span class="p">]</span>
 </pre></div>
 
 
 <p>where the first (single) argument is the model variable to be bound to the DOM element HTML content, and the subsequent comma-separated pairs specify the binding of a DOM element attribute to a model variable, like so:</p>
 <div class="codehilite"><pre><span class="c1">// Bind model &#39;content&#39; to element&#39;s HTML content, and model &#39;myStyle&#39; to element&#39;s style attribute</span>
-<span class="kd">var</span> <span class="nx">msg</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">content</span><span class="o">:</span><span class="s1">&#39;Greetings!&#39;</span><span class="p">,</span> <span class="nx">myStyle</span><span class="o">:</span><span class="s1">&#39;color:red&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;p data-bind=&quot;content, style myStyle&quot;/&gt;&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">msg</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">content</span><span class="o">:</span><span class="s1">&#39;Greetings!&#39;</span><span class="p">,</span> <span class="nx">myStyle</span><span class="o">:</span><span class="s1">&#39;color:red&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;p data-bind=&quot;content, style=myStyle&quot;/&gt;&#39;</span><span class="p">);</span>
 <span class="nx">$$</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
 </pre></div>
 
