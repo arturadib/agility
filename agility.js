@@ -430,7 +430,6 @@
       _parseBindStr: function(str){
         var obj = {key:null, attr:[]},
             pairs = str.split(','),
-            //regex = /(\w+)(?:\s+(\w+))?/,
             regex = /([a-zA-Z0-9_\-]+)(?:\s+([a-zA-Z0-9_\-]+))?/,
             matched;
         
