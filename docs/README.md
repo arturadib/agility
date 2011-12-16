@@ -2,7 +2,7 @@
 
 ## Contributing
 
-You should only have to modify the files `_*.md` (e.g. `_docs.md`, `_index.md`, etc).
+You should only have to modify Markdown files (e.g. `_docs.md`, `_index.md`, etc).
 
 ## Building
 
