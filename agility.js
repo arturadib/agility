@@ -423,14 +423,14 @@
         return this;
       }, // render
   
-      // Parse data-bind string of the type '[attribute] variable[, attribute variable ]...'
+      // Parse data-bind string of the type '[attribute][=] variable[, attribute[=] variable ]...'
       // If the variable is not an attribute, it must be first in the list,
       //   all following pairs in the list are assumed to be attributes
       // Returns { key:'model key', attr: [ {attr : 'attribute', attrVar : 'variable' }... ] }
       _parseBindStr: function(str){
         var obj = {key:null, attr:[]},
             pairs = str.split(','),
-            regex = /([a-zA-Z0-9_\-]+)(?:\s+([a-zA-Z0-9_\-]+))?/,
+            regex = /([a-zA-Z0-9_\-]+)(?:[\s=]+([a-zA-Z0-9_\-]+))?/,
             matched;
         
         if (pairs.length > 0) {

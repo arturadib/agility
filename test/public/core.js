@@ -66,7 +66,7 @@
       name: 'Joe Doe',
       firstColor: 'Red',
       'last-color': 'Blue'
-    }, '<div><span data-bind="first, name name, firstColor firstColor"/>' +
+    }, '<div><span data-bind="first, name=name, firstColor=firstColor"/>' +
      '<span data-bind="la-st, name name, last-color last-color"/></div>');
     validateObject( obj );
     equals( obj.view.$().text(), 'JoeDoe', 'format as expected');
@@ -89,7 +89,7 @@
       name: 'Joe Doe',
       firstColor: 'Red',
       'last-color': 'Blue'
-    }, '<div><span data-bind="first, name name, firstColor firstColor"/>' +
+    }, '<div><span data-bind="first, name=name, firstColor=firstColor"/>' +
      '<span data-bind="la-st, name name, last-color last-color"/></div>',
     {});
     validateObject( obj );
@@ -115,7 +115,7 @@
       name: 'Joe Doe',
       firstColor: 'Red',
       'last-color': 'Blue'
-    }, {format:'<div><span data-bind="first, name name, firstColor firstColor"/>' +
+    }, {format:'<div><span data-bind="first, name=name, firstColor=firstColor"/>' +
      '<span data-bind="la-st, name name, last-color last-color"/></div>',
      style:'& {float:right; display:none;}'},
     {});
@@ -153,14 +153,14 @@
     var obj = $$({
       model: {
         first: 'Joe',
-        last: 'Doe',
+        'la-st': 'Doe',
         name: 'Joe Doe',
         firstColor: 'Red',
-        lastColor: 'Blue'
+        'last-color': 'Blue'
       },
       view: {
-        format: '<div><span data-bind="first, name name, firstColor firstColor"/>' +
-                '<span data-bind="last, name name, lastColor lastColor"/></div>',
+        format: '<div><span data-bind="first, name=name, firstColor=firstColor"/>' +
+                '<span data-bind="la-st, name name, last-color last-color"/></div>',
         style:'& {float:right; display:none;}'
       },
       controller: {},
@@ -173,7 +173,7 @@
     equals( obj.view.$( 'span' ).first().attr( 'name' ), 'Joe Doe', 'format as expected');
     equals( obj.view.$( 'span' ).first().attr( 'firstColor' ), 'Red', 'format as expected');
     equals( obj.view.$( 'span' ).last().attr( 'name' ), 'Joe Doe', 'format as expected');
-    equals( obj.view.$( 'span' ).last().attr( 'lastColor' ), 'Blue', 'format as expected');
+    equals( obj.view.$( 'span' ).last().attr( 'last-color' ), 'Blue', 'format as expected');
     equals( obj.view.$().css('float'), 'right', 'style as expected');
   });
   
