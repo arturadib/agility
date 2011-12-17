@@ -1,3 +1,10 @@
+2011.12.17, Version 0.1.2
+
+* New data-bind notation: equal sign (Tristan Slominski)
+
+* Documentation updates (Artur Adib)
+
+
 2011.12.11, Version 0.1.1
 
 * gh-pages is now production branch, master is development

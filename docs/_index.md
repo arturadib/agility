@@ -2,12 +2,12 @@
 Agility.js is an [MVC](http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) library for Javascript that lets you write maintainable and reusable browser code without the verbose or infrastructural overhead found in [other](http://documentcloud.github.com/backbone/) [MVC](http://www.sproutcore.com/) [libraries](http://knockoutjs.com/). The goal is to enable developers to write web apps at least as quickly as with jQuery, while simplifying long-term maintainability through MVC objects.
 
 <div class='download'>
-  <div><b>Latest version: __VERSION__</b> | Compatible with IE7-8, Firefox, Chrome, Safari</div>
+  <div><b>Latest version: __VERSION__</b> | <a href="https://raw.github.com/arturadib/agility/master/ChangeLog">ChangeLog</a></div>
   <div>Download <a href="agility.min.js">minified js</a> (~4K packed + gzipped)</div>
   <div>Download <a href="agility-start.zip">"getting started" package</a> (zip) or <a href="https://github.com/arturadib/agility/tree/master/docs/agility-start">browse its contents</a></div>
 </div>
 
-The library itself is a small Javascript file (goal is to remain under 10K), and its only dependency is a recent version of jQuery (Zepto support coming soon). The project is licensed under the liberal [MIT license](https://github.com/arturadib/agility/blob/master/LICENSE).
+The library itself is a small Javascript file (goal is to remain under 10K), and its only dependency is a recent version of jQuery. The project is licensed under the liberal [MIT license](https://github.com/arturadib/agility/blob/master/LICENSE).
 
 See the documentation for a more complete [list of features](docs.html#intro-features).
 
