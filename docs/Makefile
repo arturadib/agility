@@ -1,7 +1,20 @@
 VER = `cat VERSION` # (`date '+%b %d, %Y'`)
 
-all:
-	@echo "Making version $(VER)..."
+all: docs dist
+
+dist:
+	@echo "Making distribution version $(VER)..."
+
+	@echo "Minifying to agility.min.js"...
+	@cat LICENSE_HEADER > agility.min.js
+	@jsmin < ../agility.js >> agility.min.js
+
+	@echo "Creating agility-start.zip"...
+	@cp -f agility.min.js agility-start/
+	@zip agility-start.zip agility-start/*
+
+docs:
+	@echo "Making docs for version $(VER)..."
 
 	@markdown_py -x codehilite _index.md > index-content.html
 	@sed -E -i.bak "s/__VERSION__/$(VER)/" index-content.html
@@ -17,11 +30,3 @@ all:
 
 	@rm -f *-content.html *.bak
 	@mv -f index.html ..
-
-	@echo "Minifying"...
-	@cat LICENSE_HEADER > agility.min.js
-	@jsmin < ../agility.js >> agility.min.js
-
-	@echo "Updating agility-start.zip"...
-	@cp -f agility.min.js agility-start/
-	@zip agility-start.zip agility-start/*

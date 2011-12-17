@@ -211,11 +211,11 @@ To ensure CSS selectors apply only to the intended object, *make sure all select
 
     :::javascript
     // ANTI-PATTERN!! (applies CSS style globally)
-    var obj = $$({}, "<p><div>Please don't do this</div></p>", 'div { color:red; }');
+    var obj = $$({}, "<div><span>Please don't do this</span></div>", 'span { color:red; }');
     $$.document.append(obj);
 
     // Correct: applies style locally
-    var obj = $$({}, '<p><div>Do this</div></p>', '& div { color:red; }');
+    var obj = $$({}, '<div><span>Do this</span></div>', '& span { color:blue; }');
     $$.document.append(obj);
 <div class="demo"></div>
 
