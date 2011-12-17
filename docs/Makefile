@@ -1,6 +1,9 @@
 VER = `cat VERSION` # (`date '+%b %d, %Y'`)
 
-all: docs dist
+all:
+	@echo "Nothing to do (prevents unintended dist update)"
+	@echo
+	@exit
 
 dist:
 	@echo "Making distribution version $(VER)..."
