@@ -75,6 +75,16 @@
     equals( obj.view.$( 'span' ).last().attr( 'name' ), 'Joe Doe', 'format as expected');
     equals( obj.view.$( 'span' ).last().attr( 'last-color' ), 'Blue', 'format as expected');
   });
+  
+  test("Two arguments (model object, view string) with multiple attribute bindings random order", function () {
+    var obj = $$({
+      first: 'Joe',
+      name: 'Joe Doe'
+    }, '<div><span data-bind="name=name, first"/>' );
+    validateObject( obj );
+    equals( obj.view.$().text(), 'Joe', 'format as expected');
+    equals( obj.view.$( 'span' ).first().attr( 'name' ), 'Joe Doe', 'format as expected');
+  });
 
   test("Three arguments (model object, view string, controller object)", function(){
     var obj = $$({first:'Joe', last:'Doe'}, '<div><span data-bind="first"/><span data-bind="last"/></div>', {});
