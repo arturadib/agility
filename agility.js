@@ -423,41 +423,42 @@
         return this;
       }, // render
   
-      // Parse data-bind string of the type '[attribute][=] variable[, attribute[=] variable ]...'
-      // If the variable is not an attribute, it must be first in the list,
-      //   all following pairs in the list are assumed to be attributes
+      // Parse data-bind string of the type '[attribute][=] variable[, [attribute][=] variable ]...'
+      // If the variable is not an attribute, it must occur by itself
+      //   all pairs in the list are assumed to be attributes
       // Returns { key:'model key', attr: [ {attr : 'attribute', attrVar : 'variable' }... ] }
       _parseBindStr: function(str){
         var obj = {key:null, attr:[]},
             pairs = str.split(','),
             regex = /([a-zA-Z0-9_\-]+)(?:[\s=]+([a-zA-Z0-9_\-]+))?/,
+            keyAssigned = false,
             matched;
         
         if (pairs.length > 0) {
-          matched = pairs[0].match(regex);
-          // [ "attribute variable", "attribute", "variable" ]
-          // or
-          // [ "variable", "variable", undefined ]
-          // in some IE it will be [ "variable", "variable", "" ]
-          // or
-          // null
-          if (matched) {
-            if (typeof(matched[2]) === "undefined" || matched[2] === "") {
-              obj.key = matched[1];
-            } else {
-              obj.attr.push({attr: matched[1], attrVar: matched[2]});
-            } 
-          } // if (matched )
-          if (pairs.length > 1) {
-            for (var i = 1; i < pairs.length; i++) {
-              matched = pairs[i].match(regex);
-              if (matched) {
-                if (typeof(matched[2]) !== "undefined") {
-                  obj.attr.push({attr: matched[1], attrVar: matched[2]});
+          for (var i = 0; i < pairs.length; i++) {
+            matched = pairs[i].match(regex);
+            // [ "attribute variable", "attribute", "variable" ]
+            // or [ "attribute=variable", "attribute", "variable" ]
+            // or
+            // [ "variable", "variable", undefined ]
+            // in some IE it will be [ "variable", "variable", "" ]
+            // or
+            // null
+            if (matched) {
+              if (typeof(matched[2]) === "undefined" || matched[2] === "") {
+                if (keyAssigned) {
+                  throw new Error("You may specify only one key (" + 
+                    keyAssigned + " has already been specified in data-bind=" + 
+                    str + ")");
+                } else {
+                  keyAssigned = matched[1];
+                  obj.key = matched[1];
                 }
-              } // if (matched)
-            } // for (pairs.length)
-          } // if (pairs.length > 1)
+              } else {
+                obj.attr.push({attr: matched[1], attrVar: matched[2]});
+              }
+            } // if (matched)
+          } // for (pairs.length)
         } // if (pairs.length > 0)
         
         return obj;
