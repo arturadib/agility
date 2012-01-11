@@ -561,8 +561,11 @@
             bindAttributesOneWay();
           }
 
-          // <input type="text"> and <textarea>: 2-way binding
-          else if ($node.is('input[type="text"], textarea')) {
+          // <input type="text">, <input>, and <textarea>: 2-way binding
+          // checking type!="search" because we would have matched that above
+          //  so "search" is a safe placeholder to check for nonexistence of
+          //  type attribute which implies a default type="text"
+          else if ($node.is('input[type="text"], input[type!="search"], textarea')) {
             // Model --> DOM
             self.bind('_change:'+bindData.key, function(){
               $node.val(self.model.get(bindData.key)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
