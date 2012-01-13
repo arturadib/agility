@@ -331,13 +331,19 @@
         var self = this;
         var modified = []; // list of modified model attributes
         if (typeof arg === 'object') {
+          var _clone = false;
           if (params && params.reset) {
+            _clone = this.model._data; // hold on to data for change events
             this.model._data = $.extend({}, arg); // erases previous model attributes without pointing to object
           }
           else {
             $.extend(this.model._data, arg); // default is extend
           }
           for (var key in arg) {
+            delete _clone[ key ]; // no need to fire change twice
+            modified.push(key);
+          }
+          for (key in _clone) {
             modified.push(key);
           }
         }
