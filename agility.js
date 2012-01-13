@@ -496,7 +496,7 @@
           }; // bindAttributesOneWay()
           
           // <input type="checkbox">: 2-way binding
-          if ($node.is('input[type="checkbox"]')) {
+          if ($node.is('input:checkbox')) {
             // Model --> DOM
             self.bind('_change:'+bindData.key, function(){
               $node.prop("checked", self.model.get(bindData.key)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
@@ -530,7 +530,7 @@
           }
           
           // <input type="radio">: 2-way binding
-          else if ($node.is('input[type="radio"]')) {
+          else if ($node.is('input:radio')) {
             // Model --> DOM
             self.bind('_change:'+bindData.key, function(){
               var nodeName = $node.attr('name');
@@ -567,8 +567,8 @@
             bindAttributesOneWay();
           }
 
-          // <input type="text"> and <textarea>: 2-way binding
-          else if ($node.is('input[type="text"], textarea')) {
+          // <input type="text">, <input>, and <textarea>: 2-way binding
+          else if ($node.is('input:text, textarea')) {
             // Model --> DOM
             self.bind('_change:'+bindData.key, function(){
               $node.val(self.model.get(bindData.key)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)

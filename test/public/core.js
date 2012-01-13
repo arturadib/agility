@@ -927,8 +927,16 @@
     equals(t, true, 'chaining set(), bind(), and trigger()');
   });
 
-  test("Two-way bindings", function(){
+  test("Two-way bindings", function(){    
     var obj = $$({name:'Mary'}, "<input type='text' data-bind='name' />");
+    equals(obj.view.$().val(), 'Mary', 'text input: binding properly initialized');
+    obj.model.set({name:'Joe Doe'});
+    equals(obj.view.$().val(), 'Joe Doe', 'text input: Model --> DOM binding OK');
+    obj.view.$().val('Art Blakey').change();
+    equals(obj.model.get('name'), 'Art Blakey', 'text input: DOM --> Model binding OK');
+    
+    // 'text' should be the default input type as per dom spec
+    obj = $$({name:'Mary'}, "<input data-bind='name' />");
     equals(obj.view.$().val(), 'Mary', 'text input: binding properly initialized');
     obj.model.set({name:'Joe Doe'});
     equals(obj.view.$().val(), 'Joe Doe', 'text input: Model --> DOM binding OK');
