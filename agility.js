@@ -922,6 +922,8 @@
   //  Global objects
   //
   
+  // $$.document is a special Agility object, whose view is attached to <body>
+  // This object is the main entry point for all DOM operations
   agility.document = agility({
     view: {
       $: function(selector){ return selector ? $(selector, 'body') : $('body'); }
