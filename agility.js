@@ -38,11 +38,10 @@
   // Constant
   ROOT_SELECTOR = '&';
 
-  // --------------------------
+  //////////////////////////////////////////////////////////////////////////
   //
   //  Modernizing old JS
   //
-  // --------------------------      
 
   // Modified from Douglas Crockford's Object.create()
   // The condition below ensures we override other manual implementations (most are not adequate)
@@ -70,11 +69,10 @@
   }  
 
 
-  // --------------------------
+  //////////////////////////////////////////////////////////////////////////
   //
   //  util.*
   //
-  // --------------------------      
   
   // Checks if provided obj is an agility object
   util.isAgility = function(obj){
@@ -169,21 +167,22 @@
     } // for controllerName
   };
   
-  // ------------------------------
+  //////////////////////////////////////////////////////////////////////////
   //
   //  Default object prototype
   //
-  // ------------------------------
   
   defaultPrototype = {
     
     _agility: true,
     
-    // -------------
+    //////////////////////////////////////////////////////////////////////////
     //
-    //  _Container
+    //  _container
     //
-    // -------------
+    //    API and related auxiliary functions for storing child Agility objects.
+    //    Not all methods are exposed. See 'shortcuts' below for exposed methods.
+    //
     
     _container: {
 
@@ -246,12 +245,14 @@
       
     },
 
-    // -------------
+    //////////////////////////////////////////////////////////////////////////
     //
-    //  _Events
+    //  _events
     //
-    // -------------
-    
+    //    API and auxiliary functions for handling events. Not all methods are exposed.
+    //    See 'shortcuts' below for exposed methods.
+    //
+
     _events: {
 
       // Parses event string like:
@@ -318,11 +319,13 @@
       
     }, // _events
 
-    // -------------
+    //////////////////////////////////////////////////////////////////////////
     //
     //  Model
     //
-    // -------------
+    //    Main model API. All methods are exposed, but methods starting with '_'
+    //    are meant to be used internally only.
+    //
        
     model: {
 
@@ -392,11 +395,13 @@
       
     }, // model prototype
   
-    // -------------
+    //////////////////////////////////////////////////////////////////////////
     //
     //  View
     //
-    // -------------
+    //    Main view API. All methods are exposed, but methods starting with '_'
+    //    are meant to be used internally only.
+    //
   
     view: {
         
@@ -650,11 +655,14 @@
       
     }, // view prototype
   
-    // -------------
+    //////////////////////////////////////////////////////////////////////////
     //
     //  Controller
     //
-    // -------------
+    //    Default controllers, i.e. event handlers. Event handlers that start
+    //    with '_' are of internal use only, and take precedence over any other
+    //    handler without that prefix. (See trigger()).
+    //
    
     controller: {
   
@@ -705,11 +713,10 @@
       
     }, // controller prototype
 
-    // -------------
+    //////////////////////////////////////////////////////////////////////////
     //
     //  Shortcuts
     //
-    // -------------
         
     //
     // Self
@@ -720,7 +727,7 @@
     },
     
     //
-    // _Container shortcuts
+    // _container shortcuts
     //
     append: function(){
       this._container.append.apply(this, arguments);
@@ -753,7 +760,7 @@
     },
 
     //
-    // _Events shortcuts
+    // _events shortcuts
     //
     bind: function(){
       this._events.bind.apply(this, arguments);
@@ -766,11 +773,10 @@
       
   }; // prototype
   
-  // --------------------------
+  //////////////////////////////////////////////////////////////////////////
   //
   //  Main object builder
   //
-  // --------------------------      
   
   // Main agility object builder
   agility = function(){
@@ -783,11 +789,10 @@
     
     prototype = defaultPrototype;
             
-    // -----------------------------------------
+    //////////////////////////////////////////////////////////////////////////
     //
     //  Define object prototype
     //
-    // -----------------------------------------
 
     // Inherit object prototype
     if (typeof args[0] === "object" && util.isAgility(args[0])) {
@@ -815,11 +820,10 @@
     object.model._data = prototype.model._data ? $.extend(true, {}, prototype.model._data) : {};
     object._data = prototype._data ? $.extend(true, {}, prototype._data) : {};
 
-    // -----------------------------------------
+    //////////////////////////////////////////////////////////////////////////
     //
     //  Extend model, view, controller
     //
-    // -----------------------------------------
 
     // Just the default prototype
     if (args.length === 0) {
@@ -885,11 +889,10 @@
       
     } // ({model}, {view}, {controller}) args
     
-    // ----------------------------------------------
+    //////////////////////////////////////////////////////////////////////////
     //
     //  Bootstrap: Bindings, initializations, etc
     //
-    // ----------------------------------------------
     
     // Save model's initial state (so it can be .reset() later)
     object.model._initData = $.extend({}, object.model._data);
@@ -914,11 +917,10 @@
     
   }; // agility
   
-  // -----------------------------------------
+  //////////////////////////////////////////////////////////////////////////
   //
   //  Global objects
   //
-  // -----------------------------------------
   
   agility.document = agility({
     view: {
@@ -943,11 +945,10 @@
   // Globals
   window.agility = window.$$ = agility;
 
-  // -----------------------------------------
+  //////////////////////////////////////////////////////////////////////////
   //
   //  Bundled plugin: persist
   //
-  // -----------------------------------------
   
   // Main initializer
   agility.fn.persist = function(adapter, params){
