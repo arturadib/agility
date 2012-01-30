@@ -13,7 +13,7 @@ See the documentation for a more complete [list of features](docs.html#intro-fea
 
 ## Quick tour
 
-Agility encourages (but does not require) writing your entire code in Javascript, that is, content (HTML), style (CSS), and behavior (JS) can all be contained within Javascript objects. The examples in this tour consist of such code. See [Getting started](docs.html#getting-started) in the docs for the HTML template adopted.
+Agility supports (but does not require) writing your entire code in Javascript, that is, content (HTML), style (CSS), and behavior (JS) can all be contained within Javascript objects. Unless otherwise stated the examples in this tour consist of such code. See [Getting started](docs.html#getting-started) in the docs for the HTML template adopted.
 
 ### Object initialization
 
@@ -40,9 +40,34 @@ A more compact syntax is also supported. It's handy when dealing with simple obj
     $$.document.append(message);
 <div class="demo"></div>
 
+
+### HTML templates
+
+As already mentioned you don't have to place HTML templates in your JavaScript code. For example, you can pick your format from a DOM element:
+
+    :::javascript
+    // Hello World
+    var message = $$({
+      model: {}, 
+      view: {
+        format: $('#my-format').html()
+      }, 
+      controller: {}
+    });
+    $$.document.append(message);
+
+And then in your HTML file:
+
+    <script id="my-format" type="text/html">
+       <div>Hello World</div>
+    </script>
+
+Although perfectly equivalent to the previous example, this pattern is useful whenever format and behavior need to live on separate files.
+
+
 ### Model-view bindings
 
-The framework comes with a powerful model-view binder, so that views are always in sync with models and vice-versa. Establishing bindings is as simple as introducing a `data-bind` attribute in the desired DOM element; the factory function takes care of creating the necessary controllers:
+Agility comes with a powerful model-view binder, so that views are always in sync with models and vice-versa. Establishing bindings is as simple as introducing a `data-bind` attribute in the desired DOM element; the factory function takes care of creating the necessary controllers:
 
     :::javascript
     // Bind model to element's HTML content
