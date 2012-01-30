@@ -166,8 +166,8 @@
 
 
 <p><div class="demo"></div></p>
-<h3>HTML templates</h3>
-<p>As already mentioned you don't have to place HTML templates in your JavaScript code. For example, you can pick your format from a DOM element:</p>
+<h3>External HTML</h3>
+<p>Inline HTML is useful for things like quick prototyping, but sometimes it's useful to keep format and behavior separate. In this case you can pull the HTML from a DOM element, like so:</p>
 <div class="codehilite"><pre><span class="c1">// Hello World</span>
 <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span>
   <span class="nx">model</span><span class="o">:</span> <span class="p">{},</span> 
@@ -187,7 +187,6 @@
 </pre></div>
 
 
-<p>Although perfectly equivalent to the previous example, this pattern is useful whenever format and behavior need to live on separate files.</p>
 <h3>Model-view bindings</h3>
 <p>Agility comes with a powerful model-view binder, so that views are always in sync with models and vice-versa. Establishing bindings is as simple as introducing a <code>data-bind</code> attribute in the desired DOM element; the factory function takes care of creating the necessary controllers:</p>
 <div class="codehilite"><pre><span class="c1">// Bind model to element&#39;s HTML content</span>

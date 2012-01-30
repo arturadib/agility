@@ -41,9 +41,9 @@ A more compact syntax is also supported. It's handy when dealing with simple obj
 <div class="demo"></div>
 
 
-### HTML templates
+### External HTML
 
-As already mentioned you don't have to place HTML templates in your JavaScript code. For example, you can pick your format from a DOM element:
+Inline HTML is useful for things like quick prototyping, but sometimes it's useful to keep format and behavior separate. In this case you can pull the HTML from a DOM element, like so:
 
     :::javascript
     // Hello World
@@ -61,8 +61,6 @@ And then in your HTML file:
     <script id="my-format" type="text/html">
        <div>Hello World</div>
     </script>
-
-Although perfectly equivalent to the previous example, this pattern is useful whenever format and behavior need to live on separate files.
 
 
 ### Model-view bindings
