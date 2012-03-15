@@ -12,3 +12,7 @@ Agility is an MVC library for client-side Javascript that lets you write **maint
 + Tristan Slominski (@tristanls)
 
 Core devs are contributors who have a track record of pushing awesome code to Agility. You can become one too!
+
+## Mailing list
+
++ http://groups.google.com/group/agilityjs
