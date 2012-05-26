@@ -314,7 +314,7 @@
           util.reverseEvents(this._events.data, 'pre:' + eventObj.type);
           $(this._events.data).trigger(eventObj.type, params);
           if(this.parent())
-            this.parent().trigger((eventObj.type.match(/^child:/) ? '' : 'child:') + eventObj.type, params)
+            this.parent().trigger((eventObj.type.match(/^child:/) ? '' : 'child:') + eventObj.type, params);
           $(this._events.data).trigger('post:' + eventObj.type, params);
         }
         return this; // for chainable calls
