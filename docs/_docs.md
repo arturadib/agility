@@ -276,6 +276,7 @@ Agility events are fired by the object core, as well as Models and plugins. When
 Presently, the following Agility events are fired:
 
 + `create`: Fired upon object creation.
++ `show`: Fired when the object is added to a container.
 + `destroy`: Fired before object is destroyed.
 + `add`: Fired when a new Agility object is added to the object's container.
 + `remove`: Fired with an Agility object is removed from the object's container.
