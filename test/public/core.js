@@ -1072,6 +1072,21 @@
       ok(parent2Called, "event bubbled to parent 2");
   });
 
+
+  test("Unbinding events", function(){
+    var eventCalled = false;
+    var o = $$();
+    o.bind('testevent', function(){
+      eventCalled = true;
+    });
+    o.trigger('testevent');
+    ok(eventCalled, "event handler called after bind");
+    eventCalled = false;
+    o.unbind('testevent');
+    o.trigger('testevent');
+    ok(!eventCalled, "event handler not called after unbind");
+  });
+
   test("Model events", function(){
     var t = false;
     var obj = $$({}, {}, {

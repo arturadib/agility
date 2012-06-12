@@ -291,6 +291,16 @@
         return this; // for chainable calls
       }, // bind
 
+      unbind: function(eventStr){
+        // Only works with custom events for now
+        var eventObj = this._events.parseEventStr(eventStr);
+        if(eventObj.selector){
+          throw "Unbind does not yet work with jQuery events";
+        } else {
+          $(this._events.data).unbind(eventObj.type);
+        }
+      }, // unbind
+
       // Triggers eventStr. Syntax for eventStr is same as that for bind()
       trigger: function(eventStr, params){
         var eventObj = this._events.parseEventStr(eventStr);
@@ -770,6 +780,10 @@
     //
     bind: function(){
       this._events.bind.apply(this, arguments);
+      return this; // for chainable calls
+    },
+    unbind: function(){
+      this._events.unbind.apply(this, arguments);
       return this; // for chainable calls
     },
     trigger: function(){
