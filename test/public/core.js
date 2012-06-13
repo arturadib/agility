@@ -675,7 +675,24 @@
     fourth.model.set({label: "newLabel"});
     equals(fourth.view.$('span').first().text(), 'newLabel', 'naked ~change:label collapsed correctly to "change:label"');
   });
-  
+
+
+  test("Multiple event controller binding", function(){
+    var numCalls = 0;
+    var obj1 = $$({
+      controller:{
+        'event1,event2,  event3': function(){
+          numCalls += 1;
+        }
+      }
+    });
+    obj1.trigger('event1');
+    obj1.trigger('event2');
+    obj1.trigger('event3');
+    equals( numCalls, 3, 'all three events ran controller code');
+
+  });
+
   test("Object inheritance", function(){
     var objBase = $$({}, {format:'<div><span data-bind="first"/>.<span data-bind="last"/></div>', style:'& {float:right; display:none;}'});
     var objNewModel = {first:'Joe', last:'Doe'};
