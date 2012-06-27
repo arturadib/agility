@@ -241,7 +241,11 @@ If your `format` and/or `style` are too large, it's probably time to split your 
 
 ## [Events](#events)
 
-There are two types of events in Agility: DOM events, and Agility events, and both are implicitly bound to controller functions by matching function and event names. User-defined controllers extend (i.e. are called in addition to) built-in controllers.
+There are two types of events in Agility: DOM events and Agility events. Both are implicitly bound to controller functions by matching function and event names.
+
+Controller functions can bind to multiple events at the same time by comma-separating the events. For example, a controller function named `click #a, click #b` would fire when either click event occurred.
+
+User-defined controllers extend (i.e. are called in addition to) built-in controllers.
 
 ### [DOM events](#events-dom)
 

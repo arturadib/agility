@@ -321,7 +321,9 @@
 <p><div class="demo"></div></p>
 <p>If your <code>format</code> and/or <code>style</code> are too large, it's probably time to split your object into more Agility objects. (Unless of course you are creating a mostly static page, in which case Agility is probably not the best solution).</p>
 <h2><a href="#events">Events</a></h2>
-<p>There are two types of events in Agility: DOM events, and Agility events, and both are implicitly bound to controller functions by matching function and event names. User-defined controllers extend (i.e. are called in addition to) built-in controllers.</p>
+<p>There are two types of events in Agility: DOM events and Agility events. Both are implicitly bound to controller functions by matching function and event names.</p>
+<p>Controller functions can bind to multiple events at the same time by comma-separating the events. For example, a controller function named <code>click #a, click #b</code> would fire when either click event occurred.</p>
+<p>User-defined controllers extend (i.e. are called in addition to) built-in controllers.</p>
 <h3><a href="#events-dom">DOM events</a></h3>
 <p>Usual DOM events such as <code>click</code>, <code>dblclick</code>, <code>mouseenter</code>, etc are supported through jQuery's event API. Please consult jQuery's API for a <a href="http://api.jquery.com/bind/">list of events</a> supported. </p>
 <p>When binding to controller functions, DOM events are distinguished from Agility events by the presence of a <a href="http://api.jquery.com/category/selectors/">jQuery selector</a> using the syntax:</p>
@@ -946,6 +948,7 @@
 <div class="codehilite"><pre>api/resource
 api/resource/123
 </pre></div>
+
 
     </div>
   </div>
