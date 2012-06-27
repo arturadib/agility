@@ -1047,6 +1047,20 @@
     ok(o===obj1 && s==='sel', "append() called");
   });
 
+  test("`show` container event", function(){
+    var showCalled = false;
+    var obj1 = $$();
+    var obj2 = $$({
+        controller: {
+            show: function(){
+                showCalled = true;
+            }
+        }
+    });
+    obj1.append(obj2);
+    ok(showCalled, "show() called");
+  });
+
   test("Model events", function(){
     var t = false;
     var obj = $$({}, {}, {
