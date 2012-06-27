@@ -194,6 +194,7 @@
         }
         this._container.children[obj._id] = obj; // children is *not* an array; this is for simpler lookups by global object id
         this.trigger(method, [obj, selector]);
+        obj._parent = this;
         // ensures object is removed from container when destroyed:
         obj.bind('destroy', function(event, id){ 
           self._container.remove(id);
@@ -312,6 +313,8 @@
           // put the order of events back
           util.reverseEvents(this._events.data, 'pre:' + eventObj.type);
           $(this._events.data).trigger(eventObj.type, params);
+          if(this.parent())
+            this.parent().trigger((eventObj.type.match(/^child:/) ? '' : 'child:') + eventObj.type, params);
           $(this._events.data).trigger('post:' + eventObj.type, params);
         }
         return this; // for chainable calls
@@ -725,6 +728,9 @@
       this.trigger('destroy', this._id); // parent must listen to 'remove' event and handle container removal!
       // can't return this as it might not exist anymore!
     },
+    parent: function(){
+      return this._parent;
+    },
     
     //
     // _container shortcuts
@@ -811,6 +817,7 @@
 
     // Fresh 'own' properties (i.e. properties that are not inherited at all)
     object._id = idCounter++;
+    object._parent = null;
     object._events.data = {}; // event bindings will happen below
     object._container.children = {};
     object.view.$root = $(); // empty jQuery object

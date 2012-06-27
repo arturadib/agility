@@ -296,6 +296,21 @@ The example below defines both a DOM and a Model event handler:
     $$.document.append(catcher);
 <div class="demo"></div>
 
+**Agility event bubbling**
+
+Like DOM events, Agility events automatically bubble to the containers of objects. However, bubbling events do not trigger event handlers on the parent objects by default. An event handler must declare that it is interested in receiving bubbled events by including the `child:` prefix in its event specification:
+
+    :::javascript
+    var parent = $$({
+      controller: {
+        'child:testevent': function(){
+          alert('testevent fired in descendant');
+        }
+      }
+    });
+
+Events can bubble up multiple levels. Only a single `child:` prefix is required to catch an event in any descendant of an obect.
+
 ## [Auto-proxying](#auto-proxy)
 
 All user-defined controllers initialized by the factory function `$$()` have their `this` auto-proxied to the owner MVC object, for quick access and consistent behavior no matter what context:
@@ -531,6 +546,19 @@ _Erases self view, removes self from parent container._
 **Returns:**
 
 Nothing.
+
+### [.parent()](#core-parent)
+
+_Returns the parent container to which the object has been added, or null if it has not yet been added to a container._
+
+**Syntax:**
+
+    :::javascript
+    .parent()
+
+**Returns:**
+
+Parent Agility object.
 
 
 
