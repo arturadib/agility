@@ -372,6 +372,19 @@
 
 
 <p><div class="demo"></div></p>
+<p><strong>Agility event bubbling</strong></p>
+<p>Like DOM events, Agility events automatically bubble to the containers of objects. However, bubbling events do not trigger event handlers on the parent objects by default. An event handler must declare that it is interested in receiving bubbled events by including the <code>child:</code> prefix in its event specification:</p>
+<div class="codehilite"><pre><span class="kd">var</span> <span class="nx">parent</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span>
+  <span class="nx">controller</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s1">&#39;child:testevent&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+      <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;testevent fired in descendant&#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+
+
+<p>Events can bubble up multiple levels. Only a single <code>child:</code> prefix is required to catch an event in any descendant of an obect.</p>
 <h2><a href="#auto-proxy">Auto-proxying</a></h2>
 <p>All user-defined controllers initialized by the factory function <code>$$()</code> have their <code>this</code> auto-proxied to the owner MVC object, for quick access and consistent behavior no matter what context:</p>
 <div class="codehilite"><pre><span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">msg</span><span class="o">:</span><span class="s1">&#39;I only exist because of auto-proxying&#39;</span><span class="p">},</span> <span class="s1">&#39;&lt;div/&gt;&#39;</span><span class="p">,</span> <span class="p">{</span>
@@ -578,6 +591,15 @@
 
 <p><strong>Returns:</strong></p>
 <p>Nothing.</p>
+<h3><a href="#core-parent">.parent()</a></h3>
+<p><em>Returns the parent container to which the object has been added, or null if it has not yet been added to a container.</em></p>
+<p><strong>Syntax:</strong></p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">parent</span><span class="p">()</span>
+</pre></div>
+
+
+<p><strong>Returns:</strong></p>
+<p>Parent Agility object.</p>
 <h3><a href="#container">&mdash;</a></h3>
 <p>The methods below are specific to the object container.</p>
 <h3><a href="#core-append">.append()</a></h3>
@@ -946,6 +968,7 @@
 <div class="codehilite"><pre>api/resource
 api/resource/123
 </pre></div>
+
 
     </div>
   </div>
