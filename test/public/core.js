@@ -681,7 +681,7 @@
     var numCalls = 0;
     var obj1 = $$({
       controller:{
-        'event1,event2,  event3': function(){
+        'event1;event2;  event3': function(){
           numCalls += 1;
         }
       }
@@ -690,6 +690,23 @@
     obj1.trigger('event2');
     obj1.trigger('event3');
     equals( numCalls, 3, 'all three events ran controller code');
+
+    var obj2 = $$({
+      view:{
+        format: '<div id="main"><div id="button1" /><div id="button2"/><div class="button3" /></div>'
+      },
+      controller:{
+        'click #button1:not(.disabled), div#button2; dblclick div#main .button3; mouseover &': function(){
+          numCalls += 1;
+        }
+      }
+    });
+    obj2.view.$('#button1').click();
+    obj2.view.$('#button2').click();
+    obj2.view.$('.button3').dblclick();
+    obj2.view.$().mouseover();
+
+    equals( numCalls, 7, 'all four events ran controller code');
 
   });
 

@@ -912,7 +912,7 @@
     };
 
     for (var eventStr in object.controller) {
-      var events = eventStr.split(',');
+      var events = eventStr.split(';');
       var handler = object.controller[eventStr];
       $.each(events, function(i, ev){
         ev = ev.trim();
