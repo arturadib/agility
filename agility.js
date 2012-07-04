@@ -911,12 +911,23 @@
     object.view.render();
   
     // Bind all controllers to their events
-    for (var ev in object.controller) {
-      if (typeof object.controller[ev] === 'function') {
-        object.bind(ev, object.controller[ev]);
+
+    var bindEvent = function(ev, handler){
+      if (typeof handler === 'function') {
+        object.bind(ev, handler);
       }
-    }  
-  
+    };
+
+    for (var eventStr in object.controller) {
+      var events = eventStr.split(';');
+      var handler = object.controller[eventStr];
+      $.each(events, function(i, ev){
+        ev = ev.trim();
+        bindEvent(ev, handler);
+      });
+    }
+
+
     // Auto-triggers create event
     object.trigger('create');    
     
