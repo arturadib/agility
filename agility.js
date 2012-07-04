@@ -803,10 +803,6 @@
       this._events.bindFrom.apply(this, arguments);
       return this;
     },
-    unbind: function(){
-      this._events.unbind.apply(this, arguments);
-      return this; // for chainable calls
-    },
     trigger: function(){
       this._events.trigger.apply(this, arguments);
       return this; // for chainable calls

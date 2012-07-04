@@ -1082,7 +1082,7 @@
     o.trigger('testevent');
     ok(eventCalled, "event handler called after bind");
     eventCalled = false;
-    o.unbind('testevent');
+    o._events.unbind('testevent');
     o.trigger('testevent');
     ok(!eventCalled, "event handler not called after unbind");
   });

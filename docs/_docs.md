@@ -518,6 +518,36 @@ _Binds function to event._
 
 Owner Agility object (for chainable calls).
 
+### [.bindFrom()](#core-bindfrom)
+
+_Binds a function to event from an "origin object".
+When the origin object is destroyed, the event handler is automatically unbound.
+Useful for short-lived objects that bind to events in more long-lived objects._
+
+**Syntax:**
+
+    :::javascript
+    .bindFrom(originObject, event, fn)
+
++ `originObject`: Origin object that causes the event to be unbound when it is destroyed.
++ `event`: String specifying event type. Only Agility events are supported.
++ `fn`: function to be called upon event triggering.
+
+**Example:**
+
+    :::javascript
+    var model = $$({key: 'value'});
+    var observer = $$();
+    model.bindFrom(observer, 'change', someHandler);
+    // someHandler will now be called on model changes
+    observer.destroy();
+    // someHandler is now automatically unbound
+
+**Returns:**
+
+Owner Agility object (for chainable calls).
+
+
 ### [.trigger()](#core-trigger)
 
 _Triggers event, optionally passing parameters to listeners._
