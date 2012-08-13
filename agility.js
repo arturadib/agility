@@ -343,6 +343,37 @@
             this.model._data = $.extend({}, arg); // erases previous model attributes without pointing to object
           }
           else {
+            //iterate through properties and find nested declarations
+            for (var prop in arg){
+              if (prop.indexOf('.') > -1){
+                var path = prop.split('.');
+                var current_node = this.model._data[path[0]];
+                if (!current_node){
+                  current_node = this.model._data[path[0]] = {};
+                }
+                var next_node;
+                for (var i = 1; i < path.length - 1; i++){
+                  next_node = current_node[path[i]];
+                  if ($.isPlainObject(next_node)){
+                    current_node = next_node;
+                  }else{
+                    current_node[path[i]] = {};
+                    current_node = current_node[path[i]];
+                  }
+                }
+                var last_property = path[path.length - 1];
+                if ($.isPlainObject(arg[key]) && $.isPlainObject(current_node[last_property])){
+                  //if we're assigning objects, extend rather than replace
+                  $.extend(current_node[last_property], arg[prop]);
+                }else{
+                  current_node[last_property] = arg[prop];
+                }
+
+                delete _clone[ prop ]; // no need to fire change twice
+                modified.push(prop);
+                delete arg[prop];
+              }
+            }
             $.extend(this.model._data, arg); // default is extend
           }
           for (var key in arg) {
@@ -373,8 +404,23 @@
           return this.model._data;
         }
         // Attribute getter
-        if (typeof arg === 'string') {            
-          return this.model._data[arg];
+        if (typeof arg === 'string') {
+	      var paths = arg.split('.');
+	      var value = this.model._data[paths[0]];
+	      //check for nested objects
+	      if ($.isPlainObject(value)){
+		      for (var i = 1; i < paths.length; i++){
+			      if ($.isPlainObject(value) && value[paths[i]]){
+			        value = value[paths[i]];
+	              }else{
+				    value = value[paths.splice(i).join('.')];
+			      }
+		      }
+	      }else{
+		      //direct key access
+		      value = this.model._data[arg];
+	      }
+          return value;
         }
         throw 'agility.js: unknown argument for getter';
       },
@@ -444,7 +490,7 @@
       _parseBindStr: function(str){
         var obj = {key:null, attr:[]},
             pairs = str.split(','),
-            regex = /([a-zA-Z0-9_\-]+)(?:[\s=]+([a-zA-Z0-9_\-]+))?/,
+            regex = /([a-zA-Z0-9_\-\.]+)(?:[\s=]+([a-zA-Z0-9_\-]+))?/,
             keyAssigned = false,
             matched;
         
