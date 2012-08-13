@@ -1055,7 +1055,7 @@
             // parse id from Location
             self.model.set({ id: jqXHR.getResponseHeader('Location').match(/\/([0-9]+)$/)[1] }, {silent:true});
           }
-          self.trigger('persist:save:success');
+          self.trigger('persist:save:success', {data:data});
         },
         error: function(){
           self.trigger('persist:error');
