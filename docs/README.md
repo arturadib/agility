@@ -17,4 +17,4 @@ On Mac OS X, you can do an `$ easy_install pip`, then:
 + `$ pip install markdown pygments` (sudo)
 + `$ brew install jsmin`
 
-Then do a `$ make`. This should generate all the necessary production files (`index.html`, etc).
+Then do a `$ make docs`. This should generate all the necessary production files (`index.html`, etc).

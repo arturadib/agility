@@ -1,14 +1,27 @@
+# Gallery
+
+The websites and apps below use Agility.js in production. If you would like to add your startup/site here, [let us know!](http://twitter.com/agilityjs)
+
+
+## [cheaphotels.co.uk](http://cheaphotels.co.uk)
+
+Cheap Hotels is an online search engine and deal finder for hotels across the globe.
+
+![Screenshot](gallery/cheaphotels.png)
+
+
+
+## [OpDots.com](http://opdots.com)
+
+OpDots is the "see everything" dashboard for your enterprise data.
+
+![Screenshot](gallery/opdots.png)
+
+
+
 ## [The Wall](http://thewall.agilityjs.com)
 
-_The Wall is a minimal Twitter clone, where everyone can post anonymously to a virtual "wall". It illustrates most features offered by Agility, including server-side persistence._
-
-+ Demo: [http://thewall.agilityjs.com](http://thewall.agilityjs.com)
-+ Full source: [https://github.com/arturadib/thewall/blob/master/public/app.js](https://github.com/arturadib/thewall/blob/master/public/app.js)
-+ Screenshot:
+The Wall is a minimal Twitter clone, where everyone can post anonymously to a virtual "wall". It illustrates most features offered by Agility, including server-side persistence.
 
 ![Screenshot](gallery/thewall.png)
 
-
-### User submissions
-
-Have you created an awesome project that showcases Agility's capabilities? [Fork this site](https://github.com/arturadib/agility/tree/gh-pages), add a brief description of your project, and send a pull request. We'd love to see what you can do with Agility!

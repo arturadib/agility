@@ -1,3 +1,18 @@
+2012.9.3, Version 0.1.3
+
+* Added event bubbling (Pindi Albert)
+
+* Added multi-event binding (Pindi Albert)
+
+* Default input type is "text" (Tristan Slominski)
+
+* .set() fires model change event when reset is true (Tristan Slominski)
+
+* Accept data-bind events in any order (Tristan Slominski)
+
+* Documentation updates
+
+
 2011.12.17, Version 0.1.2
 
 * New data-bind notation: equal sign (Tristan Slominski)
