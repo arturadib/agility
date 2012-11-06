@@ -922,7 +922,7 @@
       var events = eventStr.split(';');
       var handler = object.controller[eventStr];
       $.each(events, function(i, ev){
-        ev = ev.trim();
+        ev = $.trim(ev);
         bindEvent(ev, handler);
       });
     }
