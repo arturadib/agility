@@ -633,7 +633,7 @@
         if (this.view.hasOwnProperty('style')) {
           objClass = 'agility_' + this._id;
           var styleStr = this.view.style.replace(regex, '.'+objClass);
-          $('head', window.document).append('<style type="text/css">'+styleStr+'</style>');
+          $('head', window.document).append('<style id="'+ objClass +'" type="text/css">'+styleStr+'</style>');
           this.view.$().addClass(objClass);
         }
         // Inherited style
@@ -678,9 +678,11 @@
   
       // Triggered upon removing self
       _destroy: function(event){
+        var objClass = 'agility_' + this._id;
         // destroy any appended agility objects
         this._container.empty();
         // destroy self
+        $('head #'+objClass, window.document).remove();
         this.view.$().remove();
       },
 
