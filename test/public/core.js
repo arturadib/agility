@@ -985,6 +985,21 @@
     // obj.view.$().val('Joe Doee').keypress();
     // equals(obj.model.get('name'), 'Joe Doee', 'search input: DOM --> Model binding OK');
 
+    var obj = $$({email:'mary@email.com'}, "<input type='email' data-bind='email' />");
+    equals(obj.view.$().val(), 'mary@email.com', 'email input: binding properly initialized');
+    obj.model.set({email:'joe@email.com'});
+    equals(obj.view.$().val(), 'joe@email.com', 'email input: Model --> DOM binding OK');
+
+    var obj = $$({num:42}, "<input type='number' data-bind='num' />");
+    equals(obj.view.$().val(), "42", 'number input: binding properly initialized');
+    obj.model.set({num:1337});
+    equals(obj.view.$().val(), "1337", 'number input: Model --> DOM binding OK');
+
+    var obj = $$({pass:'secret'}, "<input type='password' data-bind='pass' />");
+    equals(obj.view.$().val(), 'secret', 'password input: binding properly initialized');
+    obj.model.set({pass:'other secret'});
+    equals(obj.view.$().val(), 'other secret', 'password input: Model --> DOM binding OK');
+
     obj = $$({a:true}, "<input type='checkbox' data-bind='a' />");
     equals(obj.view.$().prop('checked'), true, 'checkbox input: binding properly initialized');
     obj.model.set({a:false});
@@ -1026,6 +1041,27 @@
     // can't test these synchronously as current implementation uses a 50ms timeout
     // obj.view.$().val('Joe Doee').keypress();
     // equals(obj.model.get('name'), 'Joe Doee', 'search input: DOM --> Model binding OK');
+
+    var obj = $$({email:'mary@email.com',myAttr:'myAttr'}, "<input type='email' data-bind='email, myAttr myAttr' />");
+    equals(obj.view.$().val(), 'mary@email.com', 'email input: binding properly initialized');
+    equals(obj.view.$().attr('myAttr'), 'myAttr', 'extra attribute set');
+    obj.model.set({email:'joe@email.com'});
+    equals(obj.view.$().val(), 'joe@email.com', 'email input: Model --> DOM binding OK');
+    equals(obj.view.$().attr('myAttr'), 'myAttr', 'extra attribute set');
+
+    var obj = $$({num:42,myAttr:'myAttr'}, "<input type='number' data-bind='num, myAttr myAttr' />");
+    equals(obj.view.$().val(), '42', 'number input: binding properly initialized');
+    equals(obj.view.$().attr('myAttr'), 'myAttr', 'extra attribute set');
+    obj.model.set({num:1337});
+    equals(obj.view.$().val(), '1337', 'number input: Model --> DOM binding OK');
+    equals(obj.view.$().attr('myAttr'), 'myAttr', 'extra attribute set');
+
+    var obj = $$({pass:'secret',myAttr:'myAttr'}, "<input type='password' data-bind='pass, myAttr myAttr' />");
+    equals(obj.view.$().val(), 'secret', 'password input: binding properly initialized');
+    equals(obj.view.$().attr('myAttr'), 'myAttr', 'extra attribute set');
+    obj.model.set({pass:'other secret'});
+    equals(obj.view.$().val(), 'other secret', 'password input: Model --> DOM binding OK');
+    equals(obj.view.$().attr('myAttr'), 'myAttr', 'extra attribute set');
 
     obj = $$({a:true,myAttr:'myAttr'}, "<input type='checkbox' data-bind='a, myAttr myAttr' />");
     equals(obj.view.$().prop('checked'), true, 'checkbox input: binding properly initialized');
