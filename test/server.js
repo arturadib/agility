@@ -5,7 +5,7 @@
 var express = require('express');
 var port = 8222;
 
-var app = express.createServer();
+var app = express();
 app.use(express.bodyParser());
 app.use(app.router);
 app.use(express.static(__dirname + '/public'));
@@ -14,7 +14,7 @@ var data = [{id:'123', name:'Joe Doe'}, {id:'1', name:'John Smith'}, {id:'2', na
 
 //
 // GET /api
-// 
+//
 app.get('/api', function(req, res){
   res.send('agility is the way of the future');
 });
