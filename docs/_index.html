@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<!-- 
+<!--
 
 **********************************************************************
 *
@@ -20,14 +20,14 @@
     Agility.js Javascript MVC library
   </title>
   <base href="docs/" target="_self" />
-  
+
   <meta charset="utf-8" />
 	<meta name="description" content="Agility.js is an MVC library for Javascript that lets you write maintainable and reusable browser code without the verbose or infrastructural overhead found in other MVC libraries."/>
 	<meta name="author" content="Artur Adib"/>
 
   <link rel="icon" type="image/png" href="favicon.png">
-  <link type="text/css" href="highlight.css" rel="stylesheet" />	  
-      
+  <link type="text/css" href="highlight.css" rel="stylesheet" />
+
   <style type="text/css">
     html,body { background:#ebebeb; margin:0; padding:0; padding-bottom:15px; font-family:'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif; font-size:16px; line-height:150%; }
     pre { line-height:125%; }
@@ -39,7 +39,7 @@
     div#menu { text-align:center; }
     div#menu li { display:inline; margin-right:40px; }
     div#box {
-      margin-top:0; 
+      margin-top:0;
       background:white;
       -moz-border-radius: 3px;
       -webkit-border-radius: 3px;
@@ -55,7 +55,7 @@
     div#demo-wrapper { font-size:90%; font-family:Arial, sans; }
     div#demo-wrapper #msg { margin-bottom:10px; }
     div#demo-wrapper iframe { width:600px; height:400px; border:1px solid #333; }
-    
+
     #simplemodal-overlay { background-color:#000; }
     #simplemodal-container { background-color:white; border:8px solid #555; padding:12px; }
   </style>
@@ -80,7 +80,7 @@
 <body>
 
   <div id="decor"></div>
-  
+
   <a href="http://github.com/arturadib/agility"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
 
   <div id="top" class='center'>
@@ -97,7 +97,7 @@
         </script>
 
         &nbsp;
-        
+
         <div class="g-plusone" data-href="http://agilityjs.com"></div>
         <script type="text/javascript">
           (function() {
@@ -105,17 +105,17 @@
             po.src = 'https://apis.google.com/js/plusone.js';
             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
           })();
-        </script>      
+        </script>
 
       </div>
 
       <div style="font-size:14px; line-height:130%; margin-top:10px;">
         Twitter: <a href="http://twitter.com/agilityjs">@agilityjs</a> <br/>
-        Creator: <a href="http://twitter.com/ar2r">@ar2r</a> <br/>
+        Creator: <a href="http://twitter.com/r2r">@r2r</a> <br/>
         Mailing list: <a href="http://groups.google.com/group/agilityjs">Google Groups</a> <br/>
       </div>
     </div>
-    
+
     <div style="clear:both;"></div>
   </div>
 
@@ -128,7 +128,7 @@
       <li><a href="https://github.com/arturadib/agility" target="_blank"><b>Contribute</b></a></li>
     </ul>
   </div>
-  
+
   <div id="box" class='center'>
     <div id='box-wrapper'>
 
@@ -160,7 +160,7 @@
             .empty()
             .append('<div id="msg">Loading ...</div>')
             .append($frame)
-            .modal({overlayClose: true});            
+            .modal({overlayClose: true});
           //
           // Insert dynamic frame content (pure jQuery doesn't work with script tags)
           //
@@ -170,7 +170,7 @@
             var script = frameWindow.document.createElement("script");
             script.type = "text/javascript";
             script.text = '\n'+code+'\n';
-            frameWindow.document.body.appendChild(script);          
+            frameWindow.document.body.appendChild(script);
           });
           return false;
         }); // demo click
