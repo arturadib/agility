@@ -980,11 +980,31 @@
       id = params.id;
     }
 
+    // Define post-load/gather data transform. If no indirection specified, return
+    // data as-is. If a string, represents single-level JSON data offset. If a
+    // function, that function processes data into locally appropriate data.
+    function indirect_get(data, indirection) {
+        if (indirection === undefined || indirection === null) {
+            return data;
+        }
+        return $.isFunction(indirection) ? indirection(data) : data[indirection];
+    }
+    
+    // Opposite of indrect_set(). Optional pre-save transform of data to
+    // massage it into a format acceptable to the server.
+    function indirect_set(data, indirection) {
+        if (indirection === undefined || indirection === null) {
+            return data;
+        }
+        return isFunction(indirection) ? indirection(data) : { indirection: data };
+    }
+    
+    
     // Creates persist methods
     
     // .save()
     // Creates new model or update existing one, depending on whether model has 'id' property
-    this.save = function(){
+    this.save = function(indirection){
       var self = this;
       if (this._data.persist.openRequests === 0) {
         this.trigger('persist:start');
@@ -993,7 +1013,7 @@
       this._data.persist.adapter.call(this, {
         type: this.model.get(id) ? 'PUT' : 'POST', // update vs. create
         id: this.model.get(id),
-        data: this.model.get(),
+        data: indirect_set(this.model.get(), indirection),
         complete: function(){
           self._data.persist.openRequests--;
           if (self._data.persist.openRequests === 0) {
@@ -1022,7 +1042,7 @@
   
     // .load()
     // Loads model with given id
-    this.load = function(){
+    this.load = function(indirection){
       var self = this;
       if (this.model.get(id) === undefined) throw 'agility.js: load() needs model id';
     
@@ -1040,6 +1060,7 @@
           }
         },
         success: function(data, textStatus, jqXHR){
+          data = indirect_get(data);
           self.model.set(data);
           self.trigger('persist:load:success');
         },      
@@ -1086,7 +1107,7 @@
 
     // .gather()
     // Loads collection and appends/prepends (depending on method) at selector. All persistence data including adapter comes from proto, not self
-    this.gather = function(proto, method, selectorOrQuery, query){      
+    this.gather = function(proto, method, selectorOrQuery, query, indirection){      
       var selector, self = this;
       if (!proto) throw "agility.js plugin persist: gather() needs object prototype";
       if (!proto._data.persist) throw "agility.js plugin persist: prototype doesn't seem to contain persist() data";
@@ -1119,6 +1140,7 @@
           }
         },
         success: function(data){
+          data = indirect_get(data, indirection);
           $.each(data, function(index, entry){
             var obj = $$(proto, entry);
             if (typeof method === 'string') {
