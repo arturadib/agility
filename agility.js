@@ -595,7 +595,8 @@
           else {
             if (bindData.key) {
               self.bind('_change:'+bindData.key, function(){
-                if (self.model.get(bindData.key)) {
+                var key = self.model.get(bindData.key);
+                if (key || key===0) {
                   $node.text(self.model.get(bindData.key).toString());
                 } else {
                   $node.text('');
