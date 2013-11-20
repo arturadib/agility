@@ -543,7 +543,7 @@
             self.bind('_change:'+bindData.key, function(){
               var nodeName = $node.attr('name');
               var modelValue = self.model.get(bindData.key);
-              $node.siblings('input[name="'+nodeName+'"]').filter('[value="'+modelValue+'"]').prop("checked", true); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
+              self.view.$root.find('input[name="'+nodeName+'"]').filter('[value="'+modelValue+'"]').prop("checked", true); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
             });            
             // DOM --> Model
             $node.change(function(){
