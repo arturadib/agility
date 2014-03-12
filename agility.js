@@ -576,7 +576,7 @@
           }
 
           // <input type="text">, <input>, and <textarea>: 2-way binding
-          else if ($node.is('input:text, input[type!="search"], textarea')) {
+          else if ($node.is('input, textarea')) {
             // Model --> DOM
             self.bind('_change:'+bindData.key, function(){
               $node.val(self.model.get(bindData.key)); // this won't fire a DOM 'change' event, saving us from an infinite event loop (Model <--> DOM)
