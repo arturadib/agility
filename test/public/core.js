@@ -964,6 +964,39 @@
     equals(obj1.model.get('text'), undefined, 'obj.model.reset() erases non-original attributes');
   });
 
+  test("Nested Model calls", function(){
+    var a_change = false;
+    var t = false;
+    var obj1 = $$({a:1}, '<div data-bind="text.name"></div>', {
+      'change:a': function(){
+        a_change = true;
+      },
+      'change:text.name': function(){
+        t = true;
+      }
+    });
+    obj1.model.set({text:{name:'Joe Doe'}});
+    equals(obj1.model.get('a'), 1, 'obj.model.set() extends by default');
+    equals(obj1.view.$().text(), 'Joe Doe', 'obj.model.set() fires view change');
+    equals(t, true, 'obj.model.set() fires change:var');
+    a_change = false;
+    obj1.model.set({'text.name':'New Text'}, {reset:true});
+    equals(obj1.model.get('a'), undefined, 'obj.model.set() resets OK');
+    equals(a_change, true, 'obj.model.set() with reset=true fires change:a');
+    
+    obj1.model.reset();
+    equals(obj1.model.get('a'), 1, 'obj.model.reset() brings back original attribute');
+    equals(obj1.model.get('text.name'), undefined, 'obj.model.reset() erases non-original attributes');
+
+	obj1.model.set({text:{name:'Test'}});
+	equals(obj1.model.get('text.name'), 'Test', 'obj.model.set() nested model set/get');
+	equals(obj1.view.$().text(), 'Test', 'nested obj.model.set() fires view change');
+	
+	obj1.model.set({person:{'address.street':'123 fake street'}});
+	equals(obj1.model.get('person.address.street'), '123 fake street', 'obj.model.set() nested model set/get');
+	equals(obj1.model.get('person')['address.street'], '123 fake street', 'obj.model.set() nested model set/get with dotted key');
+  });
+
   test("Chainable calls", function(){
     t = false;
     var obj = $$().model.set({text:'Joe Doe'}).bind('click &', function(){ t = true; }).trigger('click &');
