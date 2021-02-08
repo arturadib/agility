@@ -571,6 +571,32 @@
 </ul>
 <p><strong>Returns:</strong></p>
 <p>Owner Agility object (for chainable calls).</p>
+<h3><a href="#core-bindfrom">.bindFrom()</a></h3>
+<p><em>Binds a function to event from an "origin object".
+When the origin object is destroyed, the event handler is automatically unbound.
+Useful for short-lived objects that bind to events in more long-lived objects.</em></p>
+<p><strong>Syntax:</strong></p>
+<div class="codehilite"><pre><span class="p">.</span><span class="nx">bindFrom</span><span class="p">(</span><span class="nx">originObject</span><span class="p">,</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">fn</span><span class="p">)</span>
+</pre></div>
+
+
+<ul>
+<li><code>originObject</code>: Origin object that causes the event to be unbound when it is destroyed.</li>
+<li><code>event</code>: String specifying event type. Only Agility events are supported.</li>
+<li><code>fn</code>: function to be called upon event triggering.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="codehilite"><pre><span class="kd">var</span> <span class="nx">model</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">({</span><span class="nx">key</span><span class="o">:</span> <span class="s1">&#39;value&#39;</span><span class="p">});</span>
+<span class="kd">var</span> <span class="nx">observer</span> <span class="o">=</span> <span class="nx">$$</span><span class="p">();</span>
+<span class="nx">model</span><span class="p">.</span><span class="nx">bindFrom</span><span class="p">(</span><span class="nx">observer</span><span class="p">,</span> <span class="s1">&#39;change&#39;</span><span class="p">,</span> <span class="nx">someHandler</span><span class="p">);</span>
+<span class="c1">// someHandler will now be called on model changes</span>
+<span class="nx">observer</span><span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
+<span class="c1">// someHandler is now automatically unbound</span>
+</pre></div>
+
+
+<p><strong>Returns:</strong></p>
+<p>Owner Agility object (for chainable calls).</p>
 <h3><a href="#core-trigger">.trigger()</a></h3>
 <p><em>Triggers event, optionally passing parameters to listeners.</em></p>
 <p><strong>Syntax:</strong> </p>

@@ -291,6 +291,33 @@
         return this; // for chainable calls
       }, // bind
 
+      // Binds eventStr to fn from originObject. When originObject is destroyed,
+      // the event is automatically unbound.
+      bindFrom: function(originObject, eventStr, fn){
+        var eventObj = this._events.parseEventStr(eventStr);
+        if(eventObj.selector){
+          throw "bindFrom does not yet work with jQuery events";
+        } else {
+          // jQuery namespaced events: events of the form "<eventType>.<namespace>" can be unbound with an
+          // unbind call to ".<namespace>" without affecting other events.
+          this._events.bind(eventObj.type + '.' + originObject._id.toString(), fn);
+          var self = this;
+          originObject.bind('_destroy', function(){
+            self._events.unbind('.' + originObject._id.toString());
+          });
+        }
+      }, // bindFrom
+
+      unbind: function(eventStr){
+        // Only works with custom events for now
+        var eventObj = this._events.parseEventStr(eventStr);
+        if(eventObj.selector){
+          throw "Unbind does not yet work with jQuery events";
+        } else {
+          $(this._events.data).unbind(eventObj.type);
+        }
+      }, // unbind
+
       // Triggers eventStr. Syntax for eventStr is same as that for bind()
       trigger: function(eventStr, params){
         var eventObj = this._events.parseEventStr(eventStr);
@@ -772,6 +799,10 @@
     bind: function(){
       this._events.bind.apply(this, arguments);
       return this; // for chainable calls
+    },
+    bindFrom: function(){
+      this._events.bindFrom.apply(this, arguments);
+      return this;
     },
     trigger: function(){
       this._events.trigger.apply(this, arguments);

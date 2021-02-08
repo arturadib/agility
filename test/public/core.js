@@ -1151,6 +1151,36 @@
       ok(parent2Called, "event bubbled to parent 2");
   });
 
+
+  test("Unbinding events", function(){
+    var eventCalled = false;
+    var o = $$();
+    o.bind('testevent', function(){
+      eventCalled = true;
+    });
+    o.trigger('testevent');
+    ok(eventCalled, "event handler called after bind");
+    eventCalled = false;
+    o._events.unbind('testevent');
+    o.trigger('testevent');
+    ok(!eventCalled, "event handler not called after unbind");
+  });
+
+  test("Binding events with bindFrom", function(){
+    var eventCalled = false;
+    var origin = $$();
+    var o = $$();
+    o.bindFrom(origin, 'testevent', function(){
+      eventCalled = true;
+    });
+    o.trigger('testevent');
+    ok(eventCalled, "event handler called after bind");
+    eventCalled = false;
+    origin.destroy();
+    o.trigger('testevent');
+    ok(!eventCalled, "event handler not called after origin destoyed");
+  });
+
   test("Model events", function(){
     var t = false;
     var obj = $$({}, {}, {
